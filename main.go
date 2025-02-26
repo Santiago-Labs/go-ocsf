@@ -1,0 +1,46 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"log"
+	"os"
+
+	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
+	"github.com/Santiago-Labs/go-ocsf/syncers"
+
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+)
+
+func main() {
+	isParquet := flag.Bool("parquet", false, "Use parquet format")
+	isJSON := flag.Bool("json", false, "Use JSON format")
+	bucketName := flag.String("bucket", "", "S3 bucket name")
+
+	flag.Parse()
+
+	snykAPIKey := os.Getenv("SNYK_API_KEY")
+	snykOrganizationID := os.Getenv("SNYK_ORGANIZATION_ID")
+
+	ctx := context.Background()
+
+	snykClient, err := snyk.NewClient(ctx, snykAPIKey, snykOrganizationID)
+	if err != nil {
+		log.Fatalf("Failed to create Snyk client: %v", err)
+	}
+
+	var s3Client *s3.Client
+	if *bucketName != "" {
+		cfg, err := config.LoadDefaultConfig(ctx)
+		if err != nil {
+			log.Fatalf("Error loading AWS config: %v", err)
+		}
+
+		s3Client = s3.NewFromConfig(cfg)
+	}
+
+	snykSyncer := syncers.NewSnykOCSFSyncer(ctx, snykClient, s3Client, *bucketName, *isParquet, *isJSON)
+
+	snykSyncer.Sync(ctx)
+}
