@@ -127,11 +127,12 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		}
 	}
 
-	issueURL := fmt.Sprintf("https://app.snyk.io/org/%s/project/%s#issue-%s", s.org.Attributes.Slug, project.ID, issue.ID)
-
+	issueURL := fmt.Sprintf("https://app.snyk.io/org/%s/project/%s#issue-%s", s.org.Attributes.Slug, project.ID, issue.Attributes.Key)
+	cwe := snykIssueCWE(issue)
 	if len(issue.Attributes.Problems) == 0 {
 		vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
 			UID:                &issue.ID,
+			CWE:                cwe,
 			Desc:               &issue.Attributes.Description,
 			Title:              &issue.Attributes.Title,
 			Severity:           &severity,
@@ -147,9 +148,15 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		})
 	} else {
 		for _, problem := range issue.Attributes.Problems {
+			reference := issueURL
+			if problem.URL != nil {
+				reference = *problem.URL
+			}
+
 			vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
 				UID:                &problem.ID,
 				CVE:                snykProblemToCVE(problem),
+				CWE:                cwe,
 				AffectedCode:       snykAffectedCode(issue, project),
 				AffectedPackages:   snykAffectedPackages(issue),
 				Desc:               &issue.Attributes.Description,
@@ -161,12 +168,12 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				LastSeenTime:       &lastSeenTime,
 				VendorName:         &vendorName,
 				Remediation:        remediation,
-				References:         []string{issueURL},
+				References:         []string{reference},
 			})
 		}
 	}
 
-	resourceType := "Code"
+	resourceType := project.Attributes.Type
 	resource := ocsf.ResourceDetails{
 		UID:  &issue.ID,
 		Name: &projectName,
@@ -281,12 +288,24 @@ func mapSnykStatus(snykStatus string) (string, int32) {
 }
 
 func snykProblemToCVE(problem snyk.Problem) *ocsf.CVE {
-	if problem.Source == "CVE" {
+	if problem.Source == "NVD" {
 		return &ocsf.CVE{
 			UID: problem.ID,
 			References: []string{
 				*problem.URL,
 			},
+		}
+	}
+	return nil
+}
+
+func snykIssueCWE(issue snyk.Issue) *ocsf.CWE {
+	for _, class := range issue.Attributes.Classes {
+		if class.Source == "CWE" {
+			return &ocsf.CWE{
+				UID:       class.ID,
+				SourceURL: class.URL,
+			}
 		}
 	}
 	return nil
