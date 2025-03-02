@@ -25,6 +25,38 @@ func NewClient(ctx context.Context, apiKey, snykOrgID string) (*Client, error) {
 	}, nil
 }
 
+func (c *Client) GetOrg(ctx context.Context) (*Org, error) {
+	url := fmt.Sprintf("https://api.snyk.io/rest/orgs/%s?version=2024-10-15", c.orgID)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "token "+c.apiKey)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	var org OrgResponse
+	if err := json.NewDecoder(resp.Body).Decode(&org); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if org.Data.ID == "" {
+		return nil, fmt.Errorf("no org data found")
+	}
+
+	return &org.Data, nil
+}
+
 func (c *Client) GetProject(ctx context.Context, projectID string) (*Project, error) {
 	url := fmt.Sprintf("https://api.snyk.io/rest/orgs/%s/projects/%s?version=2024-10-15", c.orgID, projectID)
 

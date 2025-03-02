@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
+	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -16,7 +17,7 @@ import (
 func main() {
 	isParquet := flag.Bool("parquet", false, "Use parquet format")
 	isJSON := flag.Bool("json", false, "Use JSON format")
-	bucketName := flag.String("bucket", "", "S3 bucket name")
+	bucketName := flag.String("bucket-name", "", "S3 bucket name")
 
 	flag.Parse()
 
@@ -40,7 +41,34 @@ func main() {
 		s3Client = s3.NewFromConfig(cfg)
 	}
 
-	snykSyncer := syncers.NewSnykOCSFSyncer(ctx, snykClient, s3Client, *bucketName, *isParquet, *isJSON)
+	var storage datastore.Datastore
+	if *isParquet {
+		if *bucketName != "" {
+			storage = datastore.NewS3ParquetDatastore(*bucketName, s3Client)
+		} else {
+			storage, err = datastore.NewLocalParquetDatastore()
+			if err != nil {
+				log.Fatalf("Failed to create local parquet datastore: %v", err)
+			}
+		}
+	} else if *isJSON {
+		if *bucketName != "" {
+			storage = datastore.NewS3JsonDatastore(*bucketName, s3Client)
+		} else {
+			storage, err = datastore.NewLocalJsonDatastore()
+			if err != nil {
+				log.Fatalf("Failed to create local json datastore: %v", err)
+			}
+		}
+	}
 
-	snykSyncer.Sync(ctx)
+	snykSyncer, err := syncers.NewSnykOCSFSyncer(ctx, snykClient, storage)
+	if err != nil {
+		log.Fatalf("Failed to create Snyk syncer: %v", err)
+	}
+
+	err = snykSyncer.Sync(ctx)
+	if err != nil {
+		log.Fatalf("Failed to sync Snyk data: %v", err)
+	}
 }
