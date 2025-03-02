@@ -6,6 +6,20 @@ import (
 	"time"
 )
 
+type Org struct {
+	ID         string `json:"id"`
+	Attributes struct {
+		Name string `json:"name"`
+		Slug string `json:"slug"`
+	} `json:"attributes"`
+}
+
+type OrgResponse struct {
+	Data   Org        `json:"data"`
+	Links  APILinks   `json:"links"`
+	Errors []APIError `json:"errors,omitempty"`
+}
+
 type ProjectResponse struct {
 	Data    Project    `json:"data"`
 	JSONAPI JSONAPI    `json:"jsonapi"`
