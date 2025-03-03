@@ -21,15 +21,20 @@ type s3ParquetDatastore struct {
 	s3Bucket string
 	s3Client *s3.Client
 
-	findingIndex map[string]string
+	BaseDatastore
 }
 
+// NewS3ParquetDatastore creates a new S3 Parquet datastore.
+// It initializes an in-memory index of finding IDs to file paths.
 func NewS3ParquetDatastore(bucketName string, s3Client *s3.Client) Datastore {
 	s := &s3ParquetDatastore{
 		s3Bucket: bucketName,
 		s3Client: s3Client,
-
+	}
+	s.BaseDatastore = BaseDatastore{
 		findingIndex: make(map[string]string),
+		fileIndex:    make(map[string]int),
+		store:        s,
 	}
 
 	ctx := context.Background()
@@ -40,6 +45,8 @@ func NewS3ParquetDatastore(bucketName string, s3Client *s3.Client) Datastore {
 	return s
 }
 
+// buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
+// It reads all Parquet files in the S3 bucket and parses them into a slice of vulnerability findings.
 func (s *s3ParquetDatastore) buildFindingIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
@@ -63,31 +70,13 @@ func (s *s3ParquetDatastore) buildFindingIndex(ctx context.Context) error {
 		}
 	}
 
-	slog.Info("built finding index from S3", "count", len(s.findingIndex))
+	slog.Info("built finding index from S3", "count", len(s.BaseDatastore.findingIndex))
 	return nil
 }
 
-func (s *s3ParquetDatastore) GetFinding(ctx context.Context, findingID string) (*ocsf.VulnerabilityFinding, error) {
-	filePath, exists := s.findingIndex[findingID]
-	if !exists {
-		return nil, ErrNotFound
-	}
-
-	findings, err := s.GetAllFindings(ctx, filePath)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get all findings")
-	}
-
-	for _, finding := range findings {
-		if finding.FindingInfo.UID == findingID {
-			return &finding, nil
-		}
-	}
-
-	return nil, ErrNotFound
-}
-
-func (s *s3ParquetDatastore) GetAllFindings(ctx context.Context, key string) ([]ocsf.VulnerabilityFinding, error) {
+// GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
+// It reads the Parquet file and parses it into a slice of vulnerability findings.
+func (s *s3ParquetDatastore) GetFindingsFromFile(ctx context.Context, key string) ([]ocsf.VulnerabilityFinding, error) {
 	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(s.s3Bucket),
 		Key:    aws.String(key),
@@ -110,107 +99,21 @@ func (s *s3ParquetDatastore) GetAllFindings(ctx context.Context, key string) ([]
 	return findings, nil
 }
 
-func (s *s3ParquetDatastore) SaveFindings(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
-	newFindings := []ocsf.VulnerabilityFinding{}
-	existingFindings := make(map[string][]ocsf.VulnerabilityFinding)
-
-	for _, finding := range findings {
-		filePath, exists := s.findingIndex[finding.FindingInfo.UID]
-		if !exists {
-			newFindings = append(newFindings, finding)
-		} else {
-			existingFindings[filePath] = append(existingFindings[filePath], finding)
+// WriteBatch creates a new Parquet file for storing vulnerability findings.
+// It writes the findings to the specified file path and updates the datastore's in-memory index.
+func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, key *string) error {
+	allFindings := findings
+	if key == nil {
+		newkey := filepath.Join(basepath, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+		key = &newkey
+	} else {
+		var err error
+		allFindings, err = s.GetFindingsFromFile(ctx, *key)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing findings from disk")
 		}
-	}
 
-	newFindingsFilename := fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z"))
-	newFindingsKey := filepath.Join(basepath, newFindingsFilename)
-	if len(newFindings) > 0 {
-		if err := s.createFile(ctx, newFindingsKey, newFindings); err != nil {
-			return oops.Wrapf(err, "failed to write new findings to parquet")
-		}
-	}
-
-	updatedCount := 0
-	for updatedFindingsPath, updatedFindings := range existingFindings {
-		if err := s.updateFile(ctx, updatedFindingsPath, updatedFindings); err != nil {
-			slog.Error("failed to update parquet file", "file", updatedFindingsPath, "error", err)
-			// Fall back to creating a new file for these findings
-
-			newFindingsFilename := fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z"))
-			newFindingsKey := filepath.Join(basepath, newFindingsFilename)
-			if err := s.createFile(ctx, newFindingsKey, updatedFindings); err != nil {
-				return oops.Wrapf(err, "failed to write fallback parquet file")
-			}
-		} else {
-			updatedCount += len(updatedFindings)
-		}
-	}
-
-	slog.Info("saved findings",
-		"new", len(newFindings),
-		"updated", updatedCount)
-
-	return nil
-}
-
-func (s *s3ParquetDatastore) createFile(ctx context.Context, key string, findings []ocsf.VulnerabilityFinding) error {
-	var buf bytes.Buffer
-	writer := io.Writer(&buf)
-	if err := goParquet.Write(writer, findings); err != nil {
-		return oops.Wrapf(err, "failed to write findings to parquet buffer")
-	}
-
-	for _, f := range findings {
-		s.findingIndex[f.FindingInfo.UID] = key
-	}
-
-	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &s.s3Bucket,
-		Key:    &key,
-		Body:   bytes.NewReader(buf.Bytes()),
-	})
-	if err != nil {
-		return oops.Wrapf(err, "failed to upload Parquet to S3")
-	}
-
-	slog.Info("Wrote Parquet file to S3",
-		"bucket", s.s3Bucket,
-		"key", key,
-	)
-	return nil
-}
-
-func (s *s3ParquetDatastore) loadFileIntoIndex(ctx context.Context, key string) error {
-	findings, err := s.GetAllFindings(ctx, key)
-	if err != nil {
-		return oops.Wrapf(err, "failed to read all findings from parquet file")
-	}
-
-	for _, finding := range findings {
-		s.findingIndex[finding.FindingInfo.UID] = key
-	}
-
-	slog.Debug("indexed findings from s3", "key", key, "count", len(findings))
-	return nil
-}
-
-func (s *s3ParquetDatastore) updateFile(ctx context.Context, filePath string, updatedFindings []ocsf.VulnerabilityFinding) error {
-	updateMap := make(map[string]ocsf.VulnerabilityFinding)
-	for _, finding := range updatedFindings {
-		updateMap[finding.FindingInfo.UID] = finding
-	}
-
-	allFindings, err := s.GetAllFindings(ctx, filePath)
-	if err != nil {
-		return oops.Wrapf(err, "failed to read all findings from parquet file")
-	}
-
-	for i, finding := range allFindings {
-		if updated, exists := updateMap[finding.FindingInfo.UID]; exists {
-			allFindings[i] = updated
-			slog.Debug("updated finding in memory", "id", finding.FindingInfo.UID)
-		}
+		allFindings = append(allFindings, findings...)
 	}
 
 	var buf bytes.Buffer
@@ -219,19 +122,24 @@ func (s *s3ParquetDatastore) updateFile(ctx context.Context, filePath string, up
 		return oops.Wrapf(err, "failed to write findings to parquet buffer")
 	}
 
-	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(s.s3Bucket),
-		Key:    aws.String(filePath),
+	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket: &s.s3Bucket,
+		Key:    key,
 		Body:   bytes.NewReader(buf.Bytes()),
 	})
 	if err != nil {
-		return oops.Wrapf(err, "failed to upload updated parquet to S3")
+		return oops.Wrapf(err, "failed to upload Parquet to S3")
 	}
 
-	slog.Info("replaced parquet file in S3",
-		"bucket", s.s3Bucket,
-		"key", filePath,
-		"findings", len(allFindings))
+	for _, f := range allFindings {
+		s.BaseDatastore.findingIndex[f.FindingInfo.UID] = *key
+	}
+	s.BaseDatastore.fileIndex[*key] = len(allFindings)
 
+	slog.Info("Wrote Parquet file to S3",
+		"bucket", s.s3Bucket,
+		"key", *key,
+		"findings", len(allFindings),
+	)
 	return nil
 }

@@ -1,3 +1,6 @@
+// Package snyk provides a client for interacting with the Snyk API.
+// The Snyk API is documented at https://snyk.docs.apiary.io/
+
 package snyk
 
 import (
@@ -11,13 +14,18 @@ import (
 	"encoding/json"
 )
 
+// Client represents a Snyk API client that can interact with Snyk resources.
+// It handles authentication and communication with the Snyk API.
 type Client struct {
 	orgID      string
 	apiKey     string
 	httpClient *http.Client
 }
 
-func NewClient(ctx context.Context, apiKey, snykOrgID string) (*Client, error) {
+// NewClient creates a new Snyk client with the provided API key and organization ID.
+// It requires an API key and Snyk organization ID.
+// Returns an initialized client and any error encountered during initialization.
+func NewClient(apiKey, snykOrgID string) (*Client, error) {
 	return &Client{
 		apiKey:     apiKey,
 		httpClient: &http.Client{},
@@ -25,6 +33,7 @@ func NewClient(ctx context.Context, apiKey, snykOrgID string) (*Client, error) {
 	}, nil
 }
 
+// GetOrg retrieves information about the Snyk organization associated with this client.
 func (c *Client) GetOrg(ctx context.Context) (*Org, error) {
 	url := fmt.Sprintf("https://api.snyk.io/rest/orgs/%s?version=2024-10-15", c.orgID)
 
@@ -57,6 +66,7 @@ func (c *Client) GetOrg(ctx context.Context) (*Org, error) {
 	return &org.Data, nil
 }
 
+// GetProject retrieves information about a specific Snyk project.
 func (c *Client) GetProject(ctx context.Context, projectID string) (*Project, error) {
 	url := fmt.Sprintf("https://api.snyk.io/rest/orgs/%s/projects/%s?version=2024-10-15", c.orgID, projectID)
 
@@ -89,6 +99,7 @@ func (c *Client) GetProject(ctx context.Context, projectID string) (*Project, er
 	return &project.Data, nil
 }
 
+// ParseSnykTestFile reads and parses a Snyk test result file from the specified filepath.
 func (c *Client) ParseSnykTestFile(ctx context.Context, filepath string) (SnykTestAllProjectsResult, error) {
 	jsonFile, err := os.ReadFile(filepath)
 	if err != nil {
@@ -102,6 +113,7 @@ func (c *Client) ParseSnykTestFile(ctx context.Context, filepath string) (SnykTe
 	return snykTestResult, nil
 }
 
+// ListIssues retrieves all vulnerability issues from the Snyk organization.
 func (c *Client) ListIssues(ctx context.Context) ([]Issue, error) {
 	var allIssues []Issue
 
@@ -154,6 +166,7 @@ func (c *Client) ListIssues(ctx context.Context) ([]Issue, error) {
 	return allIssues, nil
 }
 
+// GetIssue retrieves detailed information about a specific vulnerability issue.
 func (c *Client) GetIssue(ctx context.Context, issueID string) (*Issue, error) {
 	url := fmt.Sprintf("https://api.snyk.io/rest/orgs/%s/issues/%s?version=2024-06-10", c.orgID, issueID)
 

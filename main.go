@@ -26,7 +26,7 @@ func main() {
 
 	ctx := context.Background()
 
-	snykClient, err := snyk.NewClient(ctx, snykAPIKey, snykOrganizationID)
+	snykClient, err := snyk.NewClient(snykAPIKey, snykOrganizationID)
 	if err != nil {
 		log.Fatalf("Failed to create Snyk client: %v", err)
 	}

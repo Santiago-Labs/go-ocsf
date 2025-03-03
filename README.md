@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/Santiago-Labs/go-ocsf.svg)](https://pkg.go.dev/github.com/Santiago-Labs/go-ocsf)
-[![License](https://img.shields.io/github/license/Santiago-Labs/go-ocsf.svg)](LICENSE)
+[![License](https://img.shields.io/github/license/Santiago-Labs/go-ocsf)](LICENSE)
 
 `go-ocsf` is a Go library and CLI tool for converting security events from your security tools (e.g., Snyk) into the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/) format, with output options in JSON or Parquet formats. Data can be stored locally or seamlessly uploaded to AWS S3.
 
@@ -11,7 +11,7 @@
 - ⚙️ Converts security event data into OCSF-compliant format
 - 📦 Supports JSON and Parquet output formats
 - ☁️ Direct integration with AWS S3 for cloud storage
-- 🖥️ Simple CLI tool and Go library usage
+- 🖥️ Use as a CLI tool or Go library
 
 ## Installation
 
@@ -40,6 +40,7 @@ Store data directly in AWS S3:
 export AWS_ACCESS_KEY_ID="your-aws-access-key-id"
 export AWS_SECRET_ACCESS_KEY="your-aws-secret-access-key"
 export AWS_REGION="your-aws-region"
+
 go run main.go --parquet --bucket-name="your-s3-bucket-name"
 ```
 
@@ -84,12 +85,13 @@ func main() {
 }
 ```
 
-## Supported Tools
+## Supported Integrations
 
 - Snyk
 - AWS Inspector (coming soon)
 - AWS GuardDuty (coming soon)
 - Crowdstrike Falcon (coming soon)
+- Google Workspace Logs (coming soon)
 - Tenable (coming soon)
 - AWS CloudTrail (coming soon)
 
@@ -105,4 +107,4 @@ We welcome contributions to improve or expand functionality.
 
 ## License
 
-`go-ocsf` is licensed under the [AGPL License](LICENSE).
+`go-ocsf` is licensed under the [AGPL-3.0 License](LICENSE).

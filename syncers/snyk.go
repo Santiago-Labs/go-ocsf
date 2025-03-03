@@ -22,6 +22,8 @@ type SnykOCSFSyncer struct {
 	org        *snyk.Org
 }
 
+// NewSnykOCSFSyncer creates a new SnykOCSFSyncer
+// It initializes the Snyk client and datastore, and fetches the organization details.
 func NewSnykOCSFSyncer(ctx context.Context, snykClient *snyk.Client, datastore datastore.Datastore) (DataSync, error) {
 	org, err := snykClient.GetOrg(ctx)
 	if err != nil {
@@ -35,6 +37,8 @@ func NewSnykOCSFSyncer(ctx context.Context, snykClient *snyk.Client, datastore d
 	}, nil
 }
 
+// Sync synchronizes Snyk data with the OCSF datastore
+// It fetches all issues from Snyk, builds OCSF findings, and saves them to the datastore.
 func (s *SnykOCSFSyncer) Sync(ctx context.Context) error {
 	slog.Info("syncing Snyk data")
 
@@ -80,6 +84,7 @@ func (s *SnykOCSFSyncer) Sync(ctx context.Context) error {
 	return nil
 }
 
+// ToOCSF converts a Snyk issue into an OCSF vulnerability finding.
 func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *snyk.Project, existingFinding *ocsf.VulnerabilityFinding) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapSnykSeverity(issue.Attributes.EffectiveSeverityLevel)
 	status, statusID := mapSnykStatus(issue.Attributes.Status)
