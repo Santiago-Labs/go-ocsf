@@ -6,12 +6,11 @@
 Convert data from any of your security tools to OCSF. Developed by <a href="https://telophase.dev">
 Telophase</a>.
 </h3>
+<a href="https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml"><img src="https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+<a href="https://goreportcard.com/report/github.com/Santiago-Labs/go-ocsf"><img src="https://goreportcard.com/badge/github.com/Santiago-Labs/go-ocsf" alt="Go Report Card"></a>
+<a href="https://pkg.go.dev/github.com/Santiago-Labs/go-ocsf"><img src="https://pkg.go.dev/badge/github.com/Santiago-Labs/go-ocsf.svg" alt="Go Reference"></a>
+<a href="LICENSE"><img src="https://img.shields.io/github/license/Santiago-Labs/go-ocsf" alt="License"></a>
 </div>
-
-[![CI](https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Santiago-Labs/go-ocsf)](https://goreportcard.com/report/github.com/Santiago-Labs/go-ocsf)
-[![Go Reference](https://pkg.go.dev/badge/github.com/Santiago-Labs/go-ocsf.svg)](https://pkg.go.dev/github.com/Santiago-Labs/go-ocsf)
-[![License](https://img.shields.io/github/license/Santiago-Labs/go-ocsf)](LICENSE)
 
 `go-ocsf` is a Go library and CLI tool for converting security findings and events from your security tools (e.g., Snyk) into the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/) format, with output options in JSON or Parquet formats. Data can be stored locally or seamlessly uploaded to AWS S3.
 
