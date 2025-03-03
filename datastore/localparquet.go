@@ -41,6 +41,7 @@ func NewLocalParquetDatastore() (Datastore, error) {
 }
 
 // buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
+// It reads all Parquet files in the base directory and parses them into a slice of vulnerability findings.
 func (s *localParquetDatastore) buildFindingIndex(ctx context.Context) error {
 	files, err := os.ReadDir(basepath)
 	if err != nil {

@@ -73,6 +73,8 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 	return findings.VulnerabilityFindings, nil
 }
 
+// WriteBatch creates a new JSON file for storing vulnerability findings.
+// It marshals the findings into a JSON object and writes it to the specified file path.
 func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, key *string) error {
 	allFindings := findings
 	if key == nil {
@@ -119,6 +121,8 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 	return nil
 }
 
+// buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
+// It reads all JSON files in the S3 bucket and parses them into a slice of vulnerability findings.
 func (s *s3JsonDatastore) buildFindingIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),

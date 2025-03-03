@@ -46,8 +46,7 @@ func NewS3ParquetDatastore(bucketName string, s3Client *s3.Client) Datastore {
 }
 
 // buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
-// It reads all Parquet files in the base directory and parses them into a slice of vulnerability findings.
-// The datastore updates its in-memory index with the finding IDs and their corresponding file paths.
+// It reads all Parquet files in the S3 bucket and parses them into a slice of vulnerability findings.
 func (s *s3ParquetDatastore) buildFindingIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
@@ -100,6 +99,8 @@ func (s *s3ParquetDatastore) GetFindingsFromFile(ctx context.Context, key string
 	return findings, nil
 }
 
+// WriteBatch creates a new Parquet file for storing vulnerability findings.
+// It writes the findings to the specified file path and updates the datastore's in-memory index.
 func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, key *string) error {
 	allFindings := findings
 	if key == nil {

@@ -62,7 +62,6 @@ func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path strin
 
 // WriteBatch creates a new JSON file for storing vulnerability findings.
 // It marshals the findings into a JSON object and writes it to the specified file path.
-// The datastore also updates its in-memory index of finding IDs to file paths.
 func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, path *string) error {
 	allFindings := findings
 	if path == nil {

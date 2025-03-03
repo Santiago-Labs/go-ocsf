@@ -15,6 +15,7 @@ type BaseDatastore struct {
 	store Datastore
 }
 
+// GetFinding returns a single finding from the datastore or ErrNotFound if the finding is not found
 func (d *BaseDatastore) GetFinding(ctx context.Context, findingID string) (*ocsf.VulnerabilityFinding, error) {
 	filePath, exists := d.findingIndex[findingID]
 	if !exists {
@@ -35,6 +36,7 @@ func (d *BaseDatastore) GetFinding(ctx context.Context, findingID string) (*ocsf
 	return nil, ErrNotFound
 }
 
+// SaveFindings saves a batch of findings to the datastore. Datastore implementations handle file formats.
 func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	var (
 		currentBatch     []ocsf.VulnerabilityFinding
