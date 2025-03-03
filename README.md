@@ -1,14 +1,23 @@
-# go-ocsf
+<div align="center">
+<img src="https://github.com/user-attachments/assets/c4217cad-018c-4550-8ac5-8958d5888c54" height= "auto" width="200" />
+<br />
+<h1>Santiago-Labs/go-ocsf </h1>
+<h3>
+Convert data from any of your security tools to OCSF. Developed by <a href="https://telophase.dev">
+Telophase</a>.
+</h3>
+</div>
 
 [![CI](https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Santiago-Labs/go-ocsf/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Santiago-Labs/go-ocsf)](https://goreportcard.com/report/github.com/Santiago-Labs/go-ocsf)
 [![Go Reference](https://pkg.go.dev/badge/github.com/Santiago-Labs/go-ocsf.svg)](https://pkg.go.dev/github.com/Santiago-Labs/go-ocsf)
 [![License](https://img.shields.io/github/license/Santiago-Labs/go-ocsf)](LICENSE)
 
-`go-ocsf` is a Go library and CLI tool for converting security events from your security tools (e.g., Snyk) into the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/) format, with output options in JSON or Parquet formats. Data can be stored locally or seamlessly uploaded to AWS S3.
+`go-ocsf` is a Go library and CLI tool for converting security findings and events from your security tools (e.g., Snyk) into the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/) format, with output options in JSON or Parquet formats. Data can be stored locally or seamlessly uploaded to AWS S3.
 
 ## Features
 
-- ⚙️ Converts security event data into OCSF-compliant format
+- 🚀 Converts security event data into OCSF-compliant format
 - 📦 Supports JSON and Parquet output formats
 - ☁️ Direct integration with AWS S3 for cloud storage
 - 🖥️ Use as a CLI tool or Go library
