@@ -14,12 +14,15 @@ Telophase</a>.
 
 `go-ocsf` is a Go library and CLI tool for converting security findings and events from your security tools (e.g., Snyk) into the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/) format, with output options in JSON or Parquet formats. Data can be stored locally or seamlessly uploaded to AWS S3.
 
+Just plug in your API keys, and you're ready to go.
+
 ## Features
 
-- 🚀 Converts security event data into OCSF-compliant format
-- 📦 Supports JSON and Parquet output formats
-- ☁️ Direct integration with AWS S3 for cloud storage
-- 🖥️ Use as a CLI tool or Go library
+- 🔑 Pre-built integrations with security tools.
+- 🚀 Converts data from your security tools into OCSF-compliant format.
+- 📦 Output in JSON and Parquet formats.
+- ☁️ Direct integration with AWS S3 for cloud storage.
+- 🖥️ Use as a CLI tool or Go library.
 
 ## Installation
 
@@ -96,9 +99,10 @@ func main() {
 ## Supported Integrations
 
 - Snyk
-- AWS Inspector (coming soon)
+- AWS Inspector
 - AWS GuardDuty (coming soon)
-- Crowdstrike Falcon (coming soon)
+– AWS Security Hub (coming soon)
+- Crowdstrike Spotlight (coming soon)
 - Google Workspace Logs (coming soon)
 - Tenable (coming soon)
 - AWS CloudTrail (coming soon)

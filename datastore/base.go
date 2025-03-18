@@ -64,7 +64,7 @@ func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.Vulner
 		}
 	}
 
-	slog.Info("saved findings", "findings", len(findings))
+	slog.Info("upserted findings", "findings", len(findings))
 
 	return nil
 }
