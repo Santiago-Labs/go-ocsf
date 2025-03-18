@@ -220,7 +220,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 			Name:       &productName,
 			VendorName: productName,
 		},
-		Version: "1.1.0",
+		Version: "1.4.0",
 	}
 
 	now := time.Now()
@@ -249,7 +249,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		ClassName:       &className,
 		Message:         &issue.Attributes.Description,
 		Metadata:        metadata,
-		Resource:        &resource,
+		Resources:       []ocsf.ResourceDetails{resource},
 		Status:          &status,
 		StatusID:        &statusID,
 		TypeUID:         typeUID,
@@ -286,7 +286,7 @@ func mapSnykSeverity(snykSeverity string) (string, int) {
 func mapSnykStatus(snykStatus string) (string, int32) {
 	switch snykStatus {
 	case "resolved":
-		return "Closed", 2
+		return "Closed", 4
 	default:
 		return "Open", 1
 	}

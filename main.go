@@ -11,6 +11,7 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/syncers"
 
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/inspector2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
@@ -21,15 +22,7 @@ func main() {
 
 	flag.Parse()
 
-	snykAPIKey := os.Getenv("SNYK_API_KEY")
-	snykOrganizationID := os.Getenv("SNYK_ORGANIZATION_ID")
-
 	ctx := context.Background()
-
-	snykClient, err := snyk.NewClient(snykAPIKey, snykOrganizationID)
-	if err != nil {
-		log.Fatalf("Failed to create Snyk client: %v", err)
-	}
 
 	var s3Client *s3.Client
 	if *bucketName != "" {
@@ -42,6 +35,7 @@ func main() {
 	}
 
 	var storage datastore.Datastore
+	var err error
 	if *isParquet {
 		if *bucketName != "" {
 			storage = datastore.NewS3ParquetDatastore(*bucketName, s3Client)
@@ -62,6 +56,15 @@ func main() {
 		}
 	}
 
+	// Snyk Example
+	snykAPIKey := os.Getenv("SNYK_API_KEY")
+	snykOrganizationID := os.Getenv("SNYK_ORGANIZATION_ID")
+
+	snykClient, err := snyk.NewClient(snykAPIKey, snykOrganizationID)
+	if err != nil {
+		log.Fatalf("Failed to create Snyk client: %v", err)
+	}
+
 	snykSyncer, err := syncers.NewSnykOCSFSyncer(ctx, snykClient, storage)
 	if err != nil {
 		log.Fatalf("Failed to create Snyk syncer: %v", err)
@@ -70,5 +73,22 @@ func main() {
 	err = snykSyncer.Sync(ctx)
 	if err != nil {
 		log.Fatalf("Failed to sync Snyk data: %v", err)
+	}
+
+	// Inspector Example
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		log.Fatalf("Failed to load AWS config: %v", err)
+	}
+
+	inspectorClient := inspector2.NewFromConfig(cfg)
+	if err != nil {
+		log.Fatalf("Failed to create Inspector client: %v", err)
+	}
+
+	inspectorSyncer := syncers.NewInspectorOCSFSyncer(ctx, inspectorClient, storage)
+	err = inspectorSyncer.Sync(ctx)
+	if err != nil {
+		log.Fatalf("Failed to sync Inspector data: %v", err)
 	}
 }

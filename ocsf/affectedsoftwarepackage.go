@@ -24,7 +24,7 @@ var AffectedSoftwarePackageSchema = arrow.NewSchema(AffectedSoftwarePackageField
 
 type AffectedSoftwarePackage struct {
 	Architecture   *string      `json:"architecture,omitempty" parquet:"architecture"`
-	Epoch          *int         `json:"epoch,omitempty" parquet:"epoch"`
+	Epoch          *int32       `json:"epoch,omitempty" parquet:"epoch"`
 	FixedInVersion *string      `json:"fixed_in_version,omitempty" parquet:"fixed_in_version"`
 	License        *string      `json:"license,omitempty" parquet:"license"`
 	Name           string       `json:"name" parquet:"name"`
