@@ -119,4 +119,4 @@ We welcome contributions to improve or expand functionality.
 
 ## License
 
-`go-ocsf` is licensed under the [AGPL-3.0 License](LICENSE).
+`go-ocsf` is licensed under the [MIT License](LICENSE).
