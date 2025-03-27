@@ -100,11 +100,11 @@ func main() {
 
 - Snyk
 - AWS Inspector
+- Tenable
 - AWS GuardDuty (coming soon)
 – AWS Security Hub (coming soon)
 - Crowdstrike Spotlight (coming soon)
 - Google Workspace Logs (coming soon)
-- Tenable (coming soon)
 - AWS CloudTrail (coming soon)
 
 ## Contributing
