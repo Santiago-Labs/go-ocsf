@@ -17,6 +17,8 @@ var GeoLocationFields = []arrow.Field{
 	{Name: "region", Type: arrow.BinaryTypes.String},
 }
 
+var GeoLocationStruct = arrow.StructOf(GeoLocationFields...)
+
 type GeoLocation struct {
 	City         *string   `json:"city,omitempty" parquet:"city"`
 	Continent    *string   `json:"continent,omitempty" parquet:"continent"`

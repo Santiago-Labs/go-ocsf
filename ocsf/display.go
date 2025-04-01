@@ -12,6 +12,8 @@ var DisplayFields = []arrow.Field{
 	{Name: "scale_factor", Type: arrow.PrimitiveTypes.Int32},
 }
 
+var DisplayStruct = arrow.StructOf(DisplayFields...)
+
 // Display represents display specifications.
 type Display struct {
 	ColorDepth          *int `json:"color_depth,omitempty" parquet:"color_depth"`

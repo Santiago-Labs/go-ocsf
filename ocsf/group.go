@@ -24,3 +24,5 @@ var GroupFields = []arrow.Field{
 	{Name: "type", Type: arrow.BinaryTypes.String},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
+
+var GroupStruct = arrow.StructOf(GroupFields...)

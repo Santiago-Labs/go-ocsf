@@ -10,7 +10,7 @@ var FeatureFields = []arrow.Field{
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
 
-var FeatureSchema = arrow.NewSchema(FeatureFields, nil)
+var FeatureStruct = arrow.StructOf(FeatureFields...)
 
 type Feature struct {
 	Name    *string `json:"name,omitempty" parquet:"name"`

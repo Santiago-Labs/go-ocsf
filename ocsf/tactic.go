@@ -11,6 +11,8 @@ var TacticFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var TacticStruct = arrow.StructOf(TacticFields...)
+
 type Tactic struct {
 	Name   string `json:"name" parquet:"name"`
 	SrcURL string `json:"src_url" parquet:"src_url"`

@@ -15,9 +15,11 @@ var AffectedSoftwarePackageFields = []arrow.Field{
 	{Name: "path", Type: arrow.BinaryTypes.String},
 	{Name: "purl", Type: arrow.BinaryTypes.String},
 	{Name: "release", Type: arrow.BinaryTypes.String},
-	{Name: "remediation", Type: arrow.StructOf(RemediationFields...)},
+	{Name: "remediation", Type: RemediationStruct},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
+
+var AffectedSoftwarePackageStruct = arrow.StructOf(AffectedSoftwarePackageFields...)
 
 // AffectedSoftwarePackageSchema is the Arrow schema for AffectedSoftwarePackage.
 var AffectedSoftwarePackageSchema = arrow.NewSchema(AffectedSoftwarePackageFields, nil)

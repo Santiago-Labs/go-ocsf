@@ -8,10 +8,12 @@ import (
 var AffectedCodeFields = []arrow.Field{
 	{Name: "end_line", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "start_line", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "file", Type: arrow.StructOf(FileFields...)},
-	{Name: "owner", Type: arrow.StructOf(UserFields...)},
-	{Name: "remediation", Type: arrow.StructOf(RemediationFields...)},
+	{Name: "file", Type: FileStruct},
+	{Name: "owner", Type: UserStruct},
+	{Name: "remediation", Type: RemediationStruct},
 }
+
+var AffectedCodeStruct = arrow.StructOf(AffectedCodeFields...)
 
 // AffectedCodeSchema is the Arrow schema for AffectedCode.
 var AffectedCodeSchema = arrow.NewSchema(AffectedCodeFields, nil)

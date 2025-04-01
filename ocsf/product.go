@@ -7,7 +7,7 @@ import (
 // ProductFields defines the Arrow fields for Product.
 var ProductFields = []arrow.Field{
 	{Name: "cpe_name", Type: arrow.BinaryTypes.String},
-	{Name: "feature", Type: arrow.StructOf(FeatureFields...)},
+	{Name: "feature", Type: FeatureStruct},
 	{Name: "lang", Type: arrow.BinaryTypes.String},
 	{Name: "name", Type: arrow.BinaryTypes.String},
 	{Name: "path", Type: arrow.BinaryTypes.String},
@@ -16,6 +16,8 @@ var ProductFields = []arrow.Field{
 	{Name: "vendor_name", Type: arrow.BinaryTypes.String},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
+
+var ProductStruct = arrow.StructOf(ProductFields...)
 
 type Product struct {
 	CPEName    *string  `json:"cpe_name,omitempty" parquet:"cpe_name"`

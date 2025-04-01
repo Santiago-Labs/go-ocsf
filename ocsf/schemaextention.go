@@ -10,6 +10,8 @@ var SchemaExtensionFields = []arrow.Field{
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
 
+var SchemaExtensionStruct = arrow.StructOf(SchemaExtensionFields...)
+
 type SchemaExtension struct {
 	Name    string `json:"name" parquet:"name"`
 	UID     string `json:"uid" parquet:"uid"`

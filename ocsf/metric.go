@@ -10,6 +10,8 @@ var MetricFields = []arrow.Field{
 	{Name: "value", Type: arrow.BinaryTypes.String},
 }
 
+var MetricStruct = arrow.StructOf(MetricFields...)
+
 type Metric struct {
 	Name  string  `json:"name" parquet:"name"`
 	Value *string `json:"value" parquet:"value"`

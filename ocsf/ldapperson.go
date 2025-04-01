@@ -50,9 +50,11 @@ var LdapPersonFields = []arrow.Field{
 	{Name: "ldap_dn", Type: arrow.BinaryTypes.String},
 	{Name: "leave_time", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "leave_time_dt", Type: arrow.BinaryTypes.String},
-	{Name: "location", Type: arrow.StructOf(GeoLocationFields...)},
+	{Name: "location", Type: GeoLocationStruct},
 	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "modified_time_dt", Type: arrow.BinaryTypes.String},
 	{Name: "office_location", Type: arrow.BinaryTypes.String},
 	{Name: "surname", Type: arrow.BinaryTypes.String},
 }
+
+var LdapPersonStruct = arrow.StructOf(LdapPersonFields...)

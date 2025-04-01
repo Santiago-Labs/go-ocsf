@@ -12,6 +12,7 @@ var EnrichmentFields = []arrow.Field{
 	{Name: "value", Type: arrow.BinaryTypes.String},
 }
 
+var EnrichmentStruct = arrow.StructOf(EnrichmentFields...)
 var EnrichmentSchema = arrow.NewSchema(EnrichmentFields, nil)
 
 // Enrichment represents an enrichment element.

@@ -10,6 +10,7 @@ var CWEFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var CWEStruct = arrow.StructOf(CWEFields...)
 var CWESchema = arrow.NewSchema(CWEFields, nil)
 
 type CWE struct {
