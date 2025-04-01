@@ -11,16 +11,16 @@ var KBArticleFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "created_time_dt", Type: arrow.BinaryTypes.String},
 	{Name: "is_superseded", Type: arrow.FixedWidthTypes.Boolean},
-	// Field for OS; assume OSSchema is defined in the OS implementation.
-	{Name: "os", Type: arrow.StructOf(OSFields...)},
-	// Field for Product; assume ProductSchema is defined in the Product implementation.
-	{Name: "product", Type: arrow.StructOf(ProductFields...)},
+	{Name: "os", Type: OSStruct},
+	{Name: "product", Type: ProductStruct},
 	{Name: "severity", Type: arrow.BinaryTypes.String},
 	{Name: "size", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "src_url", Type: arrow.BinaryTypes.String},
 	{Name: "title", Type: arrow.BinaryTypes.String},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
+
+var KBArticleStruct = arrow.StructOf(KBArticleFields...)
 
 // KBArticleSchema is the Arrow schema for KBArticle.
 var KBArticleSchema = arrow.NewSchema(KBArticleFields, nil)

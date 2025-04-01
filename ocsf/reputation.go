@@ -12,6 +12,8 @@ var ReputationFields = []arrow.Field{
 	{Name: "score_id", Type: arrow.PrimitiveTypes.Int32},
 }
 
+var ReputationStruct = arrow.StructOf(ReputationFields...)
+
 type Reputation struct {
 	BaseScore float64 `json:"base_score" parquet:"base_score"`
 	Provider  *string `json:"provider,omitempty" parquet:"provider"`

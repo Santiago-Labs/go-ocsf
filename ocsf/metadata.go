@@ -13,25 +13,27 @@ import (
 var MetadataFields = []arrow.Field{
 	{Name: "correlation_uid", Type: arrow.BinaryTypes.String},
 	{Name: "event_code", Type: arrow.BinaryTypes.String},
-	{Name: "extension", Type: arrow.StructOf(SchemaExtensionFields...)},
-	{Name: "extensions", Type: arrow.ListOf(arrow.StructOf(SchemaExtensionFields...))},
+	{Name: "extension", Type: SchemaExtensionStruct},
+	{Name: "extensions", Type: arrow.ListOf(SchemaExtensionStruct)},
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String)},
 	{Name: "log_level", Type: arrow.BinaryTypes.String},
 	{Name: "log_name", Type: arrow.BinaryTypes.String},
 	{Name: "log_provider", Type: arrow.BinaryTypes.String},
 	{Name: "log_version", Type: arrow.BinaryTypes.String},
 	{Name: "logged_time", Type: arrow.BinaryTypes.String},
-	{Name: "loggers", Type: arrow.ListOf(arrow.StructOf(LoggerFields...))},
+	{Name: "loggers", Type: arrow.ListOf(LoggerStruct)},
 	{Name: "modified_time", Type: arrow.BinaryTypes.String},
 	{Name: "original_time", Type: arrow.BinaryTypes.String},
 	{Name: "processed_time", Type: arrow.BinaryTypes.String},
-	{Name: "product", Type: arrow.StructOf(ProductFields...)},
+	{Name: "product", Type: ProductStruct},
 	{Name: "profiles", Type: arrow.ListOf(arrow.BinaryTypes.String)},
 	{Name: "sequence", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "tenant_uid", Type: arrow.BinaryTypes.String},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
+
+var MetadataStruct = arrow.StructOf(MetadataFields...)
 
 type Metadata struct {
 	CorrelationUID *string           `json:"correlation_uid,omitempty" parquet:"correlation_uid"`

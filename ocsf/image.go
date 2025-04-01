@@ -13,6 +13,8 @@ var ImageFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var ImageStruct = arrow.StructOf(ImageFields...)
+
 // ImageSchema is the Arrow schema for Image.
 var ImageSchema = arrow.NewSchema(ImageFields, nil)
 

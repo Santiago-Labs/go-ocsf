@@ -10,6 +10,8 @@ var TechniqueFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var TechniqueStruct = arrow.StructOf(TechniqueFields...)
+
 type Technique struct {
 	Name   string `json:"name" parquet:"name"`
 	SrcURL string `json:"src_url" parquet:"src_url"`

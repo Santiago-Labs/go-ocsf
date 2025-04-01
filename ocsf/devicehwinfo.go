@@ -14,11 +14,13 @@ var DeviceHWInfoFields = []arrow.Field{
 	{Name: "cpu_count", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "cpu_speed", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "cpu_type", Type: arrow.BinaryTypes.String},
-	{Name: "desktop_display", Type: arrow.StructOf(DisplayFields...)},
-	{Name: "keyboard_info", Type: arrow.StructOf(KeyboardInfoFields...)},
+	{Name: "desktop_display", Type: DisplayStruct},
+	{Name: "keyboard_info", Type: KeyboardInfoStruct},
 	{Name: "ram_size", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "serial_number", Type: arrow.BinaryTypes.String},
 }
+
+var DeviceHWInfoStruct = arrow.StructOf(DeviceHWInfoFields...)
 
 // DeviceHWInfo contains hardware information.
 type DeviceHWInfo struct {

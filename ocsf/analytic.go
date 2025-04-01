@@ -15,6 +15,8 @@ var relatedAnalyticFields = []arrow.Field{
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
 
+var RelatedAnalyticStruct = arrow.StructOf(relatedAnalyticFields...)
+
 // AnalyticFields defines the Arrow fields for Analytic.
 // To avoid infinite recursion in the "related_analytics" field,
 // we include only the base (non‐recursive) fields.
@@ -22,12 +24,14 @@ var AnalyticFields = []arrow.Field{
 	{Name: "category", Type: arrow.BinaryTypes.String},
 	{Name: "desc", Type: arrow.BinaryTypes.String},
 	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "related_analytics", Type: arrow.ListOf(arrow.StructOf(relatedAnalyticFields...))},
+	{Name: "related_analytics", Type: arrow.ListOf(RelatedAnalyticStruct)},
 	{Name: "type", Type: arrow.BinaryTypes.String},
 	{Name: "type_id", Type: arrow.BinaryTypes.String},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
+
+var AnalyticStruct = arrow.StructOf(AnalyticFields...)
 
 // AnalyticSchema is the Arrow schema for Analytic.
 var AnalyticSchema = arrow.NewSchema(AnalyticFields, nil)

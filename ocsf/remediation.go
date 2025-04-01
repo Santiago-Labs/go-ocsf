@@ -7,9 +7,11 @@ import (
 // RemediationFields defines the Arrow fields for Remediation.
 var RemediationFields = []arrow.Field{
 	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "kb_article_list", Type: arrow.ListOf(arrow.StructOf(KBArticleFields...))},
+	{Name: "kb_article_list", Type: arrow.ListOf(KBArticleStruct)},
 	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String)},
 }
+
+var RemediationStruct = arrow.StructOf(RemediationFields...)
 
 type Remediation struct {
 	Description   string      `json:"desc" parquet:"desc"`

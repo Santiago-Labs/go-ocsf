@@ -9,6 +9,8 @@ var FileFields = []arrow.Field{
 	{Name: "owner", Type: arrow.BinaryTypes.String},
 }
 
+var FileStruct = arrow.StructOf(FileFields...)
+
 var FileSchema = arrow.NewSchema(FileFields, nil)
 
 type File struct {

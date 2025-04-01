@@ -10,6 +10,8 @@ var KillChainPhaseFields = []arrow.Field{
 	{Name: "phase_id", Type: arrow.PrimitiveTypes.Int32},
 }
 
+var KillChainPhaseStruct = arrow.StructOf(KillChainPhaseFields...)
+
 // KillChainPhaseSchema is the Arrow schema for KillChainPhase.
 var KillChainPhaseSchema = arrow.NewSchema(KillChainPhaseFields, nil)
 

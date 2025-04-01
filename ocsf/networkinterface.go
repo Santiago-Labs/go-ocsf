@@ -17,6 +17,8 @@ var NetworkInterfaceFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var NetworkInterfaceStruct = arrow.StructOf(NetworkInterfaceFields...)
+
 type NetworkInterface struct {
 	Hostname     *string `json:"hostname,omitempty" parquet:"hostname"`
 	IP           *string `json:"ip,omitempty" parquet:"ip"`

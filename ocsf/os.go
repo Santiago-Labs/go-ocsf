@@ -19,6 +19,8 @@ var OSFields = []arrow.Field{
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
 
+var OSStruct = arrow.StructOf(OSFields...)
+
 type OS struct {
 	Build   *string `json:"build,omitempty" parquet:"build"`
 	Country *string `json:"country,omitempty" parquet:"country"`

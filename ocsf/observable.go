@@ -14,8 +14,10 @@ type Observable struct {
 
 var ObservableFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "reputation", Type: arrow.StructOf(ReputationFields...)},
+	{Name: "reputation", Type: ReputationStruct},
 	{Name: "type", Type: arrow.BinaryTypes.String},
 	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "value", Type: arrow.BinaryTypes.String},
 }
+
+var ObservableStruct = arrow.StructOf(ObservableFields...)

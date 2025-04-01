@@ -6,14 +6,16 @@ import (
 
 // RelatedEventFields defines the Arrow fields for RelatedEvent.
 var RelatedEventFields = []arrow.Field{
-	{Name: "attacks", Type: arrow.ListOf(arrow.StructOf(MITREATTCKFields...))},
-	{Name: "kill_chain", Type: arrow.ListOf(arrow.StructOf(KillChainPhaseFields...))},
-	{Name: "observables", Type: arrow.ListOf(arrow.StructOf(ObservableFields...))},
+	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct)},
+	{Name: "kill_chain", Type: arrow.ListOf(KillChainPhaseStruct)},
+	{Name: "observables", Type: arrow.ListOf(ObservableStruct)},
 	{Name: "product_uid", Type: arrow.BinaryTypes.String},
 	{Name: "type", Type: arrow.BinaryTypes.String},
 	{Name: "type_uid", Type: arrow.PrimitiveTypes.Int64},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
+
+var RelatedEventStruct = arrow.StructOf(RelatedEventFields...)
 
 type RelatedEvent struct {
 	Attacks     []MITREATTCK     `json:"attacks,omitempty" parquet:"attacks"`

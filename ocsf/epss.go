@@ -12,6 +12,7 @@ var EPSSFields = []arrow.Field{
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
 
+var EPSSStruct = arrow.StructOf(EPSSFields...)
 var EPSSSchema = arrow.NewSchema(EPSSFields, nil)
 
 type EPSS struct {

@@ -6,15 +6,14 @@ import (
 
 // MITREATTCKFields defines the Arrow fields for MITREATTCK.
 var MITREATTCKFields = []arrow.Field{
-	{Name: "sub_technique", Type: arrow.StructOf(SubTechniqueFields...)},
-	{Name: "tactic", Type: arrow.StructOf(TacticFields...)},
-	{Name: "tactics", Type: arrow.ListOf(arrow.StructOf(TacticFields...))},
-	{Name: "technique", Type: arrow.StructOf(TechniqueFields...)},
+	{Name: "sub_technique", Type: SubTechniqueStruct},
+	{Name: "tactic", Type: TacticStruct},
+	{Name: "tactics", Type: arrow.ListOf(TacticStruct)},
+	{Name: "technique", Type: TechniqueStruct},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
 
-// MITREATTCKSchema is the Arrow schema for MITREATTCK.
-var MITREATTCKSchema = arrow.NewSchema(MITREATTCKFields, nil)
+var MITREATTCKStruct = arrow.StructOf(MITREATTCKFields...)
 
 // MITREATTCK represents MITRE ATT&CK® details.
 type MITREATTCK struct {

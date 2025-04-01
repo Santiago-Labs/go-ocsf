@@ -6,20 +6,22 @@ import (
 
 // UserFields defines the Arrow fields for User.
 var UserFields = []arrow.Field{
-	{Name: "account", Type: arrow.StructOf(AccountFields...)},
+	{Name: "account", Type: AccountStruct},
 	{Name: "credential_uid", Type: arrow.BinaryTypes.String},
 	{Name: "domain", Type: arrow.BinaryTypes.String},
 	{Name: "email_addr", Type: arrow.BinaryTypes.String},
 	{Name: "full_name", Type: arrow.BinaryTypes.String},
-	{Name: "groups", Type: arrow.ListOf(arrow.StructOf(GroupFields...))},
-	{Name: "ldap_person", Type: arrow.StructOf(LdapPersonFields...)},
+	{Name: "groups", Type: arrow.ListOf(GroupStruct)},
+	{Name: "ldap_person", Type: LdapPersonStruct},
 	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "org", Type: arrow.StructOf(OrganizationFields...)},
+	{Name: "org", Type: OrganizationStruct},
 	{Name: "type", Type: arrow.BinaryTypes.String},
 	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 	{Name: "uid_alt", Type: arrow.BinaryTypes.String},
 }
+
+var UserStruct = arrow.StructOf(UserFields...)
 
 type User struct {
 	Account       *Account      `json:"account,omitempty" parquet:"account"`

@@ -8,12 +8,14 @@ import (
 var CVSSFields = []arrow.Field{
 	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64},
 	{Name: "depth", Type: arrow.BinaryTypes.String},
-	{Name: "metrics", Type: arrow.ListOf(arrow.StructOf(MetricFields...))},
+	{Name: "metrics", Type: arrow.ListOf(MetricStruct)},
 	{Name: "overall_score", Type: arrow.PrimitiveTypes.Float64},
 	{Name: "severity", Type: arrow.BinaryTypes.String},
 	{Name: "vector_string", Type: arrow.BinaryTypes.String},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
+
+var CVSSStruct = arrow.StructOf(CVSSFields...)
 
 // CVSSSchema is the Arrow schema for CVSS.
 var CVSSSchema = arrow.NewSchema(CVSSFields, nil)

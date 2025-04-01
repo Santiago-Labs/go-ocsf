@@ -12,6 +12,8 @@ var AccountFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var AccountStruct = arrow.StructOf(AccountFields...)
+
 // AccountSchema is the Arrow schema for Account.
 var AccountSchema = arrow.NewSchema(AccountFields, nil)
 

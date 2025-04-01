@@ -12,6 +12,8 @@ var OrganizationFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
 
+var OrganizationStruct = arrow.StructOf(OrganizationFields...)
+
 type Organization struct {
 	Name   *string `json:"name,omitempty" parquet:"name"`
 	OUName *string `json:"ou_name,omitempty" parquet:"ou_name"`

@@ -14,11 +14,13 @@ var LoggerFields = []arrow.Field{
 	{Name: "log_version", Type: arrow.BinaryTypes.String},
 	{Name: "logged_time", Type: arrow.BinaryTypes.String},
 	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "product", Type: arrow.StructOf(ProductFields...)},
+	{Name: "product", Type: ProductStruct},
 	{Name: "transmit_time", Type: arrow.BinaryTypes.String},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 	{Name: "version", Type: arrow.BinaryTypes.String},
 }
+
+var LoggerStruct = arrow.StructOf(LoggerFields...)
 
 type Logger struct {
 	Device       *Device    `json:"device,omitempty" parquet:"device"`

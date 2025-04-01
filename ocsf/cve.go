@@ -8,19 +8,21 @@ import (
 
 var CVEFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.BinaryTypes.String},
-	{Name: "cvss", Type: arrow.BinaryTypes.String},
-	{Name: "cwe", Type: arrow.StructOf(CWEFields...)},
+	{Name: "cvss", Type: CVSSStruct},
+	{Name: "cwe", Type: CWEStruct},
 	{Name: "cwe_uid", Type: arrow.BinaryTypes.String},
 	{Name: "cwe_url", Type: arrow.BinaryTypes.String},
 	{Name: "desc", Type: arrow.BinaryTypes.String},
 	{Name: "epss", Type: arrow.BinaryTypes.String},
 	{Name: "modified_time", Type: arrow.BinaryTypes.String},
-	{Name: "product", Type: arrow.StructOf(ProductFields...)},
+	{Name: "product", Type: ProductStruct},
 	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String)},
 	{Name: "title", Type: arrow.BinaryTypes.String},
 	{Name: "type", Type: arrow.BinaryTypes.String},
 	{Name: "uid", Type: arrow.BinaryTypes.String},
 }
+
+var CVEStruct = arrow.StructOf(CVEFields...)
 
 // CVESchema is the Arrow schema for CVE.
 var CVESchema = arrow.NewSchema(CVEFields, nil)

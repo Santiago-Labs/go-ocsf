@@ -13,6 +13,8 @@ var KeyboardInfoFields = []arrow.Field{
 	{Name: "keyboard_type", Type: arrow.BinaryTypes.String},
 }
 
+var KeyboardInfoStruct = arrow.StructOf(KeyboardInfoFields...)
+
 type KeyboardInfo struct {
 	FunctionKeys    *int    `json:"function_keys,omitempty" parquet:"function_keys"`
 	IME             *string `json:"ime,omitempty" parquet:"ime"`
