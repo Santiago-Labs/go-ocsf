@@ -169,10 +169,17 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 	classUID := int32(2002)
 
 	if existingFinding == nil {
-		activityID = int32(1)
-		activityName = "Create"
-		typeUID = int64(classUID)*100 + int64(activityID)
-		typeName = "Vulnerability Finding: Create"
+		if status == "Closed" {
+			activityID = int32(3)
+			activityName = "Close"
+			typeUID = int64(classUID)*100 + int64(activityID)
+			typeName = "Vulnerability Finding: Close"
+		} else {
+			activityID = int32(1)
+			activityName = "Create"
+			typeUID = int64(classUID)*100 + int64(activityID)
+			typeName = "Vulnerability Finding: Create"
+		}
 	} else {
 		if status == "Closed" {
 			activityID = int32(3)
