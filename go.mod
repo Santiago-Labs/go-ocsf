@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.7
 	github.com/aws/aws-sdk-go-v2/service/inspector2 v1.36.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.77.1
+	github.com/aws/aws-sdk-go-v2/service/securityhub v1.57.0
 	github.com/parquet-go/parquet-go v0.25.0
 	github.com/samsarahq/go/oops v0.0.0-20220211150445-4b291d6feac4
 )

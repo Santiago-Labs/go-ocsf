@@ -12,9 +12,11 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/securityhub"
 )
 
 func main() {
@@ -49,8 +51,17 @@ func main() {
 		}
 	}
 
-	if err := inspectorSync(ctx, storage); err != nil {
-		log.Fatalf("Failed to sync Inspector data: %v", err)
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		log.Printf("Warning: Failed to load AWS config: %v. AWS services will be skipped.", err)
+	} else {
+		if err := inspectorSync(ctx, storage, cfg); err != nil {
+			log.Fatalf("Failed to sync Inspector data: %v", err)
+		}
+
+		if err := syncSecurityHub(ctx, storage, cfg); err != nil {
+			log.Fatalf("Failed to sync SecurityHub data: %v", err)
+		}
 	}
 }
 
@@ -112,23 +123,10 @@ func syncSnyk(ctx context.Context, apiKey, orgID string, storage datastore.Datas
 	return snykSyncer.Sync(ctx)
 }
 
-func inspectorSync(ctx context.Context, storage datastore.Datastore) error {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		log.Fatalf("Failed to load AWS config: %v", err)
-	}
-
+func inspectorSync(ctx context.Context, storage datastore.Datastore, cfg aws.Config) error {
 	inspectorClient := inspector2.NewFromConfig(cfg)
-	if err != nil {
-		log.Fatalf("Failed to create Inspector client: %v", err)
-	}
 
 	inspectorSyncer := syncers.NewInspectorOCSFSyncer(ctx, inspectorClient, storage)
-	err = inspectorSyncer.Sync(ctx)
-	if err != nil {
-		log.Fatalf("Failed to sync Inspector data: %v", err)
-	}
-
 	return inspectorSyncer.Sync(ctx)
 }
 
@@ -144,4 +142,11 @@ func syncTenable(ctx context.Context, apiKey, secretKey string, storage datastor
 	}
 
 	return tenableSyncer.Sync(ctx)
+}
+
+func syncSecurityHub(ctx context.Context, storage datastore.Datastore, cfg aws.Config) error {
+	securityHubClient := securityhub.NewFromConfig(cfg)
+
+	securityHubSyncer := syncers.NewSecurityHubOCSFSyncer(ctx, securityHubClient, storage)
+	return securityHubSyncer.Sync(ctx)
 }
