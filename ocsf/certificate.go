@@ -21,6 +21,7 @@ var DigitalCertificateFields = []arrow.Field{
 }
 
 var DigitalCertificateStruct = arrow.StructOf(DigitalCertificateFields...)
+var DigitalCertificateClassname = "certificate"
 
 type DigitalCertificate struct {
 	CreatedTime    *time.Time                `json:"created_time,omitempty" parquet:"created_time"`

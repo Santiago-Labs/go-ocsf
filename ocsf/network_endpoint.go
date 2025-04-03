@@ -34,6 +34,7 @@ var NetworkEndpointFields = []arrow.Field{
 }
 
 var NetworkEndpointStruct = arrow.StructOf(NetworkEndpointFields...)
+var NetworkEndpointClassname = "network_endpoint"
 
 type NetworkEndpoint struct {
 	Domain           *string               `json:"domain,omitempty" parquet:"domain"`

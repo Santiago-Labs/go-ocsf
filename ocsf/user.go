@@ -22,6 +22,7 @@ var UserFields = []arrow.Field{
 }
 
 var UserStruct = arrow.StructOf(UserFields...)
+var UserClassname = "user"
 
 type User struct {
 	Account       *Account      `json:"account,omitempty" parquet:"account"`

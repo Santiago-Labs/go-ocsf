@@ -17,6 +17,7 @@ var AgentFields = []arrow.Field{
 }
 
 var AgentStruct = arrow.StructOf(AgentFields...)
+var AgentClassname = "agent"
 
 type Agent struct {
 	Name       *string   `json:"name,omitempty" parquet:"name"`

@@ -12,6 +12,7 @@ var KeyValueObjectFields = []arrow.Field{
 }
 
 var KeyValueObjectStruct = arrow.StructOf(KeyValueObjectFields...)
+var KeyValueObjectClassname = "key_value_object"
 
 type KeyValueObject struct {
 	Name   string    `json:"name" parquet:"name"`

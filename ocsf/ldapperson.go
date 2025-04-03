@@ -58,3 +58,4 @@ var LdapPersonFields = []arrow.Field{
 }
 
 var LdapPersonStruct = arrow.StructOf(LdapPersonFields...)
+var LdapPersonClassname = "ldap_person"

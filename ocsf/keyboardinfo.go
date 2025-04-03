@@ -14,6 +14,7 @@ var KeyboardInfoFields = []arrow.Field{
 }
 
 var KeyboardInfoStruct = arrow.StructOf(KeyboardInfoFields...)
+var KeyboardInfoClassname = "keyboard_info"
 
 type KeyboardInfo struct {
 	FunctionKeys    *int    `json:"function_keys,omitempty" parquet:"function_keys"`

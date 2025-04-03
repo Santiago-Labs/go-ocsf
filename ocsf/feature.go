@@ -11,6 +11,7 @@ var FeatureFields = []arrow.Field{
 }
 
 var FeatureStruct = arrow.StructOf(FeatureFields...)
+var FeatureClassname = "feature"
 
 type Feature struct {
 	Name    *string `json:"name,omitempty" parquet:"name"`

@@ -16,6 +16,7 @@ var ResponseFields = []arrow.Field{
 }
 
 var ResponseStruct = arrow.StructOf(ResponseFields...)
+var ResponseClassname = "response"
 
 type Response struct {
 	Code         *int32       `json:"code,omitempty" parquet:"code"`

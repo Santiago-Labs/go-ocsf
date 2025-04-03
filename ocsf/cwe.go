@@ -11,7 +11,7 @@ var CWEFields = []arrow.Field{
 }
 
 var CWEStruct = arrow.StructOf(CWEFields...)
-var CWESchema = arrow.NewSchema(CWEFields, nil)
+var CWEClassname = "cwe"
 
 type CWE struct {
 	Caption   *string `json:"caption" parquet:"caption"`

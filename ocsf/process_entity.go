@@ -17,6 +17,7 @@ var ProcessEntityFields = []arrow.Field{
 }
 
 var ProcessEntityStruct = arrow.StructOf(ProcessEntityFields...)
+var ProcessEntityClassname = "process_entity"
 
 type ProcessEntity struct {
 	CmdLine     *string    `json:"cmd_line,omitempty" parquet:"cmd_line"`

@@ -13,6 +13,7 @@ var RequestFields = []arrow.Field{
 }
 
 var RequestStruct = arrow.StructOf(RequestFields...)
+var RequestClassname = "request"
 
 type Request struct {
 	Containers []*Container `json:"containers,omitempty" parquet:"containers"`

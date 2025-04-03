@@ -14,6 +14,7 @@ var MITREATTCKFields = []arrow.Field{
 }
 
 var MITREATTCKStruct = arrow.StructOf(MITREATTCKFields...)
+var MITREATTCKClassname = "attack"
 
 // MITREATTCK represents MITRE ATT&CK® details.
 type MITREATTCK struct {

@@ -21,3 +21,4 @@ var ObservableFields = []arrow.Field{
 }
 
 var ObservableStruct = arrow.StructOf(ObservableFields...)
+var ObservableClassname = "observable"

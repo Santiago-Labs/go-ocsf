@@ -51,9 +51,7 @@ var DeviceFields = []arrow.Field{
 }
 
 var DeviceStruct = arrow.StructOf(DeviceFields...)
-
-// DeviceSchema is the Arrow schema for Device.
-var DeviceSchema = arrow.NewSchema(DeviceFields, nil)
+var DeviceClassname = "device"
 
 type Device struct {
 	Region            *string            `json:"region,omitempty" parquet:"region"`

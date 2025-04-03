@@ -23,6 +23,7 @@ var IdentityProviderFields = []arrow.Field{
 }
 
 var IdentityProviderStruct = arrow.StructOf(IdentityProviderFields...)
+var IdentityProviderClassname = "idp"
 
 type IdentityProvider struct {
 	AuthFactors  []*AuthFactor `json:"auth_factors,omitempty" parquet:"auth_factors"`

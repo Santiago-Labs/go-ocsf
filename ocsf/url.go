@@ -20,6 +20,7 @@ var URLFields = []arrow.Field{
 }
 
 var URLStruct = arrow.StructOf(URLFields...)
+var URLClassname = "url"
 
 type URL struct {
 	Domain       *string   `json:"domain,omitempty" parquet:"domain"`

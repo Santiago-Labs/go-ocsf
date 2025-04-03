@@ -13,6 +13,7 @@ var DisplayFields = []arrow.Field{
 }
 
 var DisplayStruct = arrow.StructOf(DisplayFields...)
+var DisplayClassname = "display"
 
 // Display represents display specifications.
 type Display struct {

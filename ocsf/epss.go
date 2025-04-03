@@ -13,7 +13,7 @@ var EPSSFields = []arrow.Field{
 }
 
 var EPSSStruct = arrow.StructOf(EPSSFields...)
-var EPSSSchema = arrow.NewSchema(EPSSFields, nil)
+var EPSSClassname = "epss"
 
 type EPSS struct {
 	CreatedTime   *int     `json:"created_time,omitempty" parquet:"created_time"`

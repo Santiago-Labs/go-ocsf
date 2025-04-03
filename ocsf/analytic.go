@@ -16,6 +16,7 @@ var relatedAnalyticFields = []arrow.Field{
 }
 
 var RelatedAnalyticStruct = arrow.StructOf(relatedAnalyticFields...)
+var RelatedAnalyticClassname = "related_analytics"
 
 // AnalyticFields defines the Arrow fields for Analytic.
 // To avoid infinite recursion in the "related_analytics" field,
@@ -32,9 +33,7 @@ var AnalyticFields = []arrow.Field{
 }
 
 var AnalyticStruct = arrow.StructOf(AnalyticFields...)
-
-// AnalyticSchema is the Arrow schema for Analytic.
-var AnalyticSchema = arrow.NewSchema(AnalyticFields, nil)
+var AnalyticClassname = "analytic"
 
 type Analytic struct {
 	Category         *string           `json:"category,omitempty" parquet:"category"`

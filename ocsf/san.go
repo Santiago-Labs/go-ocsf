@@ -11,6 +11,7 @@ var SubjectAlternativeNameFields = []arrow.Field{
 }
 
 var SubjectAlternativeNameStruct = arrow.StructOf(SubjectAlternativeNameFields...)
+var SubjectAlternativeNameClassname = "san"
 
 type SubjectAlternativeName struct {
 	Name string `json:"name" parquet:"name"`

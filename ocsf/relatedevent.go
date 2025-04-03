@@ -16,6 +16,7 @@ var RelatedEventFields = []arrow.Field{
 }
 
 var RelatedEventStruct = arrow.StructOf(RelatedEventFields...)
+var RelatedEventClassname = "related_event"
 
 type RelatedEvent struct {
 	Attacks     []MITREATTCK     `json:"attacks,omitempty" parquet:"attacks"`

@@ -13,9 +13,7 @@ var AccountFields = []arrow.Field{
 }
 
 var AccountStruct = arrow.StructOf(AccountFields...)
-
-// AccountSchema is the Arrow schema for Account.
-var AccountSchema = arrow.NewSchema(AccountFields, nil)
+var AccountClassname = "account"
 
 type Account struct {
 	Name *string `json:"name,omitempty" parquet:"name"`

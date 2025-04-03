@@ -13,6 +13,7 @@ var OrganizationFields = []arrow.Field{
 }
 
 var OrganizationStruct = arrow.StructOf(OrganizationFields...)
+var OrganizationClassname = "organization"
 
 type Organization struct {
 	Name   *string `json:"name,omitempty" parquet:"name"`

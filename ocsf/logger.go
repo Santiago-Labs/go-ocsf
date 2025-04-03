@@ -21,6 +21,7 @@ var LoggerFields = []arrow.Field{
 }
 
 var LoggerStruct = arrow.StructOf(LoggerFields...)
+var LoggerClassname = "logger"
 
 type Logger struct {
 	Device       *Device    `json:"device,omitempty" parquet:"device"`

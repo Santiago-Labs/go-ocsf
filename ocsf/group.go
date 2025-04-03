@@ -4,7 +4,7 @@ import (
 	"github.com/apache/arrow/go/v15/arrow"
 )
 
-var GroupSchema = arrow.NewSchema(GroupFields, nil)
+var GroupClassname = "group"
 
 type Group struct {
 	Desc       *string  `json:"desc,omitempty" parquet:"desc"`

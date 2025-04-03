@@ -24,6 +24,7 @@ var SessionFields = []arrow.Field{
 }
 
 var SessionStruct = arrow.StructOf(SessionFields...)
+var SessionClassname = "session"
 
 type Session struct {
 	Count            *int       `json:"count,omitempty" parquet:"count"`

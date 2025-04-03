@@ -18,6 +18,7 @@ var NetworkInterfaceFields = []arrow.Field{
 }
 
 var NetworkInterfaceStruct = arrow.StructOf(NetworkInterfaceFields...)
+var NetworkInterfaceClassname = "network_interface"
 
 type NetworkInterface struct {
 	Hostname     *string `json:"hostname,omitempty" parquet:"hostname"`

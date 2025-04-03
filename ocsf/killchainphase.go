@@ -11,9 +11,7 @@ var KillChainPhaseFields = []arrow.Field{
 }
 
 var KillChainPhaseStruct = arrow.StructOf(KillChainPhaseFields...)
-
-// KillChainPhaseSchema is the Arrow schema for KillChainPhase.
-var KillChainPhaseSchema = arrow.NewSchema(KillChainPhaseFields, nil)
+var KillChainPhaseClassname = "kill_chain_phase"
 
 // KillChainPhase represents a kill chain phase.
 type KillChainPhase struct {

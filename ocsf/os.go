@@ -22,6 +22,7 @@ var OSFields = []arrow.Field{
 }
 
 var OSStruct = arrow.StructOf(OSFields...)
+var OSClassname = "os"
 
 type OS struct {
 	Build         *string `json:"build,omitempty" parquet:"build"`

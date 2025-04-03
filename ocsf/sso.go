@@ -26,6 +26,7 @@ var SSOFields = []arrow.Field{
 }
 
 var SSOStruct = arrow.StructOf(SSOFields...)
+var SSOClassname = "sso"
 
 type SSO struct {
 	AuthProtocol     *string             `json:"auth_protocol,omitempty" parquet:"auth_protocol"`

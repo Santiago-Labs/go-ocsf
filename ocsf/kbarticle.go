@@ -21,9 +21,7 @@ var KBArticleFields = []arrow.Field{
 }
 
 var KBArticleStruct = arrow.StructOf(KBArticleFields...)
-
-// KBArticleSchema is the Arrow schema for KBArticle.
-var KBArticleSchema = arrow.NewSchema(KBArticleFields, nil)
+var KBArticleClassname = "kb_article"
 
 type KBArticle struct {
 	Bulletin       *string  `json:"bulletin,omitempty" parquet:"bulletin"`
