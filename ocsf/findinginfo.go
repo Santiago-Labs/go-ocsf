@@ -26,6 +26,7 @@ var FindingInfoFields = []arrow.Field{
 }
 
 var FindingInfoStruct = arrow.StructOf(FindingInfoFields...)
+var FindingInfoClassname = "finding_info"
 
 type FindingInfo struct {
 	Analytic         *Analytic        `json:"analytic,omitempty" parquet:"analytic"`

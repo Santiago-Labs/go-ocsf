@@ -11,6 +11,7 @@ var SchemaExtensionFields = []arrow.Field{
 }
 
 var SchemaExtensionStruct = arrow.StructOf(SchemaExtensionFields...)
+var SchemaExtensionClassname = "extension"
 
 type SchemaExtension struct {
 	Name    string `json:"name" parquet:"name"`

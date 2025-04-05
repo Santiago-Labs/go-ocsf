@@ -17,6 +17,7 @@ var ActorFields = []arrow.Field{
 }
 
 var ActorStruct = arrow.StructOf(ActorFields...)
+var ActorClassname = "actor"
 
 type Actor struct {
 	AppName        *string           `json:"app_name,omitempty" parquet:"app_name"`

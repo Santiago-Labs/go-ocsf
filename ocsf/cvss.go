@@ -16,9 +16,7 @@ var CVSSFields = []arrow.Field{
 }
 
 var CVSSStruct = arrow.StructOf(CVSSFields...)
-
-// CVSSSchema is the Arrow schema for CVSS.
-var CVSSSchema = arrow.NewSchema(CVSSFields, nil)
+var CVSSClassname = "cvss"
 
 type CVSS struct {
 	BaseScore    float64  `json:"base_score" parquet:"base_score"`

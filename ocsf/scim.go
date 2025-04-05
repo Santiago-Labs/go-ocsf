@@ -31,6 +31,7 @@ var SCIMFields = []arrow.Field{
 }
 
 var SCIMStruct = arrow.StructOf(SCIMFields...)
+var SCIMClassname = "scim"
 
 type SCIM struct {
 	AuthProtocol               *string    `json:"auth_protocol,omitempty" parquet:"auth_protocol"`

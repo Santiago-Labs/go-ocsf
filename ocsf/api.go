@@ -15,6 +15,7 @@ var APIFields = []arrow.Field{
 }
 
 var APIStruct = arrow.StructOf(APIFields...)
+var APIClassname = "api"
 
 type API struct {
 	Group     *Group    `json:"group,omitempty" parquet:"group"`

@@ -12,6 +12,7 @@ var RemediationFields = []arrow.Field{
 }
 
 var RemediationStruct = arrow.StructOf(RemediationFields...)
+var RemediationClassname = "remediation"
 
 type Remediation struct {
 	Description   string      `json:"desc" parquet:"desc"`

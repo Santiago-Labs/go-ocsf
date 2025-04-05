@@ -13,7 +13,7 @@ var EnrichmentFields = []arrow.Field{
 }
 
 var EnrichmentStruct = arrow.StructOf(EnrichmentFields...)
-var EnrichmentSchema = arrow.NewSchema(EnrichmentFields, nil)
+var EnrichmentClassname = "enrichment"
 
 // Enrichment represents an enrichment element.
 type Enrichment struct {

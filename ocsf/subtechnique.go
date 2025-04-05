@@ -11,6 +11,7 @@ var SubTechniqueFields = []arrow.Field{
 }
 
 var SubTechniqueStruct = arrow.StructOf(SubTechniqueFields...)
+var SubTechniqueClassname = "sub_technique"
 
 type SubTechnique struct {
 	Name   string `json:"name" parquet:"name"`

@@ -15,6 +15,7 @@ var PolicyFields = []arrow.Field{
 }
 
 var PolicyStruct = arrow.StructOf(PolicyFields...)
+var PolicyClassname = "policy"
 
 type Policy struct {
 	Desc      *string `json:"desc,omitempty" parquet:"desc"`

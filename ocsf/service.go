@@ -14,6 +14,7 @@ var ServiceFields = []arrow.Field{
 }
 
 var ServiceStruct = arrow.StructOf(ServiceFields...)
+var ServiceClassname = "service"
 
 type Service struct {
 	Labels  []string          `json:"labels,omitempty" parquet:"labels"`

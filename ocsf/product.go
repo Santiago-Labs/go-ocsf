@@ -18,6 +18,7 @@ var ProductFields = []arrow.Field{
 }
 
 var ProductStruct = arrow.StructOf(ProductFields...)
+var ProductClassname = "product"
 
 type Product struct {
 	CPEName    *string  `json:"cpe_name,omitempty" parquet:"cpe_name"`

@@ -14,9 +14,7 @@ var ImageFields = []arrow.Field{
 }
 
 var ImageStruct = arrow.StructOf(ImageFields...)
-
-// ImageSchema is the Arrow schema for Image.
-var ImageSchema = arrow.NewSchema(ImageFields, nil)
+var ImageClassname = "image"
 
 // Image represents image details.
 type Image struct {

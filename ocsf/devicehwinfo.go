@@ -21,6 +21,7 @@ var DeviceHWInfoFields = []arrow.Field{
 }
 
 var DeviceHWInfoStruct = arrow.StructOf(DeviceHWInfoFields...)
+var DeviceHWInfoClassname = "device_hw_info"
 
 // DeviceHWInfo contains hardware information.
 type DeviceHWInfo struct {

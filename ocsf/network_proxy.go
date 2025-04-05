@@ -33,6 +33,7 @@ var NetworkProxyEndpointFields = []arrow.Field{
 }
 
 var NetworkProxyEndpointStruct = arrow.StructOf(NetworkProxyEndpointFields...)
+var NetworkProxyEndpointClassname = "network_proxy"
 
 type NetworkProxyEndpoint struct {
 	Domain           *string           `json:"domain,omitempty" parquet:"domain"`

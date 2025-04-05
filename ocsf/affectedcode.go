@@ -14,9 +14,7 @@ var AffectedCodeFields = []arrow.Field{
 }
 
 var AffectedCodeStruct = arrow.StructOf(AffectedCodeFields...)
-
-// AffectedCodeSchema is the Arrow schema for AffectedCode.
-var AffectedCodeSchema = arrow.NewSchema(AffectedCodeFields, nil)
+var AffectedCodeClassname = "affected_code"
 
 type AffectedCode struct {
 	EndLine     int32        `json:"end_line" parquet:"end_line"`

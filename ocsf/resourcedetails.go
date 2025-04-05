@@ -19,6 +19,7 @@ var ResourceDetailsFields = []arrow.Field{
 }
 
 var ResourceDetailsStruct = arrow.StructOf(ResourceDetailsFields...)
+var ResourceDetailsClassname = "resource_details"
 
 type ResourceDetails struct {
 	Criticality *string  `json:"criticality,omitempty" parquet:"criticality"`

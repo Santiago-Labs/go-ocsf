@@ -20,9 +20,7 @@ var AffectedSoftwarePackageFields = []arrow.Field{
 }
 
 var AffectedSoftwarePackageStruct = arrow.StructOf(AffectedSoftwarePackageFields...)
-
-// AffectedSoftwarePackageSchema is the Arrow schema for AffectedSoftwarePackage.
-var AffectedSoftwarePackageSchema = arrow.NewSchema(AffectedSoftwarePackageFields, nil)
+var AffectedSoftwarePackageClassname = "affected_software_package"
 
 type AffectedSoftwarePackage struct {
 	Architecture   *string      `json:"architecture,omitempty" parquet:"architecture"`

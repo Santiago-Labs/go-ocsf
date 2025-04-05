@@ -34,6 +34,7 @@ var MetadataFields = []arrow.Field{
 }
 
 var MetadataStruct = arrow.StructOf(MetadataFields...)
+var MetadataClassname = "metadata"
 
 type Metadata struct {
 	CorrelationUID *string           `json:"correlation_uid,omitempty" parquet:"correlation_uid"`

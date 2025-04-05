@@ -23,9 +23,7 @@ var CVEFields = []arrow.Field{
 }
 
 var CVEStruct = arrow.StructOf(CVEFields...)
-
-// CVESchema is the Arrow schema for CVE.
-var CVESchema = arrow.NewSchema(CVEFields, nil)
+var CVEClassname = "cve"
 
 type CVE struct {
 	CreatedTime  *time.Time `json:"created_time,omitempty" parquet:"created_time"`

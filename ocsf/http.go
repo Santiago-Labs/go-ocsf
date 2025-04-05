@@ -20,6 +20,7 @@ var HTTPRequestFields = []arrow.Field{
 }
 
 var HTTPRequestStruct = arrow.StructOf(HTTPRequestFields...)
+var HTTPRequestClassname = "http_request"
 
 type HTTPRequest struct {
 	Args          *string       `json:"args,omitempty" parquet:"args"`
@@ -48,6 +49,7 @@ var HTTPResponseFields = []arrow.Field{
 }
 
 var HTTPResponseStruct = arrow.StructOf(HTTPResponseFields...)
+var HTTPResponseClassname = "http_response"
 
 type HTTPResponse struct {
 	BodyLength  *int          `json:"body_length,omitempty" parquet:"body_length"`
@@ -67,6 +69,7 @@ var HTTPHeaderFields = []arrow.Field{
 }
 
 var HTTPHeaderStruct = arrow.StructOf(HTTPHeaderFields...)
+var HTTPHeaderClassname = "http_header"
 
 type HTTPHeader struct {
 	Name  string `json:"name" parquet:"name"`

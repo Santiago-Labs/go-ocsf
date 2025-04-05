@@ -54,7 +54,10 @@ var ProcessFields = []arrow.Field{
 }
 
 var ParentProcessStruct = arrow.StructOf(ParentProcessFields...)
+var ParentProcessClassname = "ancestry"
+
 var ProcessStruct = arrow.StructOf(ProcessFields...)
+var ProcessClassname = "process"
 
 type Process struct {
 	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry"`

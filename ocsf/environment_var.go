@@ -11,6 +11,7 @@ var EnvironmentVarFields = []arrow.Field{
 }
 
 var EnvironmentVarStruct = arrow.StructOf(EnvironmentVarFields...)
+var EnvironmentVarClassname = "environment_variable"
 
 type EnvironmentVar struct {
 	Name  string `json:"name" parquet:"name"`

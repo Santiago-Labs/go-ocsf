@@ -18,6 +18,7 @@ var AuthFactorFields = []arrow.Field{
 }
 
 var AuthFactorStruct = arrow.StructOf(AuthFactorFields...)
+var AuthFactorClassname = "auth_factor"
 
 type AuthFactor struct {
 	Device            *Device  `json:"device,omitempty" parquet:"device"`

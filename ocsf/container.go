@@ -21,6 +21,7 @@ var ContainerFields = []arrow.Field{
 }
 
 var ContainerStruct = arrow.StructOf(ContainerFields...)
+var ContainerClassname = "container"
 
 type Container struct {
 	Hash          *Fingerprint     `json:"hash,omitempty" parquet:"hash"`

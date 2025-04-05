@@ -43,6 +43,7 @@ var APIActivityFields = []arrow.Field{
 }
 
 var APIActivityStruct = arrow.StructOf(APIActivityFields...)
+var APIActivityClassname = "api_activity"
 
 type APIActivity struct {
 	ActivityID     int                    `json:"activity_id" parquet:"activity_id"`

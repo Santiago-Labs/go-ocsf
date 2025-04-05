@@ -18,6 +18,7 @@ var GeoLocationFields = []arrow.Field{
 }
 
 var GeoLocationStruct = arrow.StructOf(GeoLocationFields...)
+var GeoLocationClassname = "location"
 
 type GeoLocation struct {
 	City         *string   `json:"city,omitempty" parquet:"city"`
