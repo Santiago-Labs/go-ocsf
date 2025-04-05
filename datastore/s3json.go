@@ -69,7 +69,7 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 	}
 
 	var findings struct {
-		VulnerabilityFindings []ocsf.VulnerabilityFinding `json:"vulnerability_findings"`
+		VulnerabilityFindings []ocsf.VulnerabilityFinding `json:"vulnerability_finding"`
 	}
 
 	if err := json.Unmarshal(data, &findings); err != nil {
@@ -84,7 +84,7 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, key *string) error {
 	allFindings := findings
 	if key == nil {
-		newkey := filepath.Join(basepath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		newkey := filepath.Join(Basepath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 		key = &newkey
 	} else {
 		var err error
@@ -97,7 +97,7 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 	}
 
 	outerSchema := map[string]interface{}{
-		"vulnerability_findings": allFindings,
+		"vulnerability_finding": allFindings,
 	}
 	jsonData, err := json.Marshal(outerSchema)
 	if err != nil {
@@ -132,7 +132,7 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 func (s *s3JsonDatastore) buildFindingIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(basepath),
+		Prefix: aws.String(BasepathFindings),
 	})
 
 	for paginator.HasMorePages() {
@@ -161,7 +161,7 @@ func (s *s3JsonDatastore) buildFindingIndex(ctx context.Context) error {
 func (s *s3JsonDatastore) buildActivityIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(basepathActivities),
+		Prefix: aws.String(BasepathActivities),
 	})
 
 	for paginator.HasMorePages() {
@@ -214,7 +214,7 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, key *string) error {
 	allActivities := activities
 	if key == nil {
-		newkey := filepath.Join(basepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		newkey := filepath.Join(BasepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 		key = &newkey
 	} else {
 		var err error

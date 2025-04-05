@@ -31,11 +31,11 @@ func NewLocalJsonDatastore() (Datastore, error) {
 		store:             s,
 	}
 
-	if err := os.MkdirAll(basepath, 0755); err != nil {
+	if err := os.MkdirAll(Basepath, 0755); err != nil {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
-	if err := os.MkdirAll(basepathActivities, 0755); err != nil {
+	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
@@ -60,7 +60,7 @@ func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path strin
 	}
 
 	var findings struct {
-		VulnerabilityFindings []ocsf.VulnerabilityFinding `json:"vulnerability_findings"`
+		VulnerabilityFindings []ocsf.VulnerabilityFinding `json:"vulnerability_finding"`
 	}
 
 	if err := json.Unmarshal(data, &findings); err != nil {
@@ -75,7 +75,7 @@ func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path strin
 func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, path *string) error {
 	allFindings := findings
 	if path == nil {
-		newpath := filepath.Join(basepath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		newpath := filepath.Join(Basepath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 		path = &newpath
 	} else {
 		var err error
@@ -88,7 +88,7 @@ func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 	}
 
 	outerSchema := map[string]interface{}{
-		"vulnerability_findings": allFindings,
+		"vulnerability_finding": allFindings,
 	}
 	jsonData, err := json.Marshal(outerSchema)
 	if err != nil {
@@ -112,9 +112,9 @@ func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 // buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
 // It reads all JSON files in the base directory and parses them into a slice of vulnerability findings.
 func (s *localJsonDatastore) buildFindingIndex(ctx context.Context) error {
-	files, err := os.ReadDir(basepath)
+	files, err := os.ReadDir(BasepathFindings)
 	if err != nil {
-		return oops.Wrapf(err, "failed to read local directory %s", basepath)
+		return oops.Wrapf(err, "failed to read local directory %s", BasepathFindings)
 	}
 
 	for _, file := range files {
@@ -122,7 +122,7 @@ func (s *localJsonDatastore) buildFindingIndex(ctx context.Context) error {
 			continue
 		}
 
-		filePath := filepath.Join(basepath, file.Name())
+		filePath := filepath.Join(BasepathFindings, file.Name())
 		if err := s.loadFileIntoIndex(ctx, filePath); err != nil {
 			slog.Error("failed to load json file into index, skipping", "file", filePath, "error", err)
 			continue
@@ -134,9 +134,9 @@ func (s *localJsonDatastore) buildFindingIndex(ctx context.Context) error {
 }
 
 func (s *localJsonDatastore) buildActivityIndex(ctx context.Context) error {
-	files, err := os.ReadDir(basepathActivities)
+	files, err := os.ReadDir(BasepathActivities)
 	if err != nil {
-		return oops.Wrapf(err, "failed to read local directory %s", basepathActivities)
+		return oops.Wrapf(err, "failed to read local directory %s", BasepathActivities)
 	}
 
 	for _, file := range files {
@@ -144,7 +144,7 @@ func (s *localJsonDatastore) buildActivityIndex(ctx context.Context) error {
 			continue
 		}
 
-		filePath := filepath.Join(basepathActivities, file.Name())
+		filePath := filepath.Join(BasepathActivities, file.Name())
 		if err := s.loadActivityFileIntoIndex(ctx, filePath); err != nil {
 			slog.Error("failed to load json file into index, skipping", "file", filePath, "error", err)
 			continue
@@ -158,7 +158,7 @@ func (s *localJsonDatastore) buildActivityIndex(ctx context.Context) error {
 func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, path *string) error {
 	allActivities := activities
 	if path == nil {
-		newpath := filepath.Join(basepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		newpath := filepath.Join(BasepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 		path = &newpath
 	} else {
 		var err error

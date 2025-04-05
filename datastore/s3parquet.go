@@ -56,7 +56,7 @@ func NewS3ParquetDatastore(bucketName string, s3Client *s3.Client) Datastore {
 func (s *s3ParquetDatastore) buildFindingIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(basepath),
+		Prefix: aws.String(Basepath),
 	})
 
 	for paginator.HasMorePages() {
@@ -110,7 +110,7 @@ func (s *s3ParquetDatastore) GetFindingsFromFile(ctx context.Context, key string
 func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, key *string) error {
 	allFindings := findings
 	if key == nil {
-		newkey := filepath.Join(basepath, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+		newkey := filepath.Join(Basepath, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
 		key = &newkey
 	} else {
 		var err error
@@ -155,7 +155,7 @@ func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 func (s *s3ParquetDatastore) buildActivityIndex(ctx context.Context) error {
 	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(basepathActivities),
+		Prefix: aws.String(BasepathActivities),
 	})
 
 	for paginator.HasMorePages() {
@@ -182,7 +182,7 @@ func (s *s3ParquetDatastore) buildActivityIndex(ctx context.Context) error {
 func (s *s3ParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, key *string) error {
 	allActivities := activities
 	if key == nil {
-		newkey := filepath.Join(basepathActivities, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+		newkey := filepath.Join(BasepathActivities, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
 		key = &newkey
 	} else {
 		var err error

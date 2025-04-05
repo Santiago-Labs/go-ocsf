@@ -3,12 +3,16 @@ package datastore
 import (
 	"context"
 	"errors"
+	"path/filepath"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 )
 
-var basepath = "data/findings"
-var basepathActivities = "data/activities"
+var Basepath = "data"
+
+var BasepathFindings = filepath.Join(Basepath, "vulnerability_finding")
+var BasepathActivities = filepath.Join(Basepath, "api_activity")
+
 var ErrNotFound = errors.New("not found")
 
 const maxFileSize = 128 * 1024 * 1024 // 128 MB

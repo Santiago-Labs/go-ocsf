@@ -7,14 +7,18 @@ import (
 	"log"
 	"os"
 
+	"github.com/Santiago-Labs/go-ocsf/clients/athena"
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
 	"github.com/Santiago-Labs/go-ocsf/syncers/gcpauditlog"
+	"github.com/apache/arrow/go/v15/arrow"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	awsathena "github.com/aws/aws-sdk-go-v2/service/athena"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub"
@@ -24,6 +28,17 @@ func main() {
 	isParquet := flag.Bool("parquet", false, "Use parquet format")
 	isJSON := flag.Bool("json", false, "Use JSON format")
 	bucketName := flag.String("bucket-name", "", "S3 bucket name")
+
+	// Create tables.
+	createS3Table := flag.Bool("create-s3-table", false, "Create S3 table. Only required once per bucket.")
+	createVulnFindingTable := flag.Bool("create-vuln-finding-table", false, "Create vulnerability finding table. Only required once per bucket.")
+	createAPIActivityTable := flag.Bool("create-api-activity-table", false, "Create API activity table. Only required once per bucket.")
+
+	// Sync data.
+	syncSnykOption := flag.Bool("sync-snyk", false, "Sync Snyk data.")
+	syncTenableOption := flag.Bool("sync-tenable", false, "Sync Tenable data.")
+	syncSecurityHubOption := flag.Bool("sync-security-hub", false, "Sync SecurityHub data.")
+	syncInspectorOption := flag.Bool("sync-inspector", false, "Sync Inspector data.")
 
 	flag.Parse()
 
@@ -40,26 +55,42 @@ func main() {
 		log.Fatalf("Failed to setup storage: %v", err)
 	}
 
-	if snykAPIKey != "" && snykOrganizationID != "" {
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		log.Fatalf("Failed to load AWS config: %v", err)
+	}
+
+	if *createS3Table {
+		if *bucketName == "" {
+			log.Fatal("--bucket-name is required when --create-s3-table is set")
+		}
+
+		if err := createAthenaTables(ctx, cfg, *bucketName, *createVulnFindingTable, *createAPIActivityTable); err != nil {
+			log.Fatalf("Failed to create Athena table: %v", err)
+		}
+	}
+
+	if *syncSnykOption {
+		if snykAPIKey == "" || snykOrganizationID == "" {
+			log.Fatal("SNYK_API_KEY and SNYK_ORGANIZATION_ID must be set when --sync-snyk is set")
+		}
+
 		if err := syncSnyk(ctx, snykAPIKey, snykOrganizationID, storage); err != nil {
 			log.Fatalf("Failed to sync Snyk data: %v", err)
 		}
 	}
 
-	if tenableAPIKey != "" && tenableSecretKey != "" {
+	if *syncTenableOption {
+		if tenableAPIKey == "" || tenableSecretKey == "" {
+			log.Fatal("TENABLE_API_KEY and TENABLE_SECRET_KEY must be set when --sync-tenable is set")
+		}
+
 		if err := syncTenable(ctx, tenableAPIKey, tenableSecretKey, storage); err != nil {
 			log.Fatalf("Failed to sync Tenable data: %v", err)
 		}
 	}
 
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		log.Printf("Warning: Failed to load AWS config: %v. AWS services will be skipped.", err)
-	} else {
-		if err := inspectorSync(ctx, storage, cfg); err != nil {
-			log.Fatalf("Failed to sync Inspector data: %v", err)
-		}
-
+	if *syncSecurityHubOption {
 		if err := syncSecurityHub(ctx, storage, cfg); err != nil {
 			log.Fatalf("Failed to sync SecurityHub data: %v", err)
 		}
@@ -67,6 +98,12 @@ func main() {
 
 	if err := syncGCPAuditLog(ctx, storage); err != nil {
 		log.Fatalf("Failed to sync GCPAuditLog data: %v", err)
+	}
+
+	if *syncInspectorOption {
+		if err := inspectorSync(ctx, storage, cfg); err != nil {
+			log.Fatalf("Failed to sync Inspector data: %v", err)
+		}
 	}
 }
 
@@ -163,4 +200,28 @@ func syncGCPAuditLog(ctx context.Context, storage datastore.Datastore) error {
 	}
 
 	return gcpauditlogSyncer.Sync(ctx)
+}
+
+func createAthenaTables(ctx context.Context, cfg aws.Config, bucketName string, createVulnFindingTable, createAPIActivityTable bool) error {
+	athenaClient := awsathena.NewFromConfig(cfg)
+	client := athena.NewClient(athenaClient, "default", "primary")
+
+	tables := make(map[string][]arrow.Field)
+	if createVulnFindingTable {
+		tables["vulnerability_finding"] = ocsf.VulnerabilityFindingFields
+	}
+	if createAPIActivityTable {
+		tables["api_activity"] = ocsf.APIActivityFields
+	}
+
+	for tableName, fields := range tables {
+		s3Location := fmt.Sprintf("s3://%s/%s/%s", bucketName, datastore.Basepath, tableName)
+		err := client.CreateTable(ctx, fields, tableName, s3Location, []string{}) // TODO: partition by source and day.
+		if err != nil {
+			return fmt.Errorf("failed to create Athena table: %w", err)
+		}
+
+		log.Printf("Successfully created Athena table '%s' in database 'default'", tableName)
+	}
+	return nil
 }

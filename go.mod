@@ -9,6 +9,7 @@ require (
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.7
+	github.com/aws/aws-sdk-go-v2/service/athena v1.50.2
 	github.com/aws/aws-sdk-go-v2/service/inspector2 v1.36.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.77.1
 	github.com/aws/aws-sdk-go-v2/service/securityhub v1.57.0

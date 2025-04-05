@@ -30,10 +30,10 @@ func NewLocalParquetDatastore() (Datastore, error) {
 		store:             s,
 	}
 
-	if err := os.MkdirAll(basepath, 0755); err != nil {
+	if err := os.MkdirAll(Basepath, 0755); err != nil {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
-	if err := os.MkdirAll(basepathActivities, 0755); err != nil {
+	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
@@ -52,9 +52,9 @@ func NewLocalParquetDatastore() (Datastore, error) {
 // buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
 // It reads all Parquet files in the base directory and parses them into a slice of vulnerability findings.
 func (s *localParquetDatastore) buildFindingIndex(ctx context.Context) error {
-	files, err := os.ReadDir(basepath)
+	files, err := os.ReadDir(Basepath)
 	if err != nil {
-		return oops.Wrapf(err, "failed to read local directory %s", basepath)
+		return oops.Wrapf(err, "failed to read local directory %s", Basepath)
 	}
 
 	for _, file := range files {
@@ -62,7 +62,7 @@ func (s *localParquetDatastore) buildFindingIndex(ctx context.Context) error {
 			continue
 		}
 
-		filePath := filepath.Join(basepath, file.Name())
+		filePath := filepath.Join(Basepath, file.Name())
 		if err := s.loadFileIntoIndex(ctx, filePath); err != nil {
 			slog.Error("failed to load parquet file into index, skipping", "file", filePath, "error", err)
 			continue
@@ -89,7 +89,7 @@ func (s *localParquetDatastore) GetFindingsFromFile(ctx context.Context, path st
 func (s *localParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, path *string) error {
 	allFindings := findings
 	if path == nil {
-		newpath := filepath.Join(basepath, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+		newpath := filepath.Join(Basepath, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
 		path = &newpath
 	} else {
 		var err error
@@ -119,9 +119,9 @@ func (s *localParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.
 }
 
 func (s *localParquetDatastore) buildActivityIndex(ctx context.Context) error {
-	files, err := os.ReadDir(basepathActivities)
+	files, err := os.ReadDir(BasepathActivities)
 	if err != nil {
-		return oops.Wrapf(err, "failed to read local directory %s", basepath)
+		return oops.Wrapf(err, "failed to read local directory %s", BasepathActivities)
 	}
 
 	for _, file := range files {
@@ -129,7 +129,7 @@ func (s *localParquetDatastore) buildActivityIndex(ctx context.Context) error {
 			continue
 		}
 
-		filePath := filepath.Join(basepathActivities, file.Name())
+		filePath := filepath.Join(BasepathActivities, file.Name())
 		if err := s.loadActivityFileIntoIndex(ctx, filePath); err != nil {
 			slog.Error("failed to load parquet file into index, skipping", "file", filePath, "error", err)
 			continue
@@ -143,7 +143,7 @@ func (s *localParquetDatastore) buildActivityIndex(ctx context.Context) error {
 func (s *localParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, path *string) error {
 	allActivities := activities
 	if path == nil {
-		newpath := filepath.Join(basepathActivities, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+		newpath := filepath.Join(BasepathActivities, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
 		path = &newpath
 	} else {
 		var err error
