@@ -1,13 +1,21 @@
 name: Build DuckDB Linux AMD64
 
 on:
+  push:
+    branches:
+      - feature/s3-tables
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout DuckDB Iceberg (with submodules)
+        uses: actions/checkout@v4
+        with:
+          repository: Tishj/duckdb_iceberg
+          ref: integrating_rest_api_objects
+          submodules: recursive
 
       - name: Install Dependencies
         run: |
