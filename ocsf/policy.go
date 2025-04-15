@@ -6,12 +6,12 @@ import (
 
 // PolicyFields defines the Arrow fields for Policy.
 var PolicyFields = []arrow.Field{
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "group", Type: GroupStruct},
-	{Name: "is_applied", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "group", Type: GroupStruct, Nullable: true},
+	{Name: "is_applied", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var PolicyStruct = arrow.StructOf(PolicyFields...)

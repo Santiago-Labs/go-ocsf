@@ -73,7 +73,7 @@ func (s *GCPAuditLogSyncer) Sync(ctx context.Context) error {
 			return fmt.Errorf("failed to get existing activity: %w", err)
 		}
 
-		if existingActivity != nil && existingActivity.Equals(&activity) {
+		if existingActivity != nil {
 			continue
 		}
 

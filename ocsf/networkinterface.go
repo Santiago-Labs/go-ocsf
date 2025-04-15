@@ -6,15 +6,15 @@ import (
 
 // NetworkInterfaceFields defines the Arrow fields for NetworkInterface.
 var NetworkInterfaceFields = []arrow.Field{
-	{Name: "hostname", Type: arrow.BinaryTypes.String},
-	{Name: "ip", Type: arrow.BinaryTypes.String},
-	{Name: "mac", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "namespace", Type: arrow.BinaryTypes.String},
-	{Name: "subnet_prefix", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "hostname", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "ip", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "mac", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "namespace", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "subnet_prefix", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var NetworkInterfaceStruct = arrow.StructOf(NetworkInterfaceFields...)

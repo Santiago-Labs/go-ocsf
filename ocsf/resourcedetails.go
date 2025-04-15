@@ -6,16 +6,16 @@ import (
 
 // ResourceDetailsFields defines the Arrow fields for ResourceDetails.
 var ResourceDetailsFields = []arrow.Field{
-	{Name: "criticality", Type: arrow.BinaryTypes.String},
-	{Name: "data", Type: arrow.BinaryTypes.String},
-	{Name: "group", Type: GroupStruct},
-	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "namespace", Type: arrow.BinaryTypes.String},
-	{Name: "owner", Type: UserStruct},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "criticality", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "group", Type: GroupStruct, Nullable: true},
+	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "namespace", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "owner", Type: UserStruct, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var ResourceDetailsStruct = arrow.StructOf(ResourceDetailsFields...)

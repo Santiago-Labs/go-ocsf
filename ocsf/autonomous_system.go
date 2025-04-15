@@ -6,8 +6,8 @@ import (
 
 // AutonomousSystemFields defines the Arrow fields for AutonomousSystem.
 var AutonomousSystemFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "number", Type: arrow.PrimitiveTypes.Int32},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "number", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 }
 
 var AutonomousSystemStruct = arrow.StructOf(AutonomousSystemFields...)

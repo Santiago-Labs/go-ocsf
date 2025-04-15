@@ -1,0 +1,32 @@
+name: Build DuckDB Linux AMD64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential git cmake python3 curl unzip zip pkg-config linux-headers-generic
+
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git ~/vcpkg
+          ~/vcpkg/bootstrap-vcpkg.sh
+
+      - name: Build DuckDB
+        run: |
+          VCPKG_TOOLCHAIN_PATH="$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+          EXT_FLAGS="-DCMAKE_POLICY_VERSION_MINIMUM=3.5" \
+          make clean release
+
+      - name: Upload DuckDB binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckdb-linux-amd64
+          path: build/release/src/libduckdb.so

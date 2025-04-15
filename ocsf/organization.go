@@ -6,10 +6,10 @@ import (
 
 // OrganizationFields defines the Arrow fields for Organization.
 var OrganizationFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "ou_name", Type: arrow.BinaryTypes.String},
-	{Name: "ou_uid", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "ou_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "ou_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var OrganizationStruct = arrow.StructOf(OrganizationFields...)

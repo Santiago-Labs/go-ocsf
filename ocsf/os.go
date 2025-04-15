@@ -6,19 +6,19 @@ import (
 
 // OSFields defines the Arrow fields for OS.
 var OSFields = []arrow.Field{
-	{Name: "build", Type: arrow.BinaryTypes.String},
-	{Name: "country", Type: arrow.BinaryTypes.String},
-	{Name: "cpe_name", Type: arrow.BinaryTypes.String},
-	{Name: "cpu_bits", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "edition", Type: arrow.BinaryTypes.String},
-	{Name: "kernel_release", Type: arrow.BinaryTypes.String},
-	{Name: "lang", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "sp_name", Type: arrow.BinaryTypes.String},
-	{Name: "sp_ver", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "build", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "country", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "cpe_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "cpu_bits", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "edition", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "kernel_release", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "lang", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "sp_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "sp_ver", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var OSStruct = arrow.StructOf(OSFields...)

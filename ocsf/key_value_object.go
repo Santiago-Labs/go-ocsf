@@ -6,16 +6,16 @@ import (
 
 // KeyValueObjectFields defines the Arrow fields for KeyValueObject.
 var KeyValueObjectFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "value", Type: arrow.BinaryTypes.String},
-	{Name: "values", Type: arrow.ListOf(arrow.BinaryTypes.String)},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "values", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 }
 
 var KeyValueObjectStruct = arrow.StructOf(KeyValueObjectFields...)
 var KeyValueObjectClassname = "key_value_object"
 
 type KeyValueObject struct {
-	Name   string    `json:"name" parquet:"name"`
-	Value  *string   `json:"value,omitempty" parquet:"value"`
-	Values []*string `json:"values,omitempty" parquet:"values"`
+	Name   string   `json:"name" parquet:"name"`
+	Value  *string  `json:"value,omitempty" parquet:"value"`
+	Values []string `json:"values,omitempty" parquet:"values"`
 }

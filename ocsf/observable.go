@@ -13,11 +13,11 @@ type Observable struct {
 }
 
 var ObservableFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "reputation", Type: ReputationStruct},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "value", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "reputation", Type: ReputationStruct, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var ObservableStruct = arrow.StructOf(ObservableFields...)

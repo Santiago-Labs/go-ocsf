@@ -5,16 +5,16 @@ import (
 )
 
 var GeoLocationFields = []arrow.Field{
-	{Name: "city", Type: arrow.BinaryTypes.String},
-	{Name: "continent", Type: arrow.BinaryTypes.String},
-	{Name: "coordinates", Type: arrow.ListOf(arrow.PrimitiveTypes.Float64)},
-	{Name: "country", Type: arrow.BinaryTypes.String},
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "is_on_premises", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "isp", Type: arrow.BinaryTypes.String},
-	{Name: "postal_code", Type: arrow.BinaryTypes.String},
-	{Name: "provider", Type: arrow.BinaryTypes.String},
-	{Name: "region", Type: arrow.BinaryTypes.String},
+	{Name: "city", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "continent", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "coordinates", Type: arrow.ListOf(arrow.PrimitiveTypes.Float64), Nullable: true},
+	{Name: "country", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "is_on_premises", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "isp", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "postal_code", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "provider", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var GeoLocationStruct = arrow.StructOf(GeoLocationFields...)

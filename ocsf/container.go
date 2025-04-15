@@ -6,18 +6,18 @@ import (
 
 // ContainerFields defines the Arrow fields for Container.
 var ContainerFields = []arrow.Field{
-	{Name: "hash", Type: FingerprintStruct},
-	{Name: "image", Type: ImageStruct},
-	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "network_driver", Type: arrow.BinaryTypes.String},
-	{Name: "orchestrator", Type: arrow.BinaryTypes.String},
-	{Name: "pod_uuid", Type: arrow.BinaryTypes.String},
-	{Name: "runtime", Type: arrow.BinaryTypes.String},
-	{Name: "size", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "tag", Type: arrow.BinaryTypes.String},
-	{Name: "tags", Type: arrow.ListOf(KeyValueObjectStruct)},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "hash", Type: FingerprintStruct, Nullable: true},
+	{Name: "image", Type: ImageStruct, Nullable: true},
+	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "network_driver", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "orchestrator", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "pod_uuid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "runtime", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "size", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "tag", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "tags", Type: arrow.ListOf(KeyValueObjectStruct), Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var ContainerStruct = arrow.StructOf(ContainerFields...)

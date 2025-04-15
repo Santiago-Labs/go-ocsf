@@ -7,17 +7,17 @@ import (
 )
 
 var LoggerFields = []arrow.Field{
-	{Name: "device", Type: arrow.StructOf(DeviceFields...)},
-	{Name: "log_level", Type: arrow.BinaryTypes.String},
-	{Name: "log_name", Type: arrow.BinaryTypes.String},
-	{Name: "log_provider", Type: arrow.BinaryTypes.String},
-	{Name: "log_version", Type: arrow.BinaryTypes.String},
-	{Name: "logged_time", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "product", Type: ProductStruct},
-	{Name: "transmit_time", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "device", Type: arrow.StructOf(DeviceFields...), Nullable: true},
+	{Name: "log_level", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "log_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "log_provider", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "log_version", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "logged_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "product", Type: ProductStruct, Nullable: true},
+	{Name: "transmit_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var LoggerStruct = arrow.StructOf(LoggerFields...)

@@ -1,13 +1,24 @@
+//go:build duckdb_use_lib
+
 package main
+
+/*
+#cgo LDFLAGS: -lduckdb -L${SRCDIR}/duckdb_lib -Wl,-rpath,${SRCDIR}/duckdb_lib
+*/
+import "C"
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/Santiago-Labs/go-ocsf/clients/athena"
+	"github.com/Santiago-Labs/go-ocsf/clients/glue"
+	"github.com/Santiago-Labs/go-ocsf/clients/iam"
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
@@ -18,10 +29,14 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	awsathena "github.com/aws/aws-sdk-go-v2/service/athena"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/aws-sdk-go-v2/service/s3tables"
+	s3tablesTypes "github.com/aws/aws-sdk-go-v2/service/s3tables/types"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub"
+
+	"github.com/Santiago-Labs/go-ocsf/clients/duckdb"
 )
 
 func main() {
@@ -30,9 +45,7 @@ func main() {
 	bucketName := flag.String("bucket-name", "", "S3 bucket name")
 
 	// Create tables.
-	createS3Table := flag.Bool("create-s3-table", false, "Create S3 table. Only required once per bucket.")
-	createVulnFindingTable := flag.Bool("create-vuln-finding-table", false, "Create vulnerability finding table. Only required once per bucket.")
-	createAPIActivityTable := flag.Bool("create-api-activity-table", false, "Create API activity table. Only required once per bucket.")
+	setupS3TablesOption := flag.Bool("setup-s3-tables", false, "Setup S3 tables. Only required once per bucket.")
 
 	// Sync data.
 	syncSnykOption := flag.Bool("sync-snyk", false, "Sync Snyk data.")
@@ -50,24 +63,26 @@ func main() {
 	tenableAPIKey := os.Getenv("TENABLE_API_KEY")
 	tenableSecretKey := os.Getenv("TENABLE_SECRET_KEY")
 
-	storage, _, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName)
-	if err != nil {
-		log.Fatalf("Failed to setup storage: %v", err)
-	}
-
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		log.Fatalf("Failed to load AWS config: %v", err)
 	}
 
-	if *createS3Table {
+	if *setupS3TablesOption {
 		if *bucketName == "" {
-			log.Fatal("--bucket-name is required when --create-s3-table is set")
+			log.Fatal("--bucket-name is required when --setup-s3-tables is set")
 		}
 
-		if err := createAthenaTables(ctx, cfg, *bucketName, *createVulnFindingTable, *createAPIActivityTable); err != nil {
-			log.Fatalf("Failed to create Athena table: %v", err)
+		s3tablesClient := s3tables.NewFromConfig(cfg)
+		athenaClient := athena.NewClient(cfg)
+		if err := setupS3Tables(ctx, *bucketName, s3tablesClient, athenaClient); err != nil {
+			log.Fatalf("Failed to setup S3 tables: %v", err)
 		}
+	}
+
+	storage, _, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName)
+	if err != nil {
+		log.Fatalf("Failed to setup storage: %v", err)
 	}
 
 	if *syncSnykOption {
@@ -105,6 +120,27 @@ func main() {
 			log.Fatalf("Failed to sync Inspector data: %v", err)
 		}
 	}
+
+	db, err := duckdb.Client(ctx, *bucketName)
+	if err != nil {
+		log.Fatalf("Failed to create DuckDB client: %v", err)
+	}
+
+	rows, err := db.Queryx("SELECT time, activity_id FROM s3_tables_db.ocsf_data.vulnerability_finding")
+	if err != nil {
+		log.Fatalf("Failed to query DuckDB: %v", err)
+	}
+
+	for rows.Next() {
+		var v ocsf.VulnerabilityFinding
+		err = rows.StructScan(&v)
+		if err != nil {
+			log.Fatalf("Failed to scan row: %v", err)
+		}
+		fmt.Printf("%+v\n", v)
+	}
+
+	fmt.Println("Done")
 }
 
 func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName string) (datastore.Datastore, *s3.Client, error) {
@@ -112,14 +148,12 @@ func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName string
 	var s3Client *s3.Client
 	var err error
 
-	if bucketName != "" {
-		cfg, err := config.LoadDefaultConfig(ctx)
-		if err != nil {
-			return nil, nil, fmt.Errorf("error loading AWS config: %v", err)
-		}
-
-		s3Client = s3.NewFromConfig(cfg)
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error loading AWS config: %v", err)
 	}
+
+	s3Client = s3.NewFromConfig(cfg)
 
 	if isParquet {
 		if bucketName != "" {
@@ -193,6 +227,7 @@ func syncSecurityHub(ctx context.Context, storage datastore.Datastore, cfg aws.C
 	return securityHubSyncer.Sync(ctx)
 }
 
+<<<<<<< HEAD
 func syncGCPAuditLog(ctx context.Context, storage datastore.Datastore) error {
 	gcpauditlogSyncer, err := gcpauditlog.NewGCPAuditLogSyncer(ctx, storage, os.Getenv("GCP_PROJECT_ID"))
 	if err != nil {
@@ -205,23 +240,108 @@ func syncGCPAuditLog(ctx context.Context, storage datastore.Datastore) error {
 func createAthenaTables(ctx context.Context, cfg aws.Config, bucketName string, createVulnFindingTable, createAPIActivityTable bool) error {
 	athenaClient := awsathena.NewFromConfig(cfg)
 	client := athena.NewClient(athenaClient, "default", "primary")
+=======
+func setupS3Tables(ctx context.Context, bucketName string, s3tablesClient *s3tables.Client, athenaClient *athena.Client) error {
+	log.Println("Creating table bucket...")
+	resp, err := s3tablesClient.CreateTableBucket(ctx, &s3tables.CreateTableBucketInput{
+		Name: aws.String(bucketName),
+	})
+>>>>>>> c0033a2 (build duckdb)
 
-	tables := make(map[string][]arrow.Field)
-	if createVulnFindingTable {
-		tables["vulnerability_finding"] = ocsf.VulnerabilityFindingFields
+	var bne *types.BucketAlreadyExists
+	var bucketArn string
+	if err != nil {
+		if !errors.As(err, &bne) {
+			getResp, err := s3tablesClient.ListTableBuckets(ctx, &s3tables.ListTableBucketsInput{})
+			if err != nil {
+				return err
+			}
+
+			for _, bucket := range getResp.TableBuckets {
+				if *bucket.Name == bucketName {
+					log.Println("Bucket already exists:", bucket)
+					bucketArn = *bucket.Arn
+					break
+				}
+			}
+		} else {
+			return err
+		}
+	} else {
+		bucketArn = *resp.Arn
 	}
-	if createAPIActivityTable {
-		tables["api_activity"] = ocsf.APIActivityFields
+
+	log.Println("Creating namespace...")
+	desiredNamespace := "ocsf_data"
+
+	listNamespacesResp, err := s3tablesClient.ListNamespaces(ctx, &s3tables.ListNamespacesInput{
+		TableBucketARN: aws.String(bucketArn),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to list namespaces: %v", err)
+	}
+
+	namespaceExists := false
+	for _, namespace := range listNamespacesResp.Namespaces {
+		if strings.Join(namespace.Namespace, ".") == desiredNamespace {
+			log.Println("Namespace already exists:", namespace)
+			namespaceExists = true
+			break
+		}
+	}
+
+	if !namespaceExists {
+		_, err = s3tablesClient.CreateNamespace(ctx, &s3tables.CreateNamespaceInput{
+			TableBucketARN: aws.String(bucketArn),
+			Namespace:      []string{desiredNamespace},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create namespace: %v", err)
+		}
+	}
+
+	var nne *s3tablesTypes.ConflictException
+	if err != nil && !errors.As(err, &nne) {
+		return err
+	}
+
+	log.Println("Creating Lake Formation access role...")
+	iamClient, err := iam.NewIAMClient(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create IAM client: %v", err)
+	}
+
+	err = iamClient.CreateLakeFormationAccessRole(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create Lake Formation access role: %v", err)
+	}
+
+	log.Println("Creating Glue resource link...")
+	glueClient, err := glue.NewGlueClient(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create Glue client: %v", err)
+	}
+	err = glueClient.CreateDatabase(ctx, bucketName)
+	if err != nil {
+		return fmt.Errorf("failed to create Glue resource link: %v", err)
+	}
+
+	log.Println("Creating Iceberg tables...")
+	tables := map[string][]arrow.Field{
+		"vulnerability_finding": ocsf.VulnerabilityFindingFields,
+		"api_activity":          ocsf.APIActivityFields,
 	}
 
 	for tableName, fields := range tables {
-		s3Location := fmt.Sprintf("s3://%s/%s/%s", bucketName, datastore.Basepath, tableName)
-		err := client.CreateTable(ctx, fields, tableName, s3Location, []string{}) // TODO: partition by source and day.
+		log.Println("Creating table:", tableName)
+		s3location := fmt.Sprintf("s3://%s/data/%s", bucketName, tableName)
+		err = athenaClient.CreateTable(ctx, fields, tableName, s3location, []string{})
 		if err != nil {
-			return fmt.Errorf("failed to create Athena table: %w", err)
+			return fmt.Errorf("failed to create Athena table: %v", err)
 		}
 
-		log.Printf("Successfully created Athena table '%s' in database 'default'", tableName)
+		log.Println("Table created successfully:", tableName)
 	}
+
 	return nil
 }

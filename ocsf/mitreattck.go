@@ -6,11 +6,11 @@ import (
 
 // MITREATTCKFields defines the Arrow fields for MITREATTCK.
 var MITREATTCKFields = []arrow.Field{
-	{Name: "sub_technique", Type: SubTechniqueStruct},
-	{Name: "tactic", Type: TacticStruct},
-	{Name: "tactics", Type: arrow.ListOf(TacticStruct)},
-	{Name: "technique", Type: TechniqueStruct},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "sub_technique", Type: SubTechniqueStruct, Nullable: true},
+	{Name: "tactic", Type: TacticStruct, Nullable: true},
+	{Name: "tactics", Type: arrow.ListOf(TacticStruct), Nullable: true},
+	{Name: "technique", Type: TechniqueStruct, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var MITREATTCKStruct = arrow.StructOf(MITREATTCKFields...)

@@ -6,19 +6,19 @@ import (
 
 // UserFields defines the Arrow fields for User.
 var UserFields = []arrow.Field{
-	{Name: "account", Type: AccountStruct},
-	{Name: "credential_uid", Type: arrow.BinaryTypes.String},
-	{Name: "domain", Type: arrow.BinaryTypes.String},
-	{Name: "email_addr", Type: arrow.BinaryTypes.String},
-	{Name: "full_name", Type: arrow.BinaryTypes.String},
-	{Name: "groups", Type: arrow.ListOf(GroupStruct)},
-	{Name: "ldap_person", Type: LdapPersonStruct},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "org", Type: OrganizationStruct},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "uid_alt", Type: arrow.BinaryTypes.String},
+	{Name: "account", Type: AccountStruct, Nullable: true},
+	{Name: "credential_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "email_addr", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "full_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "groups", Type: arrow.ListOf(GroupStruct), Nullable: true},
+	{Name: "ldap_person", Type: LdapPersonStruct, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "org", Type: OrganizationStruct, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid_alt", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var UserStruct = arrow.StructOf(UserFields...)

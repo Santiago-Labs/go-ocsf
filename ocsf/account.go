@@ -6,10 +6,10 @@ import (
 
 // AccountFields defines the Arrow fields for Account.
 var AccountFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var AccountStruct = arrow.StructOf(AccountFields...)

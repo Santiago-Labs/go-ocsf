@@ -6,14 +6,14 @@ import (
 
 // ActorFields defines the Arrow fields for Actor.
 var ActorFields = []arrow.Field{
-	{Name: "app_name", Type: arrow.BinaryTypes.String},
-	{Name: "app_uid", Type: arrow.BinaryTypes.String},
-	{Name: "authorizations", Type: arrow.ListOf(AuthorizationStruct)},
-	{Name: "idp", Type: IdentityProviderStruct},
-	{Name: "invoked_by", Type: arrow.BinaryTypes.String},
-	{Name: "process", Type: ProcessStruct},
-	{Name: "session", Type: SessionStruct},
-	{Name: "user", Type: UserStruct},
+	{Name: "app_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "app_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "authorizations", Type: arrow.ListOf(AuthorizationStruct), Nullable: true},
+	{Name: "idp", Type: IdentityProviderStruct, Nullable: true},
+	{Name: "invoked_by", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "process", Type: ProcessStruct, Nullable: true},
+	{Name: "session", Type: SessionStruct, Nullable: true},
+	{Name: "user", Type: UserStruct, Nullable: true},
 }
 
 var ActorStruct = arrow.StructOf(ActorFields...)

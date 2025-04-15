@@ -6,13 +6,13 @@ import (
 
 // CVSSFields defines the Arrow fields for the CVSS type.
 var CVSSFields = []arrow.Field{
-	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64},
-	{Name: "depth", Type: arrow.BinaryTypes.String},
-	{Name: "metrics", Type: arrow.ListOf(MetricStruct)},
-	{Name: "overall_score", Type: arrow.PrimitiveTypes.Float64},
-	{Name: "severity", Type: arrow.BinaryTypes.String},
-	{Name: "vector_string", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64, Nullable: false},
+	{Name: "depth", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "metrics", Type: arrow.ListOf(MetricStruct), Nullable: true},
+	{Name: "overall_score", Type: arrow.PrimitiveTypes.Float64, Nullable: true},
+	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "vector_string", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var CVSSStruct = arrow.StructOf(CVSSFields...)

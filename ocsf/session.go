@@ -8,19 +8,19 @@ import (
 
 // SessionFields defines the Arrow fields for Session.
 var SessionFields = []arrow.Field{
-	{Name: "count", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "credential_uid", Type: arrow.BinaryTypes.String},
-	{Name: "expiration_reason", Type: arrow.BinaryTypes.String},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "is_mfa", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "is_remote", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "is_vpn", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "issuer", Type: arrow.BinaryTypes.String},
-	{Name: "terminal", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "uid_alt", Type: arrow.BinaryTypes.String},
-	{Name: "uuid", Type: arrow.BinaryTypes.String},
+	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "credential_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "expiration_reason", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "is_mfa", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "is_remote", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "is_vpn", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "issuer", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "terminal", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid_alt", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uuid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var SessionStruct = arrow.StructOf(SessionFields...)

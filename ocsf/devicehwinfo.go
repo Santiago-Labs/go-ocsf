@@ -5,19 +5,19 @@ import (
 )
 
 var DeviceHWInfoFields = []arrow.Field{
-	{Name: "bios_date", Type: arrow.BinaryTypes.String},
-	{Name: "bios_manufacturer", Type: arrow.BinaryTypes.String},
-	{Name: "bios_ver", Type: arrow.BinaryTypes.String},
-	{Name: "chassis", Type: arrow.BinaryTypes.String},
-	{Name: "cpu_bits", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "cpu_cores", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "cpu_count", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "cpu_speed", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "cpu_type", Type: arrow.BinaryTypes.String},
-	{Name: "desktop_display", Type: DisplayStruct},
-	{Name: "keyboard_info", Type: KeyboardInfoStruct},
-	{Name: "ram_size", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "serial_number", Type: arrow.BinaryTypes.String},
+	{Name: "bios_date", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "bios_manufacturer", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "bios_ver", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "chassis", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "cpu_bits", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "cpu_cores", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "cpu_count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "cpu_speed", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "cpu_type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "desktop_display", Type: DisplayStruct, Nullable: true},
+	{Name: "keyboard_info", Type: KeyboardInfoStruct, Nullable: true},
+	{Name: "ram_size", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "serial_number", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var DeviceHWInfoStruct = arrow.StructOf(DeviceHWInfoFields...)

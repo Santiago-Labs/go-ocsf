@@ -6,8 +6,8 @@ import (
 
 // EnvironmentVarFields defines the Arrow fields for EnvironmentVar.
 var EnvironmentVarFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "value", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var EnvironmentVarStruct = arrow.StructOf(EnvironmentVarFields...)

@@ -6,11 +6,11 @@ import (
 
 // KeyboardInfoFields defines the Arrow fields for KeyboardInfo.
 var KeyboardInfoFields = []arrow.Field{
-	{Name: "function_keys", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "ime", Type: arrow.BinaryTypes.String},
-	{Name: "keyboard_layout", Type: arrow.BinaryTypes.String},
-	{Name: "keyboard_subtype", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "keyboard_type", Type: arrow.BinaryTypes.String},
+	{Name: "function_keys", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "ime", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "keyboard_layout", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "keyboard_subtype", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "keyboard_type", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var KeyboardInfoStruct = arrow.StructOf(KeyboardInfoFields...)

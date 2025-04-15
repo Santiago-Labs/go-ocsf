@@ -6,31 +6,31 @@ import (
 
 // NetworkEndpointFields defines the Arrow fields for NetworkEndpoint.
 var NetworkEndpointFields = []arrow.Field{
-	{Name: "domain", Type: arrow.BinaryTypes.String},
-	{Name: "hostname", Type: arrow.BinaryTypes.String},
-	{Name: "instance_uid", Type: arrow.BinaryTypes.String},
-	{Name: "interface_name", Type: arrow.BinaryTypes.String},
-	{Name: "interface_uid", Type: arrow.BinaryTypes.String},
-	{Name: "ip", Type: arrow.BinaryTypes.String},
-	{Name: "mac", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "port", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "subnet_uid", Type: arrow.BinaryTypes.String},
-	{Name: "svc_name", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "vlan_uid", Type: arrow.BinaryTypes.String},
-	{Name: "vpc_uid", Type: arrow.BinaryTypes.String},
-	{Name: "zone", Type: arrow.BinaryTypes.String},
-	{Name: "agent_list", Type: arrow.ListOf(AgentStruct)},
-	{Name: "autonomous_system", Type: AutonomousSystemStruct},
-	{Name: "hw_info", Type: DeviceHWInfoStruct},
-	{Name: "intermediate_ips", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "location", Type: GeoLocationStruct},
-	{Name: "os", Type: OSStruct},
-	{Name: "owner", Type: UserStruct},
-	{Name: "proxy_endpoint", Type: NetworkProxyEndpointStruct},
+	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "hostname", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "instance_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "interface_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "interface_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "ip", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "mac", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "port", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "subnet_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "svc_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "vlan_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "vpc_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "zone", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
+	{Name: "autonomous_system", Type: AutonomousSystemStruct, Nullable: true},
+	{Name: "hw_info", Type: DeviceHWInfoStruct, Nullable: true},
+	{Name: "intermediate_ips", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "location", Type: GeoLocationStruct, Nullable: true},
+	{Name: "os", Type: OSStruct, Nullable: true},
+	{Name: "owner", Type: UserStruct, Nullable: true},
+	{Name: "proxy_endpoint", Type: NetworkProxyEndpointStruct, Nullable: true},
 }
 
 var NetworkEndpointStruct = arrow.StructOf(NetworkEndpointFields...)
@@ -54,10 +54,10 @@ type NetworkEndpoint struct {
 	VLANUID          *string               `json:"vlan_uid,omitempty" parquet:"vlan_uid"`
 	VPCUID           *string               `json:"vpc_uid,omitempty" parquet:"vpc_uid"`
 	Zone             *string               `json:"zone,omitempty" parquet:"zone"`
-	AgentList        []*Agent              `json:"agent_list,omitempty" parquet:"agent_list"`
+	AgentList        []Agent               `json:"agent_list,omitempty" parquet:"agent_list"`
 	AutonomousSystem *AutonomousSystem     `json:"autonomous_system,omitempty" parquet:"autonomous_system"`
 	HWInfo           *DeviceHWInfo         `json:"hw_info,omitempty" parquet:"hw_info"`
-	IntermediateIPs  []*string             `json:"intermediate_ips,omitempty" parquet:"intermediate_ips"`
+	IntermediateIPs  []string              `json:"intermediate_ips,omitempty" parquet:"intermediate_ips"`
 	Location         *GeoLocation          `json:"location,omitempty" parquet:"location"`
 	OS               *OS                   `json:"os,omitempty" parquet:"os"`
 	Owner            *User                 `json:"owner,omitempty" parquet:"owner"`

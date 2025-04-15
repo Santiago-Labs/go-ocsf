@@ -5,8 +5,8 @@ import (
 )
 
 var FileFields = []arrow.Field{
-	{Name: "path", Type: arrow.BinaryTypes.String},
-	{Name: "owner", Type: arrow.BinaryTypes.String},
+	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "owner", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var FileStruct = arrow.StructOf(FileFields...)

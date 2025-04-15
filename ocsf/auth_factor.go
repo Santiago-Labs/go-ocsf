@@ -6,15 +6,15 @@ import (
 
 // AuthFactorFields defines the Arrow fields for AuthFactor.
 var AuthFactorFields = []arrow.Field{
-	{Name: "device", Type: DeviceStruct},
-	{Name: "email", Type: arrow.BinaryTypes.String},
-	{Name: "factor_type", Type: arrow.BinaryTypes.String},
-	{Name: "factor_type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "is_hotp", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "is_totp", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "phone_number", Type: arrow.BinaryTypes.String},
-	{Name: "provider", Type: arrow.BinaryTypes.String},
-	{Name: "security_questions", Type: arrow.ListOf(arrow.BinaryTypes.String)},
+	{Name: "device", Type: DeviceStruct, Nullable: true},
+	{Name: "email", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "factor_type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "factor_type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "is_hotp", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "is_totp", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "phone_number", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "provider", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "security_questions", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 }
 
 var AuthFactorStruct = arrow.StructOf(AuthFactorFields...)

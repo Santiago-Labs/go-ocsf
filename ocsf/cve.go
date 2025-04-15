@@ -7,19 +7,19 @@ import (
 )
 
 var CVEFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.BinaryTypes.String},
-	{Name: "cvss", Type: CVSSStruct},
-	{Name: "cwe", Type: CWEStruct},
-	{Name: "cwe_uid", Type: arrow.BinaryTypes.String},
-	{Name: "cwe_url", Type: arrow.BinaryTypes.String},
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "epss", Type: arrow.BinaryTypes.String},
-	{Name: "modified_time", Type: arrow.BinaryTypes.String},
-	{Name: "product", Type: ProductStruct},
-	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "title", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "created_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "cvss", Type: CVSSStruct, Nullable: true},
+	{Name: "cwe", Type: CWEStruct, Nullable: true},
+	{Name: "cwe_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "cwe_url", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "epss", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "modified_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "product", Type: ProductStruct, Nullable: true},
+	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "title", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var CVEStruct = arrow.StructOf(CVEFields...)

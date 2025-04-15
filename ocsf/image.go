@@ -6,11 +6,11 @@ import (
 
 // ImageFields defines the fields for the Image Arrow schema.
 var ImageFields = []arrow.Field{
-	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "path", Type: arrow.BinaryTypes.String},
-	{Name: "tag", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "tag", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var ImageStruct = arrow.StructOf(ImageFields...)

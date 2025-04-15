@@ -6,8 +6,8 @@ import (
 
 // MetricFields defines the Arrow fields for Metric.
 var MetricFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "value", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var MetricStruct = arrow.StructOf(MetricFields...)

@@ -5,9 +5,9 @@ import (
 )
 
 var FeatureFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var FeatureStruct = arrow.StructOf(FeatureFields...)

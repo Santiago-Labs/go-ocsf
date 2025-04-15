@@ -17,12 +17,12 @@ type Group struct {
 
 // GroupFields defines the fields for the Group Arrow schema.
 var GroupFields = []arrow.Field{
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "domain", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "privileges", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "privileges", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var GroupStruct = arrow.StructOf(GroupFields...)

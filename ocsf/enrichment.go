@@ -5,11 +5,11 @@ import (
 )
 
 var EnrichmentFields = []arrow.Field{
-	{Name: "data", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "provider", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "value", Type: arrow.BinaryTypes.String},
+	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "provider", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var EnrichmentStruct = arrow.StructOf(EnrichmentFields...)

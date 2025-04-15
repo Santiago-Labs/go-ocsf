@@ -5,11 +5,11 @@ import (
 )
 
 var EPSSFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "created_time_dt", Type: arrow.BinaryTypes.String},
-	{Name: "percentile", Type: arrow.PrimitiveTypes.Float64},
-	{Name: "score", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "created_time", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "created_time_dt", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "percentile", Type: arrow.PrimitiveTypes.Float64, Nullable: true},
+	{Name: "score", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var EPSSStruct = arrow.StructOf(EPSSFields...)

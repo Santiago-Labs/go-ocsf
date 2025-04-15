@@ -6,14 +6,14 @@ import (
 
 // AgentFields defines the Arrow fields for Agent.
 var AgentFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "uid_alt", Type: arrow.BinaryTypes.String},
-	{Name: "vendor_name", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
-	{Name: "policies", Type: arrow.ListOf(PolicyStruct)},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid_alt", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "vendor_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "policies", Type: arrow.ListOf(PolicyStruct), Nullable: true},
 }
 
 var AgentStruct = arrow.StructOf(AgentFields...)

@@ -6,8 +6,8 @@ import (
 
 // AuthorizationFields defines the Arrow fields for Authorization.
 var AuthorizationFields = []arrow.Field{
-	{Name: "decision", Type: arrow.BinaryTypes.String},
-	{Name: "policy", Type: PolicyStruct},
+	{Name: "decision", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "policy", Type: PolicyStruct, Nullable: true},
 }
 
 var AuthorizationStruct = arrow.StructOf(AuthorizationFields...)

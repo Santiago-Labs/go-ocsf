@@ -8,21 +8,21 @@ import (
 
 // SSOFields defines the Arrow fields for SSO.
 var SSOFields = []arrow.Field{
-	{Name: "auth_protocol", Type: arrow.BinaryTypes.String},
-	{Name: "auth_protocol_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "certificate", Type: DigitalCertificateStruct},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "duration_mins", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "idle_timeout", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "login_endpoint", Type: arrow.BinaryTypes.String},
-	{Name: "logout_endpoint", Type: arrow.BinaryTypes.String},
-	{Name: "metadata_endpoint", Type: arrow.BinaryTypes.String},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "protocol_name", Type: arrow.BinaryTypes.String},
-	{Name: "scopes", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "vendor_name", Type: arrow.BinaryTypes.String},
+	{Name: "auth_protocol", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "auth_protocol_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "certificate", Type: DigitalCertificateStruct, Nullable: true},
+	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "duration_mins", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "idle_timeout", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "login_endpoint", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "logout_endpoint", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "metadata_endpoint", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "protocol_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "scopes", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "vendor_name", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var SSOStruct = arrow.StructOf(SSOFields...)

@@ -5,9 +5,9 @@ import (
 )
 
 var CWEFields = []arrow.Field{
-	{Name: "caption", Type: arrow.BinaryTypes.String},
-	{Name: "src_url", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "caption", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var CWEStruct = arrow.StructOf(CWEFields...)

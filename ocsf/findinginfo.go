@@ -7,22 +7,22 @@ import (
 )
 
 var FindingInfoFields = []arrow.Field{
-	{Name: "analytic", Type: AnalyticStruct},
-	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct)},
-	{Name: "created_time", Type: arrow.BinaryTypes.String},
-	{Name: "data_sources", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "first_seen_time", Type: arrow.BinaryTypes.String},
-	{Name: "kill_chain", Type: arrow.ListOf(KillChainPhaseStruct)},
-	{Name: "last_seen_time", Type: arrow.BinaryTypes.String},
-	{Name: "modified_time", Type: arrow.BinaryTypes.String},
-	{Name: "product_uid", Type: arrow.BinaryTypes.String},
-	{Name: "related_analytics", Type: arrow.ListOf(AnalyticStruct)},
-	{Name: "related_events", Type: arrow.ListOf(RelatedEventStruct)},
-	{Name: "src_url", Type: arrow.BinaryTypes.String},
-	{Name: "title", Type: arrow.BinaryTypes.String},
-	{Name: "types", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "analytic", Type: AnalyticStruct, Nullable: true},
+	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct), Nullable: true},
+	{Name: "created_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "data_sources", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "kill_chain", Type: arrow.ListOf(KillChainPhaseStruct), Nullable: true},
+	{Name: "last_seen_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "modified_time", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "product_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "related_analytics", Type: arrow.ListOf(AnalyticStruct), Nullable: true},
+	{Name: "related_events", Type: arrow.ListOf(RelatedEventStruct), Nullable: true},
+	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "title", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "types", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var FindingInfoStruct = arrow.StructOf(FindingInfoFields...)

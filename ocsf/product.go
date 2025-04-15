@@ -6,15 +6,15 @@ import (
 
 // ProductFields defines the Arrow fields for Product.
 var ProductFields = []arrow.Field{
-	{Name: "cpe_name", Type: arrow.BinaryTypes.String},
-	{Name: "feature", Type: FeatureStruct},
-	{Name: "lang", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "path", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "url_string", Type: arrow.BinaryTypes.String},
-	{Name: "vendor_name", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "cpe_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "feature", Type: FeatureStruct, Nullable: true},
+	{Name: "lang", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "url_string", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "vendor_name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var ProductStruct = arrow.StructOf(ProductFields...)

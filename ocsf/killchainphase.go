@@ -6,8 +6,8 @@ import (
 
 // KillChainPhaseFields defines the Arrow fields for KillChainPhase.
 var KillChainPhaseFields = []arrow.Field{
-	{Name: "phase", Type: arrow.BinaryTypes.String},
-	{Name: "phase_id", Type: arrow.PrimitiveTypes.Int32},
+	{Name: "phase", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "phase_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 }
 
 var KillChainPhaseStruct = arrow.StructOf(KillChainPhaseFields...)

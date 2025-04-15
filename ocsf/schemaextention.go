@@ -5,9 +5,9 @@ import (
 )
 
 var SchemaExtensionFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var SchemaExtensionStruct = arrow.StructOf(SchemaExtensionFields...)

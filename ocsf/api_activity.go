@@ -8,38 +8,39 @@ import (
 
 // APIActivityFields defines the Arrow fields for APIActivity.
 var APIActivityFields = []arrow.Field{
-	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "activity_name", Type: arrow.BinaryTypes.String},
-	{Name: "actor", Type: ActorStruct},
-	{Name: "category_name", Type: arrow.BinaryTypes.String},
-	{Name: "category_uid", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "class_name", Type: arrow.BinaryTypes.String},
-	{Name: "class_uid", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "count", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "duration", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "message", Type: arrow.BinaryTypes.String},
-	{Name: "raw_data", Type: arrow.BinaryTypes.String},
-	{Name: "severity", Type: arrow.BinaryTypes.String},
-	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "status", Type: arrow.BinaryTypes.String},
-	{Name: "status_code", Type: arrow.BinaryTypes.String},
-	{Name: "status_detail", Type: arrow.BinaryTypes.String},
-	{Name: "status_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "timezone_offset", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "type_name", Type: arrow.BinaryTypes.String},
-	{Name: "type_uid", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "dst_endpoint", Type: NetworkEndpointStruct},
-	{Name: "enrichments", Type: arrow.ListOf(EnrichmentStruct)},
-	{Name: "http_request", Type: HTTPRequestStruct},
-	{Name: "http_response", Type: HTTPResponseStruct},
-	{Name: "metadata", Type: MetadataStruct},
-	{Name: "observables", Type: arrow.ListOf(ObservableStruct)},
-	{Name: "resources", Type: arrow.ListOf(ResourceDetailsStruct)},
-	{Name: "src_endpoint", Type: NetworkEndpointStruct},
-	{Name: "unmapped", Type: arrow.MapOf(arrow.BinaryTypes.String, arrow.BinaryTypes.String)},
+	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "actor", Type: ActorStruct, Nullable: false},
+	{Name: "api", Type: APIStruct, Nullable: false},
+	{Name: "category_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "category_uid", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "class_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "class_uid", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "message", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "status", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "status_code", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "status_detail", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "status_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "time", Type: arrow.PrimitiveTypes.Int64, Nullable: false},
+	{Name: "timezone_offset", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "type_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_uid", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "dst_endpoint", Type: NetworkEndpointStruct, Nullable: true},
+	{Name: "enrichments", Type: arrow.ListOf(EnrichmentStruct), Nullable: true},
+	{Name: "http_request", Type: HTTPRequestStruct, Nullable: true},
+	{Name: "http_response", Type: HTTPResponseStruct, Nullable: true},
+	{Name: "metadata", Type: MetadataStruct, Nullable: false},
+	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
+	{Name: "resources", Type: arrow.ListOf(ResourceDetailsStruct), Nullable: true},
+	{Name: "src_endpoint", Type: NetworkEndpointStruct, Nullable: false},
+	{Name: "unmapped", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var APIActivityStruct = arrow.StructOf(APIActivityFields...)
@@ -78,123 +79,5 @@ type APIActivity struct {
 	Observables    []*Observable      `json:"observables,omitempty" parquet:"observables"`
 	Resources      []*ResourceDetails `json:"resources,omitempty" parquet:"resources"`
 	SrcEndpoint    NetworkEndpoint    `json:"src_endpoint" parquet:"src_endpoint"`
-	Unmapped       map[string]string  `json:"unmapped,omitempty" parquet:"unmapped"`
-}
-
-func (a *APIActivity) Equals(other *APIActivity) bool {
-	if a == nil || other == nil {
-		return a == other
-	}
-
-	// Compare primitive fields
-	if a.ActivityID != other.ActivityID ||
-		a.CategoryUID != other.CategoryUID ||
-		a.ClassUID != other.ClassUID ||
-		a.SeverityID != other.SeverityID ||
-		a.StatusID != other.StatusID ||
-		!a.Time.Equal(other.Time) ||
-		a.TimezoneOffset != other.TimezoneOffset ||
-		a.TypeUID != other.TypeUID {
-		return false
-	}
-
-	// Compare pointer fields with safe dereferencing
-	if !pointerStringsEqual(a.ActivityName, other.ActivityName) ||
-		!pointerStringsEqual(a.CategoryName, other.CategoryName) ||
-		!pointerStringsEqual(a.ClassName, other.ClassName) ||
-		!pointerStringsEqual(a.Message, other.Message) ||
-		!pointerStringsEqual(a.RawData, other.RawData) ||
-		!pointerStringsEqual(a.Severity, other.Severity) ||
-		!pointerStringsEqual(a.Status, other.Status) ||
-		!pointerStringsEqual(a.StatusCode, other.StatusCode) ||
-		!pointerStringsEqual(a.StatusDetail, other.StatusDetail) ||
-		!pointerStringsEqual(a.TypeName, other.TypeName) {
-		return false
-	}
-
-	// Compare pointer to int
-	if !pointerIntsEqual(a.Count, other.Count) {
-		return false
-	}
-
-	// Compare pointer to int64
-	if !pointerInt64sEqual(a.Duration, other.Duration) {
-		return false
-	}
-
-	// Compare pointer to time.Time
-	if !pointerTimesEqual(a.EndTime, other.EndTime) ||
-		!pointerTimesEqual(a.StartTime, other.StartTime) {
-		return false
-	}
-
-	// Compare maps
-	return mapsEqual(a.Unmapped, other.Unmapped)
-}
-
-// Helper functions for safe comparison
-
-func pointerStringsEqual(a, b *string) bool {
-	if a == nil || b == nil {
-		return a == b
-	}
-	return *a == *b
-}
-
-func pointerIntsEqual(a, b *int) bool {
-	if a == nil || b == nil {
-		return a == b
-	}
-	return *a == *b
-}
-
-func pointerInt64sEqual(a, b *int64) bool {
-	if a == nil || b == nil {
-		return a == b
-	}
-	return *a == *b
-}
-
-func pointerTimesEqual(a, b *time.Time) bool {
-	if a == nil || b == nil {
-		return a == b
-	}
-	return a.Equal(*b)
-}
-
-func pointerStructsEqual[T any](a, b *T, equals func(*T, *T) bool) bool {
-	if a == nil || b == nil {
-		return a == b
-	}
-	return equals(a, b)
-}
-
-func slicesEqual[T any](a, b []*T, equals func(*T, *T) bool) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] == nil || b[i] == nil {
-			if a[i] != b[i] {
-				return false
-			}
-			continue
-		}
-		if !equals(a[i], b[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-func mapsEqual(a, b map[string]string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for k, v := range a {
-		if bv, ok := b[k]; !ok || bv != v {
-			return false
-		}
-	}
-	return true
+	Unmapped       string             `json:"unmapped,omitempty" parquet:"unmapped"`
 }

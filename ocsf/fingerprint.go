@@ -6,9 +6,9 @@ import (
 
 // FingerprintFields defines the Arrow fields for Fingerprint.
 var FingerprintFields = []arrow.Field{
-	{Name: "algorithm", Type: arrow.BinaryTypes.String},
-	{Name: "algorithm_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "value", Type: arrow.BinaryTypes.String},
+	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "algorithm_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var FingerprintStruct = arrow.StructOf(FingerprintFields...)

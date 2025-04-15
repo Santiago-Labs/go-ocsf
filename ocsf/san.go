@@ -6,8 +6,8 @@ import (
 
 // SubjectAlternativeNameFields defines the Arrow fields for Subject Alternative Name.
 var SubjectAlternativeNameFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var SubjectAlternativeNameStruct = arrow.StructOf(SubjectAlternativeNameFields...)

@@ -150,7 +150,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
 			FirstSeenTime:      createdAt,
-			IsFixAvailable:     fixAvailable,
+			IsFixAvailable:     &fixAvailable,
 			LastSeenTime:       inspectorFinding.LastObservedAt,
 			VendorName:         &vendorName,
 			AffectedCode:       mapInspectorAffectedCode(inspectorFinding),

@@ -6,20 +6,20 @@ import (
 
 // IdentityProviderFields defines the Arrow fields for IdentityProvider.
 var IdentityProviderFields = []arrow.Field{
-	{Name: "domain", Type: arrow.BinaryTypes.String},
-	{Name: "fingerprint", Type: FingerprintStruct},
-	{Name: "has_mfa", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "issuer", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "protocol_name", Type: arrow.BinaryTypes.String},
-	{Name: "auth_factors", Type: arrow.ListOf(AuthFactorStruct)},
-	{Name: "scim", Type: SCIMStruct},
-	{Name: "sso", Type: SSOStruct},
-	{Name: "state", Type: arrow.BinaryTypes.String},
-	{Name: "state_id", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "tenant_uid", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "url_string", Type: arrow.BinaryTypes.String},
+	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "fingerprint", Type: FingerprintStruct, Nullable: true},
+	{Name: "has_mfa", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "issuer", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "protocol_name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "auth_factors", Type: arrow.ListOf(AuthFactorStruct), Nullable: true},
+	{Name: "scim", Type: SCIMStruct, Nullable: true},
+	{Name: "sso", Type: SSOStruct, Nullable: true},
+	{Name: "state", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "state_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "tenant_uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "url_string", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var IdentityProviderStruct = arrow.StructOf(IdentityProviderFields...)

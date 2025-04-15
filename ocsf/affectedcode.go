@@ -6,11 +6,11 @@ import (
 
 // AffectedCodeFields defines the Arrow fields for AffectedCode.
 var AffectedCodeFields = []arrow.Field{
-	{Name: "end_line", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "start_line", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "file", Type: FileStruct},
-	{Name: "owner", Type: UserStruct},
-	{Name: "remediation", Type: RemediationStruct},
+	{Name: "end_line", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "start_line", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "file", Type: FileStruct, Nullable: false},
+	{Name: "owner", Type: UserStruct, Nullable: true},
+	{Name: "remediation", Type: RemediationStruct, Nullable: true},
 }
 
 var AffectedCodeStruct = arrow.StructOf(AffectedCodeFields...)

@@ -167,7 +167,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
 			FirstSeenTime:      createdAt,
-			IsFixAvailable:     fixAvailable,
+			IsFixAvailable:     &fixAvailable,
 			LastSeenTime:       lastSeenTime,
 			VendorName:         &vendorName,
 			Remediation:        remediation,

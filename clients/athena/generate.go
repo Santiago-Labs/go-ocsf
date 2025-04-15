@@ -8,7 +8,25 @@ import (
 	"github.com/apache/arrow/go/v15/arrow"
 )
 
-func arrowTypeToAthena(t arrow.DataType) string {
+func GenerateAthenaCreateTable(database, table string, fields []arrow.Field) string {
+	var sb strings.Builder
+
+	fmt.Fprintf(&sb, "CREATE TABLE IF NOT EXISTS `%s`.%s (\n", database, table)
+
+	for i, field := range fields {
+		comma := ","
+		if i == len(fields)-1 {
+			comma = ""
+		}
+		fmt.Fprintf(&sb, "  `%s` %s%s\n", field.Name, arrowTypeToAthenaType(field.Type), comma)
+	}
+
+	fmt.Fprintf(&sb, ")\n\nTBLPROPERTIES ('table_type'='ICEBERG');")
+
+	return sb.String()
+}
+
+func arrowTypeToAthenaType(t arrow.DataType) string {
 	switch t.ID() {
 	case arrow.STRING:
 		return "string"
@@ -24,57 +42,22 @@ func arrowTypeToAthena(t arrow.DataType) string {
 		return "timestamp"
 	case arrow.BOOL:
 		return "boolean"
+	case arrow.LIST:
+		listType := t.(*arrow.ListType)
+		return fmt.Sprintf("array<%s>", arrowTypeToAthenaType(listType.Elem()))
 	case arrow.STRUCT:
 		structType := t.(*arrow.StructType)
 		var fields []string
 		for _, f := range structType.Fields() {
-			fields = append(fields, fmt.Sprintf("%s:%s", f.Name, arrowTypeToAthena(f.Type)))
+			fields = append(fields, fmt.Sprintf("`%s`:%s", f.Name, arrowTypeToAthenaType(f.Type)))
 		}
 		return fmt.Sprintf("struct<%s>", strings.Join(fields, ","))
-	case arrow.LIST:
-		listType := t.(*arrow.ListType)
-		return fmt.Sprintf("array<%s>", arrowTypeToAthena(listType.Elem()))
+	case arrow.MAP:
+		mapType := t.(*arrow.MapType)
+		return fmt.Sprintf("map<%s,%s>", arrowTypeToAthenaType(mapType.KeyType()), arrowTypeToAthenaType(mapType.ItemType()))
 	default:
 		log.Fatalf("Unknown arrow type: %v", t.ID())
 	}
 
 	return "string"
-}
-
-func GenerateAthenaTable(fields []arrow.Field, tableName, s3Location string, partitions []string) string {
-	var schemaDefs []string
-	var partitionDefs []string
-
-	partitionSet := make(map[string]bool)
-	for _, p := range partitions {
-		partitionSet[p] = true
-	}
-
-	for _, field := range fields {
-		definition := fmt.Sprintf("  %s %s", field.Name, arrowTypeToAthena(field.Type))
-		if partitionSet[field.Name] {
-			partitionDefs = append(partitionDefs, definition)
-		} else {
-			schemaDefs = append(schemaDefs, definition)
-		}
-	}
-
-	schemaStr := strings.Join(schemaDefs, ",\n")
-	partitionStr := strings.Join(partitionDefs, ",\n")
-
-	var partitionStmt string
-	if len(partitions) > 0 {
-		partitionStmt = fmt.Sprintf("PARTITIONED BY (\n%s\n)", partitionStr)
-	}
-
-	createStmt := fmt.Sprintf(`
-	CREATE EXTERNAL TABLE %s (
-	%s
-	)
-	%s
-	STORED AS PARQUET
-	LOCATION '%s';
-	`, tableName, schemaStr, partitionStmt, s3Location)
-
-	return createStmt
 }

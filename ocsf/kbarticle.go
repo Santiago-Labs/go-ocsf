@@ -6,18 +6,18 @@ import (
 
 // KBArticleFields defines the Arrow fields for KBArticle.
 var KBArticleFields = []arrow.Field{
-	{Name: "bulletin", Type: arrow.BinaryTypes.String},
-	{Name: "classification", Type: arrow.BinaryTypes.String},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "created_time_dt", Type: arrow.BinaryTypes.String},
-	{Name: "is_superseded", Type: arrow.FixedWidthTypes.Boolean},
-	{Name: "os", Type: OSStruct},
-	{Name: "product", Type: ProductStruct},
-	{Name: "severity", Type: arrow.BinaryTypes.String},
-	{Name: "size", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "src_url", Type: arrow.BinaryTypes.String},
-	{Name: "title", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "bulletin", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "classification", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "created_time", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "created_time_dt", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "is_superseded", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
+	{Name: "os", Type: OSStruct, Nullable: true},
+	{Name: "product", Type: ProductStruct, Nullable: true},
+	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "size", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "title", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var KBArticleStruct = arrow.StructOf(KBArticleFields...)

@@ -6,9 +6,9 @@ import (
 
 // TacticFields defines the Arrow fields for Tactic.
 var TacticFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "src_url", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var TacticStruct = arrow.StructOf(TacticFields...)

@@ -6,10 +6,10 @@ import (
 
 // RequestFields defines the Arrow fields for Request.
 var RequestFields = []arrow.Field{
-	{Name: "containers", Type: arrow.ListOf(ContainerStruct)},
-	{Name: "data", Type: arrow.BinaryTypes.String},
-	{Name: "flags", Type: arrow.ListOf(arrow.BinaryTypes.String)},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "containers", Type: arrow.ListOf(ContainerStruct), Nullable: true},
+	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "flags", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var RequestStruct = arrow.StructOf(RequestFields...)

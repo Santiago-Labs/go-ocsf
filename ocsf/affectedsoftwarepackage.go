@@ -6,17 +6,17 @@ import (
 
 // AffectedSoftwarePackageFields defines the Arrow fields for AffectedSoftwarePackage.
 var AffectedSoftwarePackageFields = []arrow.Field{
-	{Name: "architecture", Type: arrow.BinaryTypes.String},
-	{Name: "epoch", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "fixed_in_version", Type: arrow.BinaryTypes.String},
-	{Name: "license", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "package_manager", Type: arrow.BinaryTypes.String},
-	{Name: "path", Type: arrow.BinaryTypes.String},
-	{Name: "purl", Type: arrow.BinaryTypes.String},
-	{Name: "release", Type: arrow.BinaryTypes.String},
-	{Name: "remediation", Type: RemediationStruct},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "architecture", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "epoch", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "fixed_in_version", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "license", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "package_manager", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "purl", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "release", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "remediation", Type: RemediationStruct, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var AffectedSoftwarePackageStruct = arrow.StructOf(AffectedSoftwarePackageFields...)

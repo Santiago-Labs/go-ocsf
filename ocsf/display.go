@@ -5,11 +5,11 @@ import (
 )
 
 var DisplayFields = []arrow.Field{
-	{Name: "color_depth", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "physical_height", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "physical_orientation", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "physical_width", Type: arrow.PrimitiveTypes.Int32},
-	{Name: "scale_factor", Type: arrow.PrimitiveTypes.Int32},
+	{Name: "color_depth", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "physical_height", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "physical_orientation", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "physical_width", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
+	{Name: "scale_factor", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 }
 
 var DisplayStruct = arrow.StructOf(DisplayFields...)

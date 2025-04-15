@@ -6,10 +6,10 @@ import (
 
 // ReputationFields defines the Arrow fields for Reputation.
 var ReputationFields = []arrow.Field{
-	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64},
-	{Name: "provider", Type: arrow.BinaryTypes.String},
-	{Name: "score", Type: arrow.BinaryTypes.String},
-	{Name: "score_id", Type: arrow.PrimitiveTypes.Int32},
+	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64, Nullable: false},
+	{Name: "provider", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "score", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "score_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 }
 
 var ReputationStruct = arrow.StructOf(ReputationFields...)

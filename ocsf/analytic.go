@@ -6,13 +6,13 @@ import (
 
 // baseAnalyticFields defines the non‐recursive fields for Analytic.
 var relatedAnalyticFields = []arrow.Field{
-	{Name: "category", Type: arrow.BinaryTypes.String},
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var RelatedAnalyticStruct = arrow.StructOf(relatedAnalyticFields...)
@@ -22,14 +22,14 @@ var RelatedAnalyticClassname = "related_analytics"
 // To avoid infinite recursion in the "related_analytics" field,
 // we include only the base (non‐recursive) fields.
 var AnalyticFields = []arrow.Field{
-	{Name: "category", Type: arrow.BinaryTypes.String},
-	{Name: "desc", Type: arrow.BinaryTypes.String},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "related_analytics", Type: arrow.ListOf(RelatedAnalyticStruct)},
-	{Name: "type", Type: arrow.BinaryTypes.String},
-	{Name: "type_id", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "related_analytics", Type: arrow.ListOf(RelatedAnalyticStruct), Nullable: true},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var AnalyticStruct = arrow.StructOf(AnalyticFields...)
