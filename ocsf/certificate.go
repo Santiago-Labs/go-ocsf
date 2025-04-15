@@ -22,14 +22,14 @@ var DigitalCertificateStruct = arrow.StructOf(DigitalCertificateFields...)
 var DigitalCertificateClassname = "certificate"
 
 type DigitalCertificate struct {
-	CreatedTime    *int64                    `json:"created_time,omitempty" parquet:"created_time,optional"`
-	ExpirationTime *int64                    `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
-	Fingerprints   []*Fingerprint            `json:"fingerprints,omitempty" parquet:"fingerprints,list,optional"`
-	IsSelfSigned   *bool                     `json:"is_self_signed,omitempty" parquet:"is_self_signed,optional"`
-	Issuer         string                    `json:"issuer" parquet:"issuer"`
-	SANs           []*SubjectAlternativeName `json:"sans,omitempty" parquet:"sans,list,optional"`
-	SerialNumber   string                    `json:"serial_number" parquet:"serial_number"`
-	Subject        *string                   `json:"subject,omitempty" parquet:"subject,optional"`
-	UID            *string                   `json:"uid,omitempty" parquet:"uid,optional"`
-	Version        *string                   `json:"version,omitempty" parquet:"version,optional"`
+	CreatedTime    *int64                    `json:"created_time,omitempty" parquet:"created_time,optional" ch:"created_time,omitempty"`
+	ExpirationTime *int64                    `json:"expiration_time,omitempty" parquet:"expiration_time,optional" ch:"expiration_time,omitempty"`
+	Fingerprints   []*Fingerprint            `json:"fingerprints,omitempty" parquet:"fingerprints,list,optional" ch:"fingerprints,omitempty"`
+	IsSelfSigned   *bool                     `json:"is_self_signed,omitempty" parquet:"is_self_signed,optional" ch:"is_self_signed,omitempty"`
+	Issuer         string                    `json:"issuer" parquet:"issuer" ch:"issuer"`
+	SANs           []*SubjectAlternativeName `json:"sans,omitempty" parquet:"sans,list,optional" ch:"sans,omitempty"`
+	SerialNumber   string                    `json:"serial_number" parquet:"serial_number" ch:"serial_number"`
+	Subject        *string                   `json:"subject,omitempty" parquet:"subject,optional" ch:"subject,omitempty"`
+	UID            *string                   `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	Version        *string                   `json:"version,omitempty" parquet:"version,optional" ch:"version,omitempty"`
 }

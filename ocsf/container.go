@@ -24,16 +24,16 @@ var ContainerStruct = arrow.StructOf(ContainerFields...)
 var ContainerClassname = "container"
 
 type Container struct {
-	Hash          *Fingerprint      `json:"hash,omitempty" parquet:"hash,optional"`
-	Image         *Image            `json:"image,omitempty" parquet:"image,optional"`
-	Labels        []string          `json:"labels,omitempty" parquet:"labels,list,optional"`
-	Name          *string           `json:"name,omitempty" parquet:"name,optional"`
-	NetworkDriver *string           `json:"network_driver,omitempty" parquet:"network_driver,optional"`
-	Orchestrator  *string           `json:"orchestrator,omitempty" parquet:"orchestrator,optional"`
-	PodUUID       *string           `json:"pod_uuid,omitempty" parquet:"pod_uuid,optional"`
-	Runtime       *string           `json:"runtime,omitempty" parquet:"runtime,optional"`
-	Size          *int64            `json:"size,omitempty" parquet:"size,optional"`
-	Tag           *string           `json:"tag,omitempty" parquet:"tag,optional"`
-	Tags          []*KeyValueObject `json:"tags,omitempty" parquet:"tags,list,optional"`
-	UID           *string           `json:"uid,omitempty" parquet:"uid,optional"`
+	Hash          *Fingerprint      `json:"hash,omitempty" parquet:"hash,optional" ch:"hash,omitempty"`
+	Image         *Image            `json:"image,omitempty" parquet:"image,optional" ch:"image,omitempty"`
+	Labels        []string          `json:"labels,omitempty" parquet:"labels,list,optional" ch:"labels,omitempty"`
+	Name          *string           `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
+	NetworkDriver *string           `json:"network_driver,omitempty" parquet:"network_driver,optional" ch:"network_driver,omitempty"`
+	Orchestrator  *string           `json:"orchestrator,omitempty" parquet:"orchestrator,optional" ch:"orchestrator,omitempty"`
+	PodUUID       *string           `json:"pod_uuid,omitempty" parquet:"pod_uuid,optional" ch:"pod_uuid,omitempty"`
+	Runtime       *string           `json:"runtime,omitempty" parquet:"runtime,optional" ch:"runtime,omitempty"`
+	Size          *int64            `json:"size,omitempty" parquet:"size,optional" ch:"size,omitempty"`
+	Tag           *string           `json:"tag,omitempty" parquet:"tag,optional" ch:"tag,omitempty"`
+	Tags          []*KeyValueObject `json:"tags,omitempty" parquet:"tags,list,optional" ch:"tags,omitempty"`
+	UID           *string           `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
 }

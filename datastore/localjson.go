@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
@@ -131,4 +132,80 @@ func (s *localJsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, path 
 	}
 
 	return activities, nil
+}
+
+func (s *localJsonDatastore) buildActivityIndex(ctx context.Context) error {
+	files, err := os.ReadDir(basepathActivities)
+	if err != nil {
+		return oops.Wrapf(err, "failed to read local directory %s", basepathActivities)
+	}
+
+	for _, file := range files {
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".json") {
+			continue
+		}
+
+		filePath := filepath.Join(basepathActivities, file.Name())
+		if err := s.loadActivityFileIntoIndex(ctx, filePath); err != nil {
+			slog.Error("failed to load json file into index, skipping", "file", filePath, "error", err)
+			continue
+		}
+	}
+
+	slog.Info("built activity index from local files", "count", len(s.BaseDatastore.activityIndex))
+	return nil
+}
+
+func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, path *string) error {
+	allActivities := activities
+	if path == nil {
+		newpath := filepath.Join(basepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		path = &newpath
+	} else {
+		var err error
+		allActivities, err = s.GetAPIActivitiesFromFile(ctx, *path)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from disk")
+		}
+
+		allActivities = append(allActivities, activities...)
+	}
+
+	outerSchema := map[string]interface{}{
+		"api_activities": allActivities,
+	}
+	jsonData, err := json.Marshal(outerSchema)
+	if err != nil {
+		return oops.Wrapf(err, "failed to marshal activities to JSON")
+	}
+	if err := os.WriteFile(*path, jsonData, 0644); err != nil {
+		return oops.Wrapf(err, "failed to write JSON to disk")
+	}
+
+	for _, activity := range allActivities {
+		s.BaseDatastore.activityIndex[*activity.Metadata.CorrelationUID] = *path
+	}
+	s.BaseDatastore.activityFileIndex[*path] = len(allActivities)
+
+	return nil
+
+}
+
+// GetAPIActivitiesFromFile retrieves all API activities from a specific file path.
+// It reads the JSON file and parses it into a slice of API activities.
+func (s *localJsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, path string) ([]ocsf.APIActivity, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to read JSON file from disk")
+	}
+
+	var activities struct {
+		APIActivities []ocsf.APIActivity `json:"api_activities"`
+	}
+
+	if err := json.Unmarshal(data, &activities); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse JSON file")
+	}
+
+	return activities.APIActivities, nil
 }

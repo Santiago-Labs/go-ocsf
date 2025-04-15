@@ -21,13 +21,13 @@ var AuthFactorStruct = arrow.StructOf(AuthFactorFields...)
 var AuthFactorClassname = "auth_factor"
 
 type AuthFactor struct {
-	Device            *Device  `json:"device,omitempty" parquet:"device,optional"`
-	Email             *string  `json:"email,omitempty" parquet:"email,optional"`
-	FactorType        *string  `json:"factor_type,omitempty" parquet:"factor_type,optional"`
-	FactorTypeID      int32    `json:"factor_type_id" parquet:"factor_type_id"`
-	IsHOTP            *bool    `json:"is_hotp,omitempty" parquet:"is_hotp,optional"`
-	IsTOTP            *bool    `json:"is_totp,omitempty" parquet:"is_totp,optional"`
-	PhoneNumber       *string  `json:"phone_number,omitempty" parquet:"phone_number,optional"`
-	Provider          *string  `json:"provider,omitempty" parquet:"provider,optional"`
-	SecurityQuestions []string `json:"security_questions,omitempty" parquet:"security_questions,list,optional"`
+	Device            *Device  `json:"device,omitempty" parquet:"device,optional" ch:"device,omitempty"`
+	Email             *string  `json:"email,omitempty" parquet:"email,optional" ch:"email,omitempty"`
+	FactorType        *string  `json:"factor_type,omitempty" parquet:"factor_type,optional" ch:"factor_type,omitempty"`
+	FactorTypeID      int32    `json:"factor_type_id" parquet:"factor_type_id" ch:"factor_type_id"`
+	IsHOTP            *bool    `json:"is_hotp,omitempty" parquet:"is_hotp,optional" ch:"is_hotp,omitempty"`
+	IsTOTP            *bool    `json:"is_totp,omitempty" parquet:"is_totp,optional" ch:"is_totp,omitempty"`
+	PhoneNumber       *string  `json:"phone_number,omitempty" parquet:"phone_number,optional" ch:"phone_number,omitempty"`
+	Provider          *string  `json:"provider,omitempty" parquet:"provider,optional" ch:"provider,omitempty"`
+	SecurityQuestions []string `json:"security_questions,omitempty" parquet:"security_questions,list,optional" ch:"security_questions,omitempty"`
 }

@@ -23,15 +23,15 @@ var AffectedSoftwarePackageStruct = arrow.StructOf(AffectedSoftwarePackageFields
 var AffectedSoftwarePackageClassname = "affected_software_package"
 
 type AffectedSoftwarePackage struct {
-	Architecture   *string      `json:"architecture,omitempty" parquet:"architecture,optional"`
-	Epoch          *int32       `json:"epoch,omitempty" parquet:"epoch,optional"`
-	FixedInVersion *string      `json:"fixed_in_version,omitempty" parquet:"fixed_in_version,optional"`
-	License        *string      `json:"license,omitempty" parquet:"license,optional"`
-	Name           string       `json:"name" parquet:"name"`
-	PackageManager *string      `json:"package_manager,omitempty" parquet:"package_manager,optional"`
-	Path           *string      `json:"path,omitempty" parquet:"path,optional"`
-	Purl           *string      `json:"purl,omitempty" parquet:"purl,optional"`
-	Release        *string      `json:"release,omitempty" parquet:"release,optional"`
-	Remediation    *Remediation `json:"remediation,omitempty" parquet:"remediation,optional"`
-	Version        string       `json:"version" parquet:"version"`
+	Architecture   *string      `json:"architecture,omitempty" parquet:"architecture,optional" ch:"architecture,omitempty"`
+	Epoch          *int32       `json:"epoch,omitempty" parquet:"epoch,optional" ch:"epoch,omitempty"`
+	FixedInVersion *string      `json:"fixed_in_version,omitempty" parquet:"fixed_in_version,optional" ch:"fixed_in_version,omitempty"`
+	License        *string      `json:"license,omitempty" parquet:"license,optional" ch:"license,omitempty"`
+	Name           string       `json:"name" parquet:"name" ch:"name"`
+	PackageManager *string      `json:"package_manager,omitempty" parquet:"package_manager,optional" ch:"package_manager,omitempty"`
+	Path           *string      `json:"path,omitempty" parquet:"path,optional" ch:"path,omitempty"`
+	Purl           *string      `json:"purl,omitempty" parquet:"purl,optional" ch:"purl,omitempty"`
+	Release        *string      `json:"release,omitempty" parquet:"release,optional" ch:"release,omitempty"`
+	Remediation    *Remediation `json:"remediation,omitempty" parquet:"remediation,optional" ch:"remediation,omitempty"`
+	Version        string       `json:"version" parquet:"version" ch:"version"`
 }
