@@ -28,12 +28,6 @@ type Datastore interface {
 	// GetAPIActivity retrieves a API activity by its unique identifier.
 	GetAPIActivity(ctx context.Context, activityID string) (*ocsf.APIActivity, error)
 
-	// GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
-	GetFindingsFromFile(ctx context.Context, path string) ([]ocsf.VulnerabilityFinding, error)
-
-	// GetAPIActivitiesFromFile retrieves all API activities from a specific file path.
-	GetAPIActivitiesFromFile(ctx context.Context, path string) ([]ocsf.APIActivity, error)
-
 	// SaveFindings saves a list of vulnerability findings to the datastore.
 	SaveFindings(ctx context.Context, findings []ocsf.VulnerabilityFinding) error
 

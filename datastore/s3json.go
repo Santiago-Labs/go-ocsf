@@ -8,7 +8,6 @@ import (
 	"io"
 	"log/slog"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
@@ -31,21 +30,9 @@ func NewS3JsonDatastore(bucketName string, s3Client *s3.Client) Datastore {
 		s3Bucket: bucketName,
 		s3Client: s3Client,
 	}
+
 	s.BaseDatastore = BaseDatastore{
-		findingIndex:      make(map[string]string),
-		fileIndex:         make(map[string]int),
-		activityIndex:     make(map[string]string),
-		activityFileIndex: make(map[string]int),
-		store:             s,
-	}
-
-	ctx := context.Background()
-	if err := s.buildFindingIndex(ctx); err != nil {
-		slog.Warn("failed to build complete finding index", "error", err)
-	}
-
-	if err := s.buildActivityIndex(ctx); err != nil {
-		slog.Warn("failed to build complete activity index", "error", err)
+		store: s,
 	}
 
 	return s
@@ -113,75 +100,12 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 		return oops.Wrapf(err, "failed to upload JSON to S3")
 	}
 
-	for _, f := range allFindings {
-		s.BaseDatastore.findingIndex[f.FindingInfo.UID] = *key
-	}
-	s.BaseDatastore.fileIndex[*key] = len(allFindings)
-
 	slog.Info("Wrote JSON file to S3",
 		"bucket", s.s3Bucket,
 		"key", *key,
 		"findings", len(allFindings),
 	)
 
-	return nil
-}
-
-// buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
-// It reads all JSON files in the S3 bucket and parses them into a slice of vulnerability findings.
-func (s *s3JsonDatastore) buildFindingIndex(ctx context.Context) error {
-	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
-		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(BasepathFindings),
-	})
-
-	for paginator.HasMorePages() {
-		output, err := paginator.NextPage(ctx)
-		if err != nil {
-			return oops.Wrapf(err, "failed to list objects in S3")
-		}
-
-		for _, object := range output.Contents {
-			if strings.HasSuffix(*object.Key, "/") || !strings.HasSuffix(*object.Key, ".json") {
-				continue
-			}
-
-			if err := s.loadFileIntoIndex(ctx, *object.Key); err != nil {
-				slog.Warn("error indexing json file", "key", *object.Key, "error", err)
-			}
-		}
-	}
-
-	slog.Info("built finding index from S3", "count", len(s.BaseDatastore.findingIndex))
-	return nil
-}
-
-// buildActivityIndex builds the datastore's in-memory index of activity IDs to file paths.
-// It reads all JSON files in the S3 bucket and parses them into a slice of API activities.
-func (s *s3JsonDatastore) buildActivityIndex(ctx context.Context) error {
-	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
-		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(BasepathActivities),
-	})
-
-	for paginator.HasMorePages() {
-		output, err := paginator.NextPage(ctx)
-		if err != nil {
-			return oops.Wrapf(err, "failed to list objects in S3")
-		}
-
-		for _, object := range output.Contents {
-			if strings.HasSuffix(*object.Key, "/") || !strings.HasSuffix(*object.Key, ".json") {
-				continue
-			}
-
-			if err := s.loadActivityFileIntoIndex(ctx, *object.Key); err != nil {
-				slog.Warn("error indexing json file", "key", *object.Key, "error", err)
-			}
-		}
-	}
-
-	slog.Info("built finding index from S3", "count", len(s.BaseDatastore.findingIndex))
 	return nil
 }
 
@@ -242,11 +166,6 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")
 	}
-
-	for _, activity := range allActivities {
-		s.BaseDatastore.findingIndex[*activity.Metadata.CorrelationUID] = *key
-	}
-	s.BaseDatastore.fileIndex[*key] = len(allActivities)
 
 	slog.Info("Wrote JSON file to S3",
 		"bucket", s.s3Bucket,

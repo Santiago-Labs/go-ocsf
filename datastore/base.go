@@ -5,38 +5,33 @@ import (
 	"log/slog"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	"github.com/jmoiron/sqlx"
 	"github.com/samsarahq/go/oops"
 )
 
 type BaseDatastore struct {
-	findingIndex map[string]string // findingID -> filePath
-	fileIndex    map[string]int    // filePath -> len(findings)
-
-	activityIndex     map[string]string // activityID -> filePath
-	activityFileIndex map[string]int    // filePath -> len(activities)
-
 	store Datastore
+
+	db *sqlx.DB
 }
 
 // GetFinding returns a single finding from the datastore or ErrNotFound if the finding is not found
 func (d *BaseDatastore) GetFinding(ctx context.Context, findingID string) (*ocsf.VulnerabilityFinding, error) {
-	filePath, exists := d.findingIndex[findingID]
-	if !exists {
+	finding := ocsf.VulnerabilityFinding{}
+	rows, err := d.db.Queryx("SELECT * FROM vulnerability_findings WHERE uid = ?", findingID)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to get finding")
+	}
+
+	if !rows.Next() {
 		return nil, ErrNotFound
 	}
 
-	findings, err := d.store.GetFindingsFromFile(ctx, filePath)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get all findings")
+	if err := rows.StructScan(&finding); err != nil {
+		return nil, oops.Wrapf(err, "failed to scan finding")
 	}
 
-	for _, finding := range findings {
-		if finding.FindingInfo.UID == findingID {
-			return &finding, nil
-		}
-	}
-
-	return nil, ErrNotFound
+	return &finding, nil
 }
 
 // SaveFindings saves a batch of findings to the datastore. Datastore implementations handle file formats.
@@ -73,42 +68,10 @@ func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.Vulner
 }
 
 func (d *BaseDatastore) getPathWithSpace(batchSize int) *string {
-	for path, count := range d.fileIndex {
-		if (count+batchSize)*avgFindingSize < maxFileSize {
-			return &path
-		}
-	}
-
 	return nil
 }
 
-func (d *BaseDatastore) loadFileIntoIndex(ctx context.Context, key string) error {
-	findings, err := d.store.GetFindingsFromFile(ctx, key)
-	if err != nil {
-		return oops.Wrapf(err, "failed to read all findings from parquet file")
-	}
-
-	for _, finding := range findings {
-		d.findingIndex[finding.FindingInfo.UID] = key
-	}
-	d.fileIndex[key] = len(findings)
-
-	slog.Debug("indexed findings from file", "key", key, "count", len(findings))
-	return nil
-}
-
-func (d *BaseDatastore) loadActivityFileIntoIndex(ctx context.Context, key string) error {
-	activities, err := d.store.GetAPIActivitiesFromFile(ctx, key)
-	if err != nil {
-		return oops.Wrapf(err, "failed to read all activities from parquet file")
-	}
-
-	for _, activity := range activities {
-		d.activityIndex[*activity.Metadata.CorrelationUID] = key
-	}
-	d.activityFileIndex[key] = len(activities)
-
-	slog.Debug("indexed activities from file", "key", key, "count", len(activities))
+func (d *BaseDatastore) getAPIActivityPathWithSpace(batchSize int) *string {
 	return nil
 }
 
@@ -146,33 +109,21 @@ func (d *BaseDatastore) SaveAPIActivities(ctx context.Context, activities []ocsf
 	return nil
 }
 
-func (d *BaseDatastore) getAPIActivityPathWithSpace(batchSize int) *string {
-	for path, count := range d.activityFileIndex {
-		if (count+batchSize)*avgFindingSize < maxFileSize {
-			return &path
-		}
-	}
-
-	return nil
-}
-
 // GetAPIActivity returns a single activity from the datastore or ErrNotFound if the activity is not found
 func (d *BaseDatastore) GetAPIActivity(ctx context.Context, activityID string) (*ocsf.APIActivity, error) {
-	filePath, exists := d.activityIndex[activityID]
-	if !exists {
+	activity := ocsf.APIActivity{}
+	rows, err := d.db.Queryx("SELECT * FROM api_activities WHERE uid = ?", activityID)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to get activity")
+	}
+
+	if !rows.Next() {
 		return nil, ErrNotFound
 	}
 
-	activities, err := d.store.GetAPIActivitiesFromFile(ctx, filePath)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get all activities")
+	if err := rows.StructScan(&activity); err != nil {
+		return nil, oops.Wrapf(err, "failed to scan activity")
 	}
 
-	for _, activity := range activities {
-		if *activity.Metadata.CorrelationUID == activityID {
-			return &activity, nil
-		}
-	}
-
-	return nil, ErrNotFound
+	return &activity, nil
 }

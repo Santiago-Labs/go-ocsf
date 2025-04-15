@@ -23,7 +23,7 @@ var (
 	}
 )
 
-func Client(ctx context.Context, bucketName string) (*sqlx.DB, error) {
+func NewS3Client(ctx context.Context, bucketName string) (*sqlx.DB, error) {
 	var err error
 	once.Do(func() {
 
@@ -85,6 +85,43 @@ func Client(ctx context.Context, bucketName string) (*sqlx.DB, error) {
 			SET search_path = 's3_tables_db';
 
 		`, cfg.Region, creds.AccountID, bucketName))
+		if err != nil {
+			return
+		}
+	})
+
+	return db, err
+}
+
+func NewLocalClient(ctx context.Context) (*sqlx.DB, error) {
+	var err error
+	once.Do(func() {
+
+		var execDir string
+		execDir, err = os.Executable()
+		if err != nil {
+			return
+		}
+		execDir = path.Dir(execDir)
+
+		duckDBDir := path.Join(execDir, "duckdb_data")
+		err = os.MkdirAll(duckDBDir, 0755)
+		if err != nil {
+			return
+		}
+
+		dbPath := path.Join(duckDBDir, "duckdb.db")
+		db, err = sqlx.Connect("duckdb", dbPath)
+		if err != nil {
+			return
+		}
+		db.Mapper = reflectx.NewMapperTagFunc("json", nil, nil)
+
+		_, err = db.Exec(fmt.Sprintf(`
+			SET home_directory='%s'; 
+			SET extension_directory='%s';
+
+		`, duckDBDir, duckDBDir))
 		if err != nil {
 			return
 		}
