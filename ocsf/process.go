@@ -67,7 +67,7 @@ type Process struct {
 	Lineage          []*string          `json:"lineage,omitempty" parquet:"lineage"`
 	LoadedModules    []*string          `json:"loaded_modules,omitempty" parquet:"loaded_modules"`
 	Name             *string            `json:"name,omitempty" parquet:"name"`
-	ParentProcess    *Process           `json:"parent_process,omitempty" parquet:"parent_process"`
+	ParentProcess    *ParentProcess     `json:"parent_process,omitempty" parquet:"parent_process"`
 	Path             *string            `json:"path,omitempty" parquet:"path"`
 	PID              *int               `json:"pid,omitempty" parquet:"pid"`
 	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox"`
@@ -78,4 +78,20 @@ type Process struct {
 	User             *User              `json:"user,omitempty" parquet:"user"`
 	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory"`
 	XAttributes      *map[string]string `json:"xattributes,omitempty" parquet:"xattributes"`
+}
+
+// ParentProcess is the parent process of a process, we use a different struct
+// to avoid self reference because go-parquet does not support one type
+// referencing itself.
+type ParentProcess struct {
+	Ancestry        *ProcessEntity    `json:"ancestry,omitempty" parquet:"ancestry"`
+	CmdLine         *string           `json:"cmd_line,omitempty" parquet:"cmd_line"`
+	CreatedTime     *int64            `json:"created_time,omitempty" parquet:"created_time"`
+	EnvironmentVars []*EnvironmentVar `json:"environment_variables,omitempty" parquet:"environment_variables"`
+	File            *File             `json:"file,omitempty" parquet:"file"`
+	Integrity       *string           `json:"integrity,omitempty" parquet:"integrity"`
+	IntegrityID     *int              `json:"integrity_id,omitempty" parquet:"integrity_id"`
+	Lineage         []*string         `json:"lineage,omitempty" parquet:"lineage"`
+	LoadedModules   []*string         `json:"loaded_modules,omitempty" parquet:"loaded_modules"`
+	Name            *string           `json:"name,omitempty" parquet:"name"`
 }

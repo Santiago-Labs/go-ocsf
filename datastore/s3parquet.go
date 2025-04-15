@@ -32,14 +32,20 @@ func NewS3ParquetDatastore(bucketName string, s3Client *s3.Client) Datastore {
 		s3Client: s3Client,
 	}
 	s.BaseDatastore = BaseDatastore{
-		findingIndex: make(map[string]string),
-		fileIndex:    make(map[string]int),
-		store:        s,
+		findingIndex:      make(map[string]string),
+		fileIndex:         make(map[string]int),
+		activityIndex:     make(map[string]string),
+		activityFileIndex: make(map[string]int),
+		store:             s,
 	}
 
 	ctx := context.Background()
 	if err := s.buildFindingIndex(ctx); err != nil {
 		slog.Warn("failed to build complete finding index", "error", err)
+	}
+
+	if err := s.buildActivityIndex(ctx); err != nil {
+		slog.Warn("failed to build complete activity index", "error", err)
 	}
 
 	return s
@@ -142,4 +148,99 @@ func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 		"findings", len(allFindings),
 	)
 	return nil
+}
+
+// buildActivityIndex builds the datastore's in-memory index of activity IDs to file paths.
+// It reads all Parquet files in the S3 bucket and parses them into a slice of API activities.
+func (s *s3ParquetDatastore) buildActivityIndex(ctx context.Context) error {
+	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
+		Bucket: aws.String(s.s3Bucket),
+		Prefix: aws.String(basepathActivities),
+	})
+
+	for paginator.HasMorePages() {
+		output, err := paginator.NextPage(ctx)
+		if err != nil {
+			return oops.Wrapf(err, "failed to list objects in S3")
+		}
+
+		for _, object := range output.Contents {
+			if strings.HasSuffix(*object.Key, "/") || !strings.HasSuffix(*object.Key, ".parquet") {
+				continue
+			}
+
+			if err := s.loadActivityFileIntoIndex(ctx, *object.Key); err != nil {
+				slog.Warn("error indexing parquet file", "key", *object.Key, "error", err)
+			}
+		}
+	}
+
+	slog.Info("built activity index from S3", "count", len(s.BaseDatastore.activityIndex))
+	return nil
+}
+
+func (s *s3ParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, key *string) error {
+	allActivities := activities
+	if key == nil {
+		newkey := filepath.Join(basepathActivities, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+		key = &newkey
+	} else {
+		var err error
+		allActivities, err = s.GetAPIActivitiesFromFile(ctx, *key)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from disk")
+		}
+
+		allActivities = append(allActivities, activities...)
+	}
+
+	var buf bytes.Buffer
+	writer := io.Writer(&buf)
+	if err := goParquet.Write(writer, allActivities); err != nil {
+		return oops.Wrapf(err, "failed to write activities to parquet buffer")
+	}
+
+	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket: &s.s3Bucket,
+		Key:    key,
+		Body:   bytes.NewReader(buf.Bytes()),
+	})
+	if err != nil {
+		return oops.Wrapf(err, "failed to upload Parquet to S3")
+	}
+
+	for _, activity := range allActivities {
+		s.BaseDatastore.activityIndex[*activity.Metadata.CorrelationUID] = *key
+	}
+	s.BaseDatastore.activityFileIndex[*key] = len(allActivities)
+
+	slog.Info("Wrote Parquet file to S3",
+		"bucket", s.s3Bucket,
+		"key", *key,
+		"activities", len(allActivities),
+	)
+	return nil
+}
+
+func (s *s3ParquetDatastore) GetAPIActivitiesFromFile(ctx context.Context, key string) ([]ocsf.APIActivity, error) {
+	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(s.s3Bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to get parquet file from S3")
+	}
+	defer result.Body.Close()
+
+	data, err := io.ReadAll(result.Body)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to read parquet file data")
+	}
+
+	activities, err := goParquet.Read[ocsf.APIActivity](bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to read parquet file")
+	}
+
+	return activities, nil
 }
