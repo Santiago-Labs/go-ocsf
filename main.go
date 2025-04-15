@@ -11,6 +11,7 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
+	"github.com/Santiago-Labs/go-ocsf/syncers/gcpauditlog"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -62,6 +63,10 @@ func main() {
 		if err := syncSecurityHub(ctx, storage, cfg); err != nil {
 			log.Fatalf("Failed to sync SecurityHub data: %v", err)
 		}
+	}
+
+	if err := syncGCPAuditLog(ctx, storage); err != nil {
+		log.Fatalf("Failed to sync GCPAuditLog data: %v", err)
 	}
 }
 
@@ -149,4 +154,13 @@ func syncSecurityHub(ctx context.Context, storage datastore.Datastore, cfg aws.C
 
 	securityHubSyncer := syncers.NewSecurityHubOCSFSyncer(ctx, securityHubClient, storage)
 	return securityHubSyncer.Sync(ctx)
+}
+
+func syncGCPAuditLog(ctx context.Context, storage datastore.Datastore) error {
+	gcpauditlogSyncer, err := gcpauditlog.NewGCPAuditLogSyncer(ctx, storage, os.Getenv("GCP_PROJECT_ID"))
+	if err != nil {
+		return fmt.Errorf("failed to create GCPAuditLog syncer: %v", err)
+	}
+
+	return gcpauditlogSyncer.Sync(ctx)
 }
