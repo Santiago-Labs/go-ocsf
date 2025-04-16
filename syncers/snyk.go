@@ -189,6 +189,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	var activityName string
 	var typeUID int64
 	var typeName string
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -199,17 +200,20 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		activityName = "Create"
 		typeUID = int64(classUID)*100 + int64(activityID)
 		typeName = "Vulnerability Finding: Create"
+		eventTime = createdAt
 	} else {
 		if status == "Closed" {
 			activityID = int32(3)
 			activityName = "Close"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Close"
+			eventTime = *endTime
 		} else {
 			activityID = int32(2)
 			activityName = "Update"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Update"
+			eventTime = lastSeenTime
 		}
 	}
 
@@ -223,22 +227,20 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		Version: "1.4.0",
 	}
 
-	now := time.Now()
-
 	findingInfo := ocsf.FindingInfo{
 		UID:           issue.ID,
 		Title:         issue.Attributes.Title,
 		Desc:          &issue.Attributes.Description,
 		CreatedTime:   &createdAt,
 		FirstSeenTime: &createdAt,
-		LastSeenTime:  &now,
+		LastSeenTime:  &lastSeenTime,
 		ModifiedTime:  &issue.Attributes.UpdatedAt,
 		DataSources:   []string{"snyk"},
 		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            time.Now(),
+		Time:            eventTime,
 		StartTime:       &createdAt,
 		EndTime:         endTime,
 		ActivityID:      activityID,

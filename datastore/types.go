@@ -35,8 +35,8 @@ type Datastore interface {
 	SaveAPIActivities(ctx context.Context, activities []ocsf.APIActivity) error
 
 	// WriteBatch writes a batch of vulnerability findings to a specific file in a specific format.
-	WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, path *string) error
+	WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, pathPrefix string) error
 
 	// WriteAPIActivityBatch writes a batch of API activities to a specific file in a specific format.
-	WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, path *string) error
+	WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, pathPrefix string) error
 }

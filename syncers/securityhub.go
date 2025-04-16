@@ -96,7 +96,6 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	severity, severityID := mapSecurityHubSeverity(securityHubFinding.Severity)
 	status, statusID := mapSecurityHubStatus(securityHubFinding.Workflow)
 
-	// Convert string timestamps to time.Time
 	var createdAt *time.Time
 	if securityHubFinding.CreatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.CreatedAt)
@@ -178,6 +177,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	var activityName string
 	var typeUID int64
 	var typeName string
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -189,11 +189,13 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 			activityName = "Close"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Close"
+			eventTime = *endTime
 		} else {
 			activityID = int32(1)
 			activityName = "Create"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Create"
+			eventTime = *createdAt
 		}
 	} else {
 		if status == "Closed" {
@@ -201,11 +203,18 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 			activityName = "Close"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Close"
+			eventTime = *endTime
 		} else {
 			activityID = int32(2)
 			activityName = "Update"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Update"
+
+			var err error
+			eventTime, err = time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
+			if err != nil {
+				return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
+			}
 		}
 	}
 
@@ -219,9 +228,6 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Version: "1.4.0",
 	}
 
-	now := time.Now()
-
-	// Convert string timestamps to time.Time for FindingInfo
 	var modifiedTime *time.Time
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
@@ -234,7 +240,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		UID:           *securityHubFinding.Id,
 		Title:         *securityHubFinding.Title,
 		Desc:          securityHubFinding.Description,
-		CreatedTime:   &now,
+		CreatedTime:   createdAt,
 		FirstSeenTime: createdAt,
 		LastSeenTime:  lastSeenTime,
 		ModifiedTime:  modifiedTime,
@@ -243,7 +249,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            time.Now(),
+		Time:            eventTime,
 		StartTime:       createdAt,
 		EndTime:         endTime,
 		ActivityID:      activityID,

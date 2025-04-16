@@ -166,6 +166,7 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding,
 	var activityName string
 	var typeUID int64
 	var typeName string
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -176,17 +177,20 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding,
 		activityName = "Create"
 		typeUID = int64(classUID)*100 + int64(activityID)
 		typeName = "Vulnerability Finding: Create"
+		eventTime = firstSeen
 	} else {
 		if status == "Closed" {
 			activityID = int32(3)
 			activityName = "Close"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Close"
+			eventTime = lastSeen
 		} else {
 			activityID = int32(2)
 			activityName = "Update"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Update"
+			eventTime = lastSeen
 		}
 	}
 
@@ -200,22 +204,20 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding,
 		Version: "1.1.0",
 	}
 
-	now := time.Now()
-
 	findingInfo := ocsf.FindingInfo{
 		UID:           findingID,
 		Title:         finding.Plugin.Name,
 		Desc:          &finding.Plugin.Description,
 		CreatedTime:   &firstSeen,
 		FirstSeenTime: &firstSeen,
-		LastSeenTime:  &now,
+		LastSeenTime:  &lastSeen,
 		ModifiedTime:  &lastSeen,
 		DataSources:   []string{"tenable"},
 		Types:         []string{"Vulnerability"},
 	}
 
 	ocsfFinding := ocsf.VulnerabilityFinding{
-		Time:            time.Now(),
+		Time:            eventTime,
 		StartTime:       &firstSeen,
 		EndTime:         endTime,
 		ActivityID:      activityID,

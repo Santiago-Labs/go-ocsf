@@ -163,6 +163,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 	var activityName string
 	var typeUID int64
 	var typeName string
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -174,11 +175,13 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 			activityName = "Close"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Close"
+			eventTime = *endTime
 		} else {
 			activityID = int32(1)
 			activityName = "Create"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Create"
+			eventTime = *createdAt
 		}
 	} else {
 		if status == "Closed" {
@@ -186,11 +189,17 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 			activityName = "Close"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Close"
+			eventTime = *endTime
 		} else {
 			activityID = int32(2)
 			activityName = "Update"
 			typeUID = int64(classUID)*100 + int64(activityID)
 			typeName = "Vulnerability Finding: Update"
+			if inspectorFinding.UpdatedAt != nil {
+				eventTime = *inspectorFinding.UpdatedAt
+			} else {
+				eventTime = *inspectorFinding.LastObservedAt
+			}
 		}
 	}
 
@@ -204,13 +213,11 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		Version: "1.4.0",
 	}
 
-	now := time.Now()
-
 	findingInfo := ocsf.FindingInfo{
 		UID:           *inspectorFinding.FindingArn,
 		Title:         *inspectorFinding.Title,
 		Desc:          inspectorFinding.Description,
-		CreatedTime:   &now,
+		CreatedTime:   createdAt,
 		FirstSeenTime: inspectorFinding.FirstObservedAt,
 		LastSeenTime:  inspectorFinding.LastObservedAt,
 		ModifiedTime:  inspectorFinding.UpdatedAt,
@@ -219,7 +226,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            time.Now(),
+		Time:            eventTime,
 		StartTime:       inspectorFinding.FirstObservedAt,
 		EndTime:         endTime,
 		ActivityID:      activityID,

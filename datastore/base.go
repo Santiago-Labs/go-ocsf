@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"log/slog"
+	"path/filepath"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/jmoiron/sqlx"
@@ -17,8 +18,8 @@ type BaseDatastore struct {
 
 // GetFinding returns a single finding from the datastore or ErrNotFound if the finding is not found
 func (d *BaseDatastore) GetFinding(ctx context.Context, findingID string) (*ocsf.VulnerabilityFinding, error) {
-	finding := ocsf.VulnerabilityFinding{}
-	rows, err := d.db.Queryx("SELECT * FROM vulnerability_findings WHERE uid = ?", findingID)
+	findingDTO := ocsf.VulnerabilityFindingDTO{}
+	rows, err := d.db.Queryx("SELECT * FROM vulnerability_finding WHERE finding_info.uid = ?", findingID)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to get finding")
 	}
@@ -27,37 +28,28 @@ func (d *BaseDatastore) GetFinding(ctx context.Context, findingID string) (*ocsf
 		return nil, ErrNotFound
 	}
 
-	if err := rows.StructScan(&finding); err != nil {
+	if err := rows.StructScan(&findingDTO); err != nil {
 		return nil, oops.Wrapf(err, "failed to scan finding")
 	}
 
-	return &finding, nil
+	finding, err := findingDTO.ToStruct()
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to convert struct")
+	}
+
+	return finding, nil
 }
 
 // SaveFindings saves a batch of findings to the datastore. Datastore implementations handle file formats.
 func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
-	var (
-		currentBatch     []ocsf.VulnerabilityFinding
-		currentBatchSize int
-	)
-
+	findingsByDay := make(map[string][]ocsf.VulnerabilityFinding)
 	for _, finding := range findings {
-		if currentBatchSize > maxFileSize && len(currentBatch) > 0 {
-			pathWithSpace := d.getPathWithSpace(len(currentBatch))
-			if err := d.store.WriteBatch(ctx, currentBatch, pathWithSpace); err != nil {
-				return err
-			}
-			currentBatch = []ocsf.VulnerabilityFinding{}
-			currentBatchSize = 0
-		}
-
-		currentBatch = append(currentBatch, finding)
-		currentBatchSize += avgFindingSize
+		partitionPath := d.getPartitionPath(finding)
+		findingsByDay[partitionPath] = append(findingsByDay[partitionPath], finding)
 	}
 
-	if len(currentBatch) > 0 {
-		pathWithSpace := d.getPathWithSpace(len(currentBatch))
-		if err := d.store.WriteBatch(ctx, currentBatch, pathWithSpace); err != nil {
+	for partitionPath, dayFindings := range findingsByDay {
+		if err := d.store.WriteBatch(ctx, dayFindings, partitionPath); err != nil {
 			return err
 		}
 	}
@@ -67,39 +59,15 @@ func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.Vulner
 	return nil
 }
 
-func (d *BaseDatastore) getPathWithSpace(batchSize int) *string {
-	return nil
-}
-
-func (d *BaseDatastore) getAPIActivityPathWithSpace(batchSize int) *string {
-	return nil
-}
-
 func (d *BaseDatastore) SaveAPIActivities(ctx context.Context, activities []ocsf.APIActivity) error {
-	var (
-		currentBatch     []ocsf.APIActivity
-		currentBatchSize int
-	)
-
+	activitiesByDay := make(map[string][]ocsf.APIActivity)
 	for _, activity := range activities {
-		if currentBatchSize > maxFileSize && len(currentBatch) > 0 {
-			pathWithSpace := d.getAPIActivityPathWithSpace(len(currentBatch))
-			if err := d.store.WriteAPIActivityBatch(ctx, currentBatch, pathWithSpace); err != nil {
-				return err
-			}
-			currentBatch = []ocsf.APIActivity{}
-			currentBatchSize = 0
-		}
-
-		currentBatch = append(currentBatch, activity)
-		currentBatchSize += avgFindingSize
+		partitionPath := d.getAPIActivityPartitionPath(activity)
+		activitiesByDay[partitionPath] = append(activitiesByDay[partitionPath], activity)
 	}
 
-	if len(currentBatch) > 0 {
-		pathWithSpace := d.getAPIActivityPathWithSpace(len(currentBatch))
-		if pathWithSpace != nil {
-		}
-		if err := d.store.WriteAPIActivityBatch(ctx, currentBatch, pathWithSpace); err != nil {
+	for partitionPath, dayActivities := range activitiesByDay {
+		if err := d.store.WriteAPIActivityBatch(ctx, dayActivities, partitionPath); err != nil {
 			return err
 		}
 	}
@@ -126,4 +94,21 @@ func (d *BaseDatastore) GetAPIActivity(ctx context.Context, activityID string) (
 	}
 
 	return &activity, nil
+}
+
+// getPartitionPath returns a path for a finding based on its event time
+func (d *BaseDatastore) getPartitionPath(finding ocsf.VulnerabilityFinding) string {
+	eventDay := finding.Time.Format("2006-01-02")
+	return filepath.Join(BasepathFindings, eventDay)
+}
+
+// getAPIActivityPartitionPath returns a path for an API activity based on its event time
+func (d *BaseDatastore) getAPIActivityPartitionPath(activity ocsf.APIActivity) string {
+	eventDay := activity.Time.Format("2006-01-02")
+	return filepath.Join(BasepathActivities, eventDay)
+}
+
+func filesExist(pattern string) bool {
+	files, err := filepath.Glob(pattern)
+	return err == nil && len(files) > 0
 }

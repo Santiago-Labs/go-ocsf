@@ -8,7 +8,7 @@ import (
 
 var CVEFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "cvss", Type: CVSSStruct, Nullable: true},
+	{Name: "cvss", Type: arrow.ListOf(CVSSStruct), Nullable: true},
 	{Name: "cwe", Type: CWEStruct, Nullable: true},
 	{Name: "cwe_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "cwe_url", Type: arrow.BinaryTypes.String, Nullable: true},
