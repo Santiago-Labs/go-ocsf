@@ -53,29 +53,17 @@ func (s *SecurityHubOCSFSyncer) Sync(ctx context.Context) error {
 
 		slog.Info("SecurityHub findings", "num_findings", len(securityHubFindingsOutput.Findings))
 
-		var findings []ocsf.VulnerabilityFinding
+		var findingsToSave []ocsf.VulnerabilityFinding
 		for _, securityHubFinding := range securityHubFindingsOutput.Findings {
-			existingFinding, err := s.datastore.GetFinding(ctx, *securityHubFinding.Id)
-			if err != nil && err != datastore.ErrNotFound {
-				return oops.Wrapf(err, "failed to get existing finding")
-			}
-
-			finding, err := s.ToOCSF(ctx, securityHubFinding, existingFinding)
+			finding, err := s.ToOCSF(ctx, securityHubFinding)
 			if err != nil {
 				return oops.Wrapf(err, "failed to build OCSF finding")
 			}
 
-			// Only save the finding if it is new or has changed.
-			if existingFinding == nil || existingFinding.SeverityID != finding.SeverityID ||
-				existingFinding.StatusID != nil && finding.StatusID == nil ||
-				existingFinding.StatusID == nil && finding.StatusID != nil ||
-				*existingFinding.StatusID != *finding.StatusID {
-
-				findings = append(findings, finding)
-			}
+			findingsToSave = append(findingsToSave, finding)
 		}
 
-		err = s.datastore.SaveFindings(ctx, findings)
+		err = s.datastore.SaveFindings(ctx, findingsToSave)
 		if err != nil {
 			return oops.Wrapf(err, "failed to save findings")
 		}
@@ -92,7 +80,7 @@ func (s *SecurityHubOCSFSyncer) Sync(ctx context.Context) error {
 }
 
 // ToOCSF converts a SecurityHub finding into an OCSF vulnerability finding.
-func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding types.AwsSecurityFinding, existingFinding *ocsf.VulnerabilityFinding) (ocsf.VulnerabilityFinding, error) {
+func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding types.AwsSecurityFinding) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapSecurityHubSeverity(securityHubFinding.Severity)
 	status, statusID := mapSecurityHubStatus(securityHubFinding.Workflow)
 
@@ -183,38 +171,27 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if existingFinding == nil {
-		if status == "Closed" {
-			activityID = int32(3)
-			activityName = "Close"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Close"
-			eventTime = *endTime
-		} else {
-			activityID = int32(1)
-			activityName = "Create"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Create"
-			eventTime = *createdAt
-		}
+	if securityHubFinding.UpdatedAt == securityHubFinding.CreatedAt {
+		activityID = int32(1)
+		activityName = "Create"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Create"
+		eventTime = *createdAt
+	} else if status == "Closed" {
+		activityID = int32(3)
+		activityName = "Close"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Close"
+		eventTime = *endTime
 	} else {
-		if status == "Closed" {
-			activityID = int32(3)
-			activityName = "Close"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Close"
-			eventTime = *endTime
-		} else {
-			activityID = int32(2)
-			activityName = "Update"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Update"
-
-			var err error
-			eventTime, err = time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
-			if err != nil {
-				return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
-			}
+		activityID = int32(2)
+		activityName = "Update"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Update"
+		var err error
+		eventTime, err = time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
+		if err != nil {
+			return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
 		}
 	}
 
@@ -251,6 +228,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	finding := ocsf.VulnerabilityFinding{
 		Time:            eventTime,
 		StartTime:       createdAt,
+		EventDay:        eventTime,
 		EndTime:         endTime,
 		ActivityID:      activityID,
 		ActivityName:    &activityName,

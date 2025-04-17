@@ -53,29 +53,18 @@ func (s *InspectorOCSFSyncer) Sync(ctx context.Context) error {
 
 		slog.Info("Inspector findings", "num_findings", len(inspectorFindingsOutput.Findings))
 
-		var findings []ocsf.VulnerabilityFinding
-		for _, inspectorFinding := range inspectorFindingsOutput.Findings {
-			existingFinding, err := s.datastore.GetFinding(ctx, *inspectorFinding.FindingArn)
-			if err != nil && err != datastore.ErrNotFound {
-				return oops.Wrapf(err, "failed to get existing finding")
-			}
+		var findingsToSave []ocsf.VulnerabilityFinding
 
-			finding, err := s.ToOCSF(ctx, inspectorFinding, existingFinding)
+		for _, inspectorFinding := range inspectorFindingsOutput.Findings {
+			finding, err := s.ToOCSF(ctx, inspectorFinding)
 			if err != nil {
 				return oops.Wrapf(err, "failed to build OCSF finding")
 			}
 
-			// Only save the finding if it is new or has changed.
-			if existingFinding == nil || existingFinding.SeverityID != finding.SeverityID ||
-				existingFinding.StatusID != nil && finding.StatusID == nil ||
-				existingFinding.StatusID == nil && finding.StatusID != nil ||
-				*existingFinding.StatusID != *finding.StatusID {
-
-				findings = append(findings, finding)
-			}
+			findingsToSave = append(findingsToSave, finding)
 		}
 
-		err = s.datastore.SaveFindings(ctx, findings)
+		err = s.datastore.SaveFindings(ctx, findingsToSave)
 		if err != nil {
 			return oops.Wrapf(err, "failed to save findings")
 		}
@@ -92,7 +81,7 @@ func (s *InspectorOCSFSyncer) Sync(ctx context.Context) error {
 }
 
 // ToOCSF converts a Inspector finding into an OCSF vulnerability finding.
-func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types.Finding, existingFinding *ocsf.VulnerabilityFinding) (ocsf.VulnerabilityFinding, error) {
+func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types.Finding) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapInspectorSeverity(inspectorFinding.Severity)
 	status, statusID := mapInspectorStatus(inspectorFinding.Status)
 	createdAt := inspectorFinding.FirstObservedAt
@@ -169,37 +158,27 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if existingFinding == nil {
-		if status == "Closed" {
-			activityID = int32(3)
-			activityName = "Close"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Close"
-			eventTime = *endTime
-		} else {
-			activityID = int32(1)
-			activityName = "Create"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Create"
-			eventTime = *createdAt
-		}
+	if inspectorFinding.UpdatedAt == nil || inspectorFinding.UpdatedAt == inspectorFinding.FirstObservedAt {
+		activityID = int32(1)
+		activityName = "Create"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Create"
+		eventTime = *createdAt
+	} else if status == "Closed" {
+		activityID = int32(3)
+		activityName = "Close"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Close"
+		eventTime = *endTime
 	} else {
-		if status == "Closed" {
-			activityID = int32(3)
-			activityName = "Close"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Close"
-			eventTime = *endTime
+		activityID = int32(2)
+		activityName = "Update"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Update"
+		if inspectorFinding.UpdatedAt != nil {
+			eventTime = *inspectorFinding.UpdatedAt
 		} else {
-			activityID = int32(2)
-			activityName = "Update"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Update"
-			if inspectorFinding.UpdatedAt != nil {
-				eventTime = *inspectorFinding.UpdatedAt
-			} else {
-				eventTime = *inspectorFinding.LastObservedAt
-			}
+			eventTime = *inspectorFinding.LastObservedAt
 		}
 	}
 
@@ -227,6 +206,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 
 	finding := ocsf.VulnerabilityFinding{
 		Time:            eventTime,
+		EventDay:        eventTime,
 		StartTime:       inspectorFinding.FirstObservedAt,
 		EndTime:         endTime,
 		ActivityID:      activityID,

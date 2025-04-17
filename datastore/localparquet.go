@@ -8,9 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Santiago-Labs/go-ocsf/clients/duckdb"
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
-	"github.com/apache/arrow/go/v15/arrow"
 	goParquet "github.com/parquet-go/parquet-go"
 	"github.com/samsarahq/go/oops"
 )
@@ -21,51 +19,16 @@ type localParquetDatastore struct {
 
 // NewLocalParquetDatastore creates a new local Parquet datastore.
 // It initializes an in-memory index of finding IDs to file paths.
-func NewLocalParquetDatastore() (Datastore, error) {
+func NewLocalParquetDatastore(ctx context.Context) (Datastore, error) {
 	s := &localParquetDatastore{}
-	dbClient, err := duckdb.NewLocalClient(context.Background())
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create local client")
-	}
-
-	basePatterns := map[string]string{
-		"vulnerability_finding": fmt.Sprintf("%s/*/*.parquet", BasepathFindings),
-		"api_activities":        fmt.Sprintf("%s/*/*.parquet", BasepathActivities),
-	}
-
-	fields := map[string][]arrow.Field{
-		"vulnerability_finding": ocsf.VulnerabilityFindingFields,
-		"api_activities":        ocsf.APIActivityFields,
-	}
-
-	var queries string
-	for view, pattern := range basePatterns {
-		if filesExist(pattern) {
-			queries += fmt.Sprintf(`
-				CREATE OR REPLACE VIEW %s AS
-				SELECT * FROM read_parquet(
-				'%s',
-				union_by_name=true,
-				hive_partitioning=true
-				);`,
-				view, pattern,
-			)
-		} else {
-			queries += duckdb.GenerateDuckDBNullView(view, fields[view])
-		}
-	}
-
-	_, err = dbClient.Exec(queries)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create view")
-	}
 
 	s.BaseDatastore = BaseDatastore{
-		store: s,
-		db:    dbClient,
+		store:                  s,
+		findingsTableName:      "vulnerability_finding",
+		apiActivitiesTableName: "api_activities",
 	}
 
-	if err := os.MkdirAll(Basepath, 0755); err != nil {
+	if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
@@ -98,12 +61,12 @@ func (s *localParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.
 				return oops.Wrapf(err, "failed to create directory")
 			}
 
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
 		} else {
 			return oops.Wrapf(err, "failed to check if directory exists")
 		}
 	} else {
-		files, err := filepath.Glob(filepath.Join(pathPrefix, "*.parquet"))
+		files, err := filepath.Glob(filepath.Join(pathPrefix, "*.parquet.gz"))
 		if err != nil {
 			return oops.Wrapf(err, "failed to get files from directory")
 		}
@@ -120,21 +83,20 @@ func (s *localParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.
 				fullPath = file
 			}
 		} else {
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
 		}
 	}
 
-	fmt.Println("fullPath", fullPath)
-
-	err := goParquet.WriteFile(fullPath, allFindings)
+	err := goParquet.WriteFile(fullPath, allFindings, goParquet.Compression(&goParquet.Gzip))
 	if err != nil {
 		return oops.Wrapf(err, "failed to write findings to parquet")
 	}
 
-	slog.Info("Wrote Parquet file to disk",
+	slog.Info("Wrote parquet file to disk",
 		"path", fullPath,
 		"findings", len(allFindings),
 	)
+
 	return nil
 }
 
@@ -148,12 +110,12 @@ func (s *localParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activ
 				return oops.Wrapf(err, "failed to create directory")
 			}
 
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
 		} else {
 			return oops.Wrapf(err, "failed to check if directory exists")
 		}
 	} else {
-		files, err := filepath.Glob(filepath.Join(pathPrefix, "*.parquet"))
+		files, err := filepath.Glob(filepath.Join(pathPrefix, "*.parquet.gz"))
 		if err != nil {
 			return oops.Wrapf(err, "failed to get files from directory")
 		}
@@ -170,19 +132,20 @@ func (s *localParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activ
 				fullPath = file
 			}
 		} else {
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet", time.Now().Format("20060102T150405Z")))
+			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
 		}
 	}
 
-	err := goParquet.WriteFile(fullPath, allActivities)
+	err := goParquet.WriteFile(fullPath, allActivities, goParquet.Compression(&goParquet.Gzip))
 	if err != nil {
 		return oops.Wrapf(err, "failed to write activities to parquet")
 	}
 
-	slog.Info("Wrote Parquet file to disk",
+	slog.Info("Wrote parquet file to disk",
 		"path", fullPath,
 		"activities", len(allActivities),
 	)
+
 	return nil
 }
 

@@ -53,9 +53,11 @@ func NewS3Client(ctx context.Context, bucketName string) (*sqlx.DB, error) {
 			SET home_directory='%s'; 
 			SET extension_directory='%s';
 
-			FORCE INSTALL aws FROM core_nightly;
-			FORCE INSTALL httpfs FROM core_nightly;
-			FORCE INSTALL iceberg FROM core_nightly;
+			FORCE INSTALL aws FROM core_nightly; LOAD aws;
+			FORCE INSTALL httpfs FROM core_nightly; LOAD httpfs;
+			FORCE INSTALL iceberg FROM core_nightly; LOAD iceberg;
+
+			INSTALL json; LOAD json;
 
 			CREATE SECRET (
 				TYPE s3,
@@ -106,6 +108,30 @@ func NewLocalClient(ctx context.Context) (*sqlx.DB, error) {
 	})
 
 	return db, err
+}
+
+func CreateTable(ctx context.Context, db *sqlx.DB, table string, fields []arrow.Field) error {
+	var err error
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (\n", table))
+
+	for _, field := range fields {
+		if field.Name == "event_day" {
+			sb.WriteString(fmt.Sprintf("  \"%s\" DATE,\n", field.Name))
+		} else {
+			sb.WriteString(fmt.Sprintf("  \"%s\" %s,\n", field.Name, arrowTypeToDuckDBType(field.Type)))
+		}
+	}
+
+	sb.WriteString(") PARTITION BY (event_day);\n")
+
+	_, err = db.Exec(sb.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func arrowTypeToDuckDBType(t arrow.DataType) string {

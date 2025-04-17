@@ -9,24 +9,28 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/athena"
 	"github.com/aws/aws-sdk-go-v2/service/athena/types"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 var (
 	DefaultDatabase  = "ocsf_data"
-	DefaultWorkgroup = "ocsf_workgroup"
+	DefaultWorkgroup = "primary"
 )
 
 type Client struct {
 	athenaClient *athena.Client
+	s3Client     *s3.Client
 	database     string
 	workgroup    string
 }
 
 func NewClient(cfg aws.Config) *Client {
 	athenaClient := athena.NewFromConfig(cfg)
+	s3Client := s3.NewFromConfig(cfg)
 
 	return &Client{
 		athenaClient: athenaClient,
+		s3Client:     s3Client,
 		database:     DefaultDatabase,
 		workgroup:    DefaultWorkgroup,
 	}

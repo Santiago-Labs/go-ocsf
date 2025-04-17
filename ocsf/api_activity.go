@@ -10,7 +10,6 @@ import (
 // APIActivityFields defines the Arrow fields for APIActivity.
 var APIActivityFields = []arrow.Field{
 	{Name: "event_day", Type: arrow.FixedWidthTypes.Date64, Nullable: false},
-	{Name: "filename", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "actor", Type: ActorStruct, Nullable: false},
@@ -31,7 +30,7 @@ var APIActivityFields = []arrow.Field{
 	{Name: "status_code", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_detail", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
-	{Name: "time", Type: arrow.PrimitiveTypes.Date64, Nullable: false},
+	{Name: "time", Type: arrow.FixedWidthTypes.Timestamp_s, Nullable: false},
 	{Name: "timezone_offset", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "type_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type_uid", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
@@ -51,7 +50,6 @@ var APIActivityClassname = "api_activity"
 
 type APIActivity struct {
 	EventDay       time.Time          `json:"event_day" parquet:"event_day"` // Used for partitioning
-	Filename       string             `json:"filename" parquet:"filename"`   // Used for partitioning
 	ActivityID     int                `json:"activity_id" parquet:"activity_id"`
 	ActivityName   *string            `json:"activity_name,omitempty" parquet:"activity_name"`
 	Actor          Actor              `json:"actor,omitempty" parquet:"actor"`
@@ -89,7 +87,6 @@ type APIActivity struct {
 
 type APIActivityDTO struct {
 	EventDay       time.Time `json:"event_day" parquet:"event_day"` // Used for partitioning
-	Filename       string    `json:"filename" parquet:"filename"`   // Used for partitioning
 	ActivityID     int       `json:"activity_id" parquet:"activity_id"`
 	ActivityName   *string   `json:"activity_name,omitempty" parquet:"activity_name"`
 	Actor          JSONB     `json:"actor,omitempty" parquet:"actor"`
@@ -129,7 +126,6 @@ func (dto *APIActivityDTO) ToStruct() (*APIActivity, error) {
 	var activity APIActivity
 
 	activity.EventDay = dto.EventDay
-	activity.Filename = dto.Filename
 	activity.ActivityID = dto.ActivityID
 	activity.ActivityName = dto.ActivityName
 	activity.CategoryName = dto.CategoryName

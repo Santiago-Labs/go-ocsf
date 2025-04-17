@@ -22,7 +22,6 @@ func (t *DBTime) Scan(value interface{}) error {
 		return nil
 	}
 
-	// Adjust the layout to match your actual datetime format
 	parsed, err := time.Parse(time.RFC3339, str)
 	if err != nil {
 		return err

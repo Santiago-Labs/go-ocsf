@@ -68,15 +68,6 @@ func (s *GCPAuditLogSyncer) Sync(ctx context.Context) error {
 			return fmt.Errorf("failed to build OCSF activity: %w", err)
 		}
 
-		existingActivity, err := s.datastore.GetAPIActivity(ctx, *activity.Metadata.CorrelationUID)
-		if err != nil && err != datastore.ErrNotFound {
-			return fmt.Errorf("failed to get existing activity: %w", err)
-		}
-
-		if existingActivity != nil {
-			continue
-		}
-
 		activitiesToSave = append(activitiesToSave, activity)
 
 		// Save in batches of batchSize
@@ -247,6 +238,7 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 
 		SrcEndpoint:    srcEndpoint,
 		Time:           ts,
+		EventDay:       ts,
 		TypeName:       &typeName,
 		TypeUID:        typeUID,
 		TimezoneOffset: 0,

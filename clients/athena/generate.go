@@ -18,10 +18,17 @@ func GenerateAthenaCreateTable(database, table string, fields []arrow.Field) str
 		if i == len(fields)-1 {
 			comma = ""
 		}
-		fmt.Fprintf(&sb, "  `%s` %s%s\n", field.Name, arrowTypeToAthenaType(field.Type), comma)
+
+		if field.Name == "event_day" {
+			fmt.Fprintf(&sb, "  `%s` DATE%s\n", field.Name, comma)
+		} else {
+			fmt.Fprintf(&sb, "  `%s` %s%s\n", field.Name, arrowTypeToAthenaType(field.Type), comma)
+		}
 	}
 
-	fmt.Fprintf(&sb, ")\n\nTBLPROPERTIES ('table_type'='ICEBERG');")
+	fmt.Fprintf(&sb, ")\n")
+	fmt.Fprintf(&sb, "PARTITIONED BY (event_day)\n")
+	fmt.Fprintf(&sb, "TBLPROPERTIES ('table_type'='ICEBERG');")
 
 	return sb.String()
 }
@@ -42,6 +49,8 @@ func arrowTypeToAthenaType(t arrow.DataType) string {
 		return "timestamp"
 	case arrow.BOOL:
 		return "boolean"
+	case arrow.DATE64:
+		return "date"
 	case arrow.LIST:
 		listType := t.(*arrow.ListType)
 		return fmt.Sprintf("array<%s>", arrowTypeToAthenaType(listType.Elem()))

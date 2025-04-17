@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,9 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Santiago-Labs/go-ocsf/clients/duckdb"
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
-	"github.com/apache/arrow/go/v15/arrow"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/samsarahq/go/oops"
@@ -28,56 +27,16 @@ type s3JsonDatastore struct {
 
 // NewS3JsonDatastore creates a new S3 JSON datastore.
 // It initializes an in-memory index of finding IDs to file paths.
-func NewS3JsonDatastore(bucketName string, s3Client *s3.Client) (Datastore, error) {
+func NewS3JsonDatastore(ctx context.Context, bucketName string, s3Client *s3.Client) (Datastore, error) {
 	s := &s3JsonDatastore{
 		s3Bucket: bucketName,
 		s3Client: s3Client,
 	}
 
-	dbClient, err := duckdb.NewS3Client(context.Background(), bucketName)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create S3 client")
-	}
-
-	basePatterns := map[string]string{
-		"vulnerability_finding": fmt.Sprintf("s3://%s/%s", s.s3Bucket, BasepathFindings),
-		"api_activities":        fmt.Sprintf("s3://%s/%s", s.s3Bucket, BasepathActivities),
-	}
-
-	fields := map[string][]arrow.Field{
-		"vulnerability_finding": ocsf.VulnerabilityFindingFields,
-		"api_activities":        ocsf.APIActivityFields,
-	}
-
-	var queries string
-	queries += "INSTALL json; LOAD json; "
-	for view, pattern := range basePatterns {
-		selectFields := duckdb.GenerateDuckDBSelectFields(view, pattern, fields[view])
-		columnsDict := duckdb.GenerateDuckDBColumnsDict(fields[view])
-		if filesExist(pattern) {
-			queries += fmt.Sprintf(`
-				CREATE OR REPLACE VIEW %s AS
-				%s FROM read_json_auto('%s',
-				ignore_errors=true,
-				union_by_name=true,
-				hive_partitioning=true,
-				%s
-				);`,
-				view, selectFields, pattern, columnsDict,
-			)
-		} else {
-			queries += duckdb.GenerateDuckDBNullView(view, fields[view])
-		}
-	}
-
-	_, err = dbClient.Exec(queries)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create view")
-	}
-
 	s.BaseDatastore = BaseDatastore{
-		store: s,
-		db:    dbClient,
+		store:                  s,
+		findingsTableName:      "vulnerability_finding",
+		apiActivitiesTableName: "api_activities",
 	}
 
 	return s, nil
@@ -126,11 +85,11 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 	files := resp.Contents
 	if len(files) > 0 {
 		for _, file := range files {
-			if strings.HasSuffix(*file.Key, ".json") {
+			if strings.HasSuffix(*file.Key, ".json.gz") {
 
 				fileFindings, err := s.GetFindingsFromFile(ctx, *file.Key)
 				if err != nil {
-					return oops.Wrapf(err, "failed to get existing activities from disk")
+					return oops.Wrapf(err, "failed to get existing activities from s3")
 				}
 
 				allFindings = append(allFindings, fileFindings...)
@@ -141,7 +100,7 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 	}
 
 	if fullKey == "" {
-		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
 	}
 
 	jsonData, err := json.Marshal(allFindings)
@@ -149,10 +108,23 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 		return oops.Wrapf(err, "failed to marshal findings to JSON")
 	}
 
+	var gzippedData bytes.Buffer
+	gzipWriter := gzip.NewWriter(&gzippedData)
+
+	if _, err := gzipWriter.Write(jsonData); err != nil {
+		return oops.Wrapf(err, "failed to write gzip data")
+	}
+
+	if err := gzipWriter.Close(); err != nil {
+		return oops.Wrapf(err, "failed to close gzip writer")
+	}
+
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &s.s3Bucket,
-		Key:    &fullKey,
-		Body:   bytes.NewReader(jsonData),
+		Bucket:          &s.s3Bucket,
+		Key:             &fullKey,
+		Body:            bytes.NewReader(gzippedData.Bytes()),
+		ContentType:     aws.String("application/json"),
+		ContentEncoding: aws.String("gzip"),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")
@@ -206,7 +178,7 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 	files := resp.Contents
 	if len(files) > 0 {
 		for _, file := range files {
-			if strings.HasSuffix(*file.Key, ".json") {
+			if strings.HasSuffix(*file.Key, ".json.gz") {
 				fullKey = *file.Key
 
 				fileActivities, err := s.GetAPIActivitiesFromFile(ctx, *file.Key)
@@ -220,7 +192,7 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 	}
 
 	if fullKey == "" {
-		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
 	}
 
 	jsonData, err := json.Marshal(allActivities)
@@ -228,10 +200,23 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 		return oops.Wrapf(err, "failed to marshal activities to JSON")
 	}
 
+	var gzippedData bytes.Buffer
+	gzipWriter := gzip.NewWriter(&gzippedData)
+
+	if _, err := gzipWriter.Write(jsonData); err != nil {
+		return oops.Wrapf(err, "failed to write gzip data")
+	}
+
+	if err := gzipWriter.Close(); err != nil {
+		return oops.Wrapf(err, "failed to close gzip writer")
+	}
+
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &s.s3Bucket,
-		Key:    &fullKey,
-		Body:   bytes.NewReader(jsonData),
+		Bucket:          &s.s3Bucket,
+		Key:             &fullKey,
+		Body:            bytes.NewReader(gzippedData.Bytes()),
+		ContentType:     aws.String("application/json"),
+		ContentEncoding: aws.String("gzip"),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")

@@ -41,6 +41,7 @@ func main() {
 	isParquet := flag.Bool("parquet", false, "Use parquet format")
 	isJSON := flag.Bool("json", false, "Use JSON format")
 	bucketName := flag.String("bucket-name", "", "S3 bucket name")
+	tableBucketName := flag.String("table-bucket-name", "", "Table bucket name")
 
 	// Create tables.
 	setupS3TablesOption := flag.Bool("setup-s3-tables", false, "Setup S3 tables. Only required once per bucket.")
@@ -67,20 +68,34 @@ func main() {
 	}
 
 	if *setupS3TablesOption {
-		if *bucketName == "" {
-			log.Fatal("--bucket-name is required when --setup-s3-tables is set")
+		if *tableBucketName == "" {
+			log.Fatal("--table-bucket-name is required when --setup-s3-tables is set")
 		}
 
 		s3tablesClient := s3tables.NewFromConfig(cfg)
 		athenaClient := athena.NewClient(cfg)
-		if err := setupS3Tables(ctx, *bucketName, s3tablesClient, athenaClient); err != nil {
+		if err := setupS3Tables(ctx, *tableBucketName, s3tablesClient, athenaClient); err != nil {
 			log.Fatalf("Failed to setup S3 tables: %v", err)
 		}
 	}
 
-	storage, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName)
+	storage, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName, *tableBucketName)
 	if err != nil {
 		log.Fatalf("Failed to setup storage: %v", err)
+	}
+
+	result, err := storage.GetDB().Queryx("SELECT count(*) FROM s3_tables_db.ocsf_data.vulnerability_finding;")
+	if err != nil {
+		log.Fatalf("Failed to query vulnerability_finding: %v", err)
+	}
+
+	for result.Next() {
+		var count int
+		if err := result.Scan(&count); err != nil {
+			log.Fatalf("Failed to scan count: %v", err)
+		}
+
+		log.Println("Count:", count)
 	}
 
 	if *syncSnykOption {
@@ -122,25 +137,36 @@ func main() {
 	}
 }
 
-func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName string) (datastore.Datastore, error) {
+func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, tableBucketName string) (datastore.Datastore, error) {
 	var storage datastore.Datastore
 	var s3Client *s3.Client
 	var err error
 
 	if isParquet {
-		if bucketName != "" {
+		if tableBucketName != "" {
+			cfg, err := config.LoadDefaultConfig(ctx)
+			if err != nil {
+				return nil, fmt.Errorf("error loading AWS config: %v", err)
+			}
+
+			athenaClient := athena.NewClient(cfg)
+			storage, err = datastore.NewS3TablesDatastore(ctx, tableBucketName, athenaClient)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create S3 tables datastore: %v", err)
+			}
+		} else if bucketName != "" {
 			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
 				return nil, fmt.Errorf("error loading AWS config: %v", err)
 			}
 
 			s3Client = s3.NewFromConfig(cfg)
-			storage, err = datastore.NewS3ParquetDatastore(bucketName, s3Client)
+			storage, err = datastore.NewS3ParquetDatastore(ctx, bucketName, s3Client)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create S3 parquet datastore: %v", err)
 			}
 		} else {
-			storage, err = datastore.NewLocalParquetDatastore()
+			storage, err = datastore.NewLocalParquetDatastore(ctx)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create local parquet datastore: %v", err)
 			}
@@ -153,12 +179,12 @@ func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName string
 			}
 
 			s3Client = s3.NewFromConfig(cfg)
-			storage, err = datastore.NewS3JsonDatastore(bucketName, s3Client)
+			storage, err = datastore.NewS3JsonDatastore(ctx, bucketName, s3Client)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create S3 json datastore: %v", err)
 			}
 		} else {
-			storage, err = datastore.NewLocalJsonDatastore()
+			storage, err = datastore.NewLocalJsonDatastore(ctx)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create local json datastore: %v", err)
 			}
