@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // ImageFields defines the fields for the Image Arrow schema.
@@ -18,9 +18,9 @@ var ImageClassname = "image"
 
 // Image represents image details.
 type Image struct {
-	Labels []string `json:"labels,omitempty" parquet:"labels"`
-	Name   *string  `json:"name,omitempty" parquet:"name"`
-	Path   *string  `json:"path,omitempty" parquet:"path"`
-	Tag    *string  `json:"tag,omitempty" parquet:"tag"`
-	UID    string   `json:"uid" parquet:"uid"`
+	Labels []*string `json:"labels,omitempty" parquet:"labels,list,optional"`
+	Name   *string   `json:"name,omitempty" parquet:"name,optional"`
+	Path   *string   `json:"path,omitempty" parquet:"path,optional"`
+	Tag    *string   `json:"tag,omitempty" parquet:"tag,optional"`
+	UID    string    `json:"uid" parquet:"uid"`
 }

@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // OSFields defines the Arrow fields for OS.
@@ -25,17 +25,17 @@ var OSStruct = arrow.StructOf(OSFields...)
 var OSClassname = "os"
 
 type OS struct {
-	Build         *string `json:"build,omitempty" parquet:"build"`
-	Country       *string `json:"country,omitempty" parquet:"country"`
-	CPEName       *string `json:"cpe_name,omitempty" parquet:"cpe_name"`
-	CPUBits       *int    `json:"cpu_bits,omitempty" parquet:"cpu_bits"`
-	Edition       *string `json:"edition,omitempty" parquet:"edition"`
-	KernelRelease *string `json:"kernel_release,omitempty" parquet:"kernel_release"`
-	Lang          *string `json:"lang,omitempty" parquet:"lang"`
+	Build         *string `json:"build,omitempty" parquet:"build,optional"`
+	Country       *string `json:"country,omitempty" parquet:"country,optional"`
+	CPEName       *string `json:"cpe_name,omitempty" parquet:"cpe_name,optional"`
+	CPUBits       *int    `json:"cpu_bits,omitempty" parquet:"cpu_bits,optional"`
+	Edition       *string `json:"edition,omitempty" parquet:"edition,optional"`
+	KernelRelease *string `json:"kernel_release,omitempty" parquet:"kernel_release,optional"`
+	Lang          *string `json:"lang,omitempty" parquet:"lang,optional"`
 	Name          string  `json:"name" parquet:"name"`
-	SPName        *string `json:"sp_name,omitempty" parquet:"sp_name"`
-	SPVer         *int    `json:"sp_ver,omitempty" parquet:"sp_ver"`
-	Type          *string `json:"type,omitempty" parquet:"type"`
+	SPName        *string `json:"sp_name,omitempty" parquet:"sp_name,optional"`
+	SPVer         *int    `json:"sp_ver,omitempty" parquet:"sp_ver,optional"`
+	Type          *string `json:"type,omitempty" parquet:"type,optional"`
 	TypeID        int     `json:"type_id" parquet:"type_id"`
-	Version       *string `json:"version,omitempty" parquet:"version"`
+	Version       *string `json:"version,omitempty" parquet:"version,optional"`
 }

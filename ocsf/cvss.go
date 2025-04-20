@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // CVSSFields defines the Arrow fields for the CVSS type.
@@ -19,11 +19,11 @@ var CVSSStruct = arrow.StructOf(CVSSFields...)
 var CVSSClassname = "cvss"
 
 type CVSS struct {
-	BaseScore    float64  `json:"base_score" parquet:"base_score"`
-	Depth        *string  `json:"depth,omitempty" parquet:"depth"`
-	Metrics      []Metric `json:"metrics,omitempty" parquet:"metrics"`
-	OverallScore *float64 `json:"overall_score,omitempty" parquet:"overall_score"`
-	Severity     *string  `json:"severity,omitempty" parquet:"severity"`
-	VectorString *string  `json:"vector_string,omitempty" parquet:"vector_string"`
-	Version      string   `json:"version" parquet:"version"`
+	BaseScore    float64   `json:"base_score" parquet:"base_score"`
+	Depth        *string   `json:"depth,omitempty" parquet:"depth,optional"`
+	Metrics      []*Metric `json:"metrics,omitempty" parquet:"metrics,list,optional"`
+	OverallScore *float64  `json:"overall_score,omitempty" parquet:"overall_score,optional"`
+	Severity     *string   `json:"severity,omitempty" parquet:"severity,optional"`
+	VectorString *string   `json:"vector_string,omitempty" parquet:"vector_string,optional"`
+	Version      string    `json:"version" parquet:"version"`
 }

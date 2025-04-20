@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -29,7 +30,7 @@ func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.Vulner
 
 	for partitionPath, dayFindings := range findingsByDay {
 		if err := d.store.WriteBatch(ctx, dayFindings, partitionPath); err != nil {
-			return err
+			return oops.Wrapf(err, "failed to write batch")
 		}
 	}
 
@@ -47,7 +48,7 @@ func (d *BaseDatastore) SaveAPIActivities(ctx context.Context, activities []ocsf
 
 	for partitionPath, dayActivities := range activitiesByDay {
 		if err := d.store.WriteAPIActivityBatch(ctx, dayActivities, partitionPath); err != nil {
-			return err
+			return oops.Wrapf(err, "failed to write batch")
 		}
 	}
 
@@ -58,13 +59,13 @@ func (d *BaseDatastore) SaveAPIActivities(ctx context.Context, activities []ocsf
 
 // getPartitionPath returns a path for a finding based on its event time
 func (d *BaseDatastore) getPartitionPath(finding ocsf.VulnerabilityFinding) string {
-	eventDay := finding.Time.Format("2006-01-02")
+	eventDay := time.UnixMilli(finding.Time).Format("2006-01-02")
 	return filepath.Join(BasepathFindings, fmt.Sprintf("event_day=%s", eventDay))
 }
 
 // getAPIActivityPartitionPath returns a path for an API activity based on its event time
 func (d *BaseDatastore) getAPIActivityPartitionPath(activity ocsf.APIActivity) string {
-	eventDay := activity.Time.Format("2006-01-02")
+	eventDay := time.UnixMilli(activity.Time).Format("2006-01-02")
 	return filepath.Join(BasepathActivities, fmt.Sprintf("event_day=%s", eventDay))
 }
 

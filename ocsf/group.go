@@ -1,18 +1,18 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var GroupClassname = "group"
 
 type Group struct {
-	Desc       *string  `json:"desc,omitempty" parquet:"desc"`
-	Domain     *string  `json:"domain,omitempty" parquet:"domain"`
-	Name       *string  `json:"name,omitempty" parquet:"name"`
-	Privileges []string `json:"privileges,omitempty" parquet:"privileges"`
-	Type       *string  `json:"type,omitempty" parquet:"type"`
-	UID        *string  `json:"uid,omitempty" parquet:"uid"`
+	Desc       *string   `json:"desc,omitempty" parquet:"desc,optional"`
+	Domain     *string   `json:"domain,omitempty" parquet:"domain,optional"`
+	Name       *string   `json:"name,omitempty" parquet:"name,optional"`
+	Privileges []*string `json:"privileges,omitempty" parquet:"privileges,list,optional"`
+	Type       *string   `json:"type,omitempty" parquet:"type,optional"`
+	UID        *string   `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
 // GroupFields defines the fields for the Group Arrow schema.

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"sync"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
@@ -16,44 +15,26 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/parquet-go/parquet-go"
 	"github.com/samsarahq/go/oops"
 
-	_ "github.com/apache/iceberg-go/catalog/glue"
+	_ "github.com/apache/iceberg-go/catalog/rest"
 )
-
-var (
-	onceFindingsSchema sync.Once
-	findingsSchema     *arrow.Schema
-
-	onceActivitiesSchema sync.Once
-	activitiesSchema     *arrow.Schema
-)
-
-func initFindingsSchema() {
-	onceFindingsSchema.Do(initFindingsSchema)
-}
-
-func initActivitiesSchema() {
-	onceActivitiesSchema.Do(initActivitiesSchema)
-}
 
 type s3TablesDatastore struct {
 	s3Bucket           string
 	apiActivitiesTable *table.Table
 	findingsTable      *table.Table
 
+	findingsTableSchema   *parquet.Schema
+	activitiesTableSchema *parquet.Schema
+
 	BaseDatastore
 }
 
 // NewS3TablesDatastore creates a new S3 Tables datastore.
 // It initializes an in-memory index of finding IDs to file paths.
-func NewS3TablesDatastore(ctx context.Context, bucketName string) (Datastore, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to load config")
-	}
-	s3Client := s3.NewFromConfig(cfg)
-
+func NewS3TablesDatastore(ctx context.Context, bucketName string, s3Client *s3.Client) (Datastore, error) {
 	bucketRegion, err := s3Client.GetBucketLocation(ctx, &s3.GetBucketLocationInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -61,33 +42,72 @@ func NewS3TablesDatastore(ctx context.Context, bucketName string) (Datastore, er
 		return nil, oops.Wrapf(err, "failed to get bucket region")
 	}
 
-	props := iceberg.Properties{
-		"type":         "glue",
-		"glue.region":  string(bucketRegion.LocationConstraint),
-		"glue.catalog": fmt.Sprintf("s3tablescatalog/%s", bucketName),
+	region := string(bucketRegion.LocationConstraint)
+	if region == "" {
+		region = "us-east-1"
 	}
 
-	cat, err := catalog.Load(ctx, "glue", props)
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	creds, err := cfg.Credentials.Retrieve(ctx)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to fetch credentials")
+	}
+
+	props := iceberg.Properties{
+		"type":                "rest",
+		"warehouse":           fmt.Sprintf("arn:aws:s3tables:%s:%s:bucket/%s", region, creds.AccountID, bucketName),
+		"uri":                 fmt.Sprintf("https://s3tables.%s.amazonaws.com/iceberg", region),
+		"rest.sigv4-enabled":  "true",
+		"rest.signing-name":   "s3tables",
+		"rest.signing-region": region,
+	}
+
+	cat, err := catalog.Load(ctx, "rest", props)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to create catalog")
 	}
 
-	findingsIdent := table.Identifier([]string{"ocsf_data", "vulnerability_finding"})
-	findingsTable, err := cat.LoadTable(ctx, findingsIdent, props)
+	findingIdent := table.Identifier([]string{"ocsf_data", "vulnerability_finding"})
+	// err = createIcebergTable(ctx, cat, ocsf.VulnerabilityFindingSchema, findingIdent)
+	// if err != nil {
+	// 	return nil, oops.Wrapf(err, "failed to create table")
+	// }
+
+	findingsTable, err := cat.LoadTable(ctx, findingIdent, props)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to load table")
 	}
 
-	apiActivitiesIdent := table.Identifier([]string{"ocsf_data", "api_activities"})
-	apiActivitiesTable, err := cat.LoadTable(ctx, apiActivitiesIdent, props)
+	patchedfindingsSchema, err := patchParquetSchema(*findingsTable, parquet.SchemaOf(new(ocsf.VulnerabilityFinding)), "VulnerabilityFinding")
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to patch parquet schema")
+	}
+
+	activityIdent := table.Identifier([]string{"ocsf_data", "api_activity"})
+	// err = createIcebergTable(ctx, cat, ocsf.APIActivitySchema, activityIdent)
+	// if err != nil {
+	// 	return nil, oops.Wrapf(err, "failed to create table")
+	// }
+	activitiesTable, err := cat.LoadTable(ctx, activityIdent, props)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to load table")
+	}
+
+	patchedActivitiesSchema, err := patchParquetSchema(*activitiesTable, parquet.SchemaOf(new(ocsf.APIActivity)), "APIActivity")
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to patch parquet schema")
 	}
 
 	s := &s3TablesDatastore{
-		s3Bucket:           bucketName,
-		apiActivitiesTable: apiActivitiesTable,
-		findingsTable:      findingsTable,
+		s3Bucket:              bucketName,
+		apiActivitiesTable:    activitiesTable,
+		findingsTable:         findingsTable,
+		findingsTableSchema:   patchedfindingsSchema,
+		activitiesTableSchema: patchedActivitiesSchema,
 	}
 
 	s.BaseDatastore = BaseDatastore{
@@ -97,69 +117,143 @@ func NewS3TablesDatastore(ctx context.Context, bucketName string) (Datastore, er
 	return s, nil
 }
 
+func patchParquetSchema(icebergTable table.Table, parquetSchema *parquet.Schema, tableName string) (*parquet.Schema, error) {
+	icebergSchema := buildParquetSchemaFromIceberg(icebergTable)
+
+	patchedRoot, err := applyFieldIDs(icebergSchema, parquetSchema)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to apply field IDs")
+	}
+
+	patchedSchema := parquet.NewSchema(tableName, patchedRoot)
+
+	return patchedSchema, nil
+}
+
+func createIcebergTable(ctx context.Context, cat catalog.Catalog, arrowSchema *arrow.Schema, tableName table.Identifier) error {
+	iceSchema, err := ArrowSchemaToIceberg(arrowSchema)
+	if err != nil {
+		return oops.Wrapf(err, "failed to create iceberg schema")
+	}
+
+	options := []catalog.CreateTableOpt{
+		catalog.WithProperties(map[string]string{
+			"type": "iceberg",
+		}),
+	}
+
+	_, err = cat.CreateTable(ctx, tableName, iceSchema, options...)
+	if err != nil {
+		return oops.Wrapf(err, "failed to create table")
+	}
+
+	return nil
+}
+
+// Note: iceberg-go does not support writing to tables with partition specs yet.
+func buildPartitionSpec(s *iceberg.Schema) (*iceberg.PartitionSpec, error) {
+	col, ok := s.FindFieldByName("event_day")
+	if !ok {
+		return nil, fmt.Errorf(`field "event_day" not found in schema`)
+	}
+
+	const specFieldID = 1000
+
+	spec := iceberg.NewPartitionSpec(
+		iceberg.PartitionField{
+			SourceID:  col.ID,
+			FieldID:   specFieldID,
+			Name:      "event_day",
+			Transform: iceberg.IdentityTransform{},
+		},
+	)
+	return &spec, nil
+}
+
 // WriteBatch creates a new Parquet file for storing vulnerability findings.
 // It writes the findings to the specified file path and updates the datastore's in-memory index.
-func (s *s3TablesDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, keyPrefix string) error {
-	onceFindingsSchema.Do(initFindingsSchema)
+func (s *s3TablesDatastore) WriteBatch(ctx context.Context,
+	findings []ocsf.VulnerabilityFinding, keyPrefix string) error {
 
-	mem := memory.NewGoAllocator()
-	rb := array.NewRecordBuilder(mem, findingsSchema)
-	defer rb.Release()
-
-	for _, row := range findings {
-		if err := buildRecord(rb, row); err != nil {
-			return err
-		}
+	rec, err := SliceToRecordBatch(findings, ocsf.VulnerabilityFindingSchema)
+	if err != nil {
+		return oops.Wrapf(err, "failed to create record batch")
 	}
-	rec := rb.NewRecord()
+	rec, err = PurgeAllNullOptionalColumns(rec)
+	if err != nil {
+		return oops.Wrapf(err, "failed to purge optional columns")
+	}
 	defer rec.Release()
 
-	tbl := array.NewTableFromRecords(findingsSchema, []arrow.Record{rec})
+	annot, err := attachFieldIDs(rec.Schema(), s.findingsTable.Schema())
+	if err != nil {
+		return oops.Wrapf(err, "failed to attach field IDs")
+	}
+
+	cols := rec.Columns()
+	for _, col := range cols {
+		col.Retain()
+	}
+	newRec := array.NewRecord(annot, cols, rec.NumRows())
+	defer newRec.Release()
+
+	columns := make([]arrow.Column, newRec.NumCols())
+	for i := 0; i < int(newRec.NumCols()); i++ {
+		arr := newRec.Column(i)
+		arr.Retain()
+
+		chunked := arrow.NewChunked(arr.DataType(), []arrow.Array{arr})
+
+		columns[i] = *arrow.NewColumn(
+			annot.Field(i),
+			chunked,
+		)
+	}
+
+	tbl := array.NewTable(annot, columns, newRec.NumRows())
 	defer tbl.Release()
 
 	txn := s.findingsTable.NewTransaction()
 	if err := txn.AppendTable(ctx, tbl, 1024, s.findingsTable.Properties()); err != nil {
-		return err
+		return oops.Wrapf(err, "failed to append table")
 	}
-	newTbl, err := txn.Commit(ctx)
+	updated, err := txn.Commit(ctx)
 	if err != nil {
-		return err
+		return oops.Wrapf(err, "failed to commit")
 	}
-	s.findingsTable = newTbl
-	slog.Info("Inserted findings using Athena",
+	s.findingsTable = updated
+
+	slog.Info("inserted findings",
 		"bucket", s.s3Bucket,
-		"findings", len(findings),
+		"rows", len(findings),
 	)
 	return nil
 }
 
 func (s *s3TablesDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, keyPrefix string) error {
-
-	onceActivitiesSchema.Do(initActivitiesSchema)
+	parquetData, err := serializeActivitiesToParquet(activities, s.activitiesTableSchema)
+	if err != nil {
+		return oops.Wrapf(err, "failed to serialize activities to parquet")
+	}
 
 	mem := memory.NewGoAllocator()
-	rb := array.NewRecordBuilder(mem, activitiesSchema)
-	defer rb.Release()
-
-	for _, row := range activities {
-		if err := buildRecord(rb, row); err != nil {
-			return err
-		}
+	arrowTable, err := parquetBytesToArrowTable(parquetData, mem)
+	if err != nil {
+		return oops.Wrapf(err, "failed to serialize activities to parquet")
 	}
-	rec := rb.NewRecord()
-	defer rec.Release()
-
-	tbl := array.NewTableFromRecords(activitiesSchema, []arrow.Record{rec})
-	defer tbl.Release()
+	defer arrowTable.Release()
 
 	txn := s.apiActivitiesTable.NewTransaction()
-	if err := txn.AppendTable(ctx, tbl, 1024, s.apiActivitiesTable.Properties()); err != nil {
-		return err
+
+	if err := txn.AppendTable(ctx, arrowTable, 1024, s.apiActivitiesTable.Properties()); err != nil {
+		return oops.Wrapf(err, "failed to append activities to table")
 	}
+
 	newTbl, err := txn.Commit(ctx)
 	if err != nil {
-		return err
+		return oops.Wrapf(err, "failed to commit activities")
 	}
+
 	s.apiActivitiesTable = newTbl
 
 	slog.Info("Inserted activities using Athena",

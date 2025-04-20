@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/samsarahq/go/oops"
 )
 
@@ -82,26 +82,27 @@ func (s *SnykOCSFSyncer) Sync(ctx context.Context) error {
 func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *snyk.Project) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapSnykSeverity(issue.Attributes.EffectiveSeverityLevel)
 	status, statusID := mapSnykStatus(issue.Attributes.Status)
-	createdAt := issue.Attributes.CreatedAt
-	var endTime *time.Time
+	createdAt := issue.Attributes.CreatedAt.UnixMilli()
+	updatedAt := issue.Attributes.UpdatedAt.UnixMilli()
+	var endTime *int64
 	if status == "Closed" {
-		updatedAt := issue.Attributes.UpdatedAt
-		endTime = &updatedAt
+		endTimeUnix := updatedAt
+		endTime = &endTimeUnix
 	}
 
-	var lastSeenTime time.Time
+	var lastSeenTime int64
 	if status == "Open" {
-		lastSeenTime = issue.Attributes.UpdatedAt
+		lastSeenTime = issue.Attributes.UpdatedAt.UnixMilli()
 	} else {
 		// This technically isn't correct because its when the issue was closed,
 		// but we don't have a way to know when the issue was last seen.
-		lastSeenTime = issue.Attributes.UpdatedAt
+		lastSeenTime = issue.Attributes.UpdatedAt.UnixMilli()
 	}
 
 	projectName := project.Attributes.Name
 	vendorName := "Snyk"
 
-	var vulnerabilities []ocsf.VulnerabilityDetails
+	var vulnerabilities []*ocsf.VulnerabilityDetails
 	exploitAvailable := issue.Attributes.ExploitDetails != nil
 
 	var fixAvailable bool
@@ -125,7 +126,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	issueURL := fmt.Sprintf("https://app.snyk.io/org/%s/project/%s#issue-%s", s.org.Attributes.Slug, project.ID, issue.Attributes.Key)
 	cwe := snykIssueCWE(issue)
 	if len(issue.Attributes.Problems) == 0 {
-		vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
+		vulnerabilities = append(vulnerabilities, &ocsf.VulnerabilityDetails{
 			UID:                &issue.ID,
 			CWE:                cwe,
 			Desc:               &issue.Attributes.Description,
@@ -139,7 +140,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 			AffectedCode:       snykAffectedCode(issue, project),
 			AffectedPackages:   snykAffectedPackages(issue),
 			Remediation:        remediation,
-			References:         []string{issueURL},
+			References:         []*string{&issueURL},
 		})
 	} else {
 		for _, problem := range issue.Attributes.Problems {
@@ -148,7 +149,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				reference = *problem.URL
 			}
 
-			vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
+			vulnerabilities = append(vulnerabilities, &ocsf.VulnerabilityDetails{
 				UID:                &problem.ID,
 				CVE:                snykProblemToCVE(problem),
 				CWE:                cwe,
@@ -163,7 +164,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				LastSeenTime:       &lastSeenTime,
 				VendorName:         &vendorName,
 				Remediation:        remediation,
-				References:         []string{reference},
+				References:         []*string{&reference},
 			})
 		}
 	}
@@ -179,13 +180,13 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	var activityName string
 	var typeUID int64
 	var typeName string
-	var eventTime time.Time
+	var eventTime int64
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if createdAt == issue.Attributes.UpdatedAt {
+	if createdAt == issue.Attributes.UpdatedAt.UnixMilli() {
 		activityID = int32(1)
 		activityName = "Create"
 		typeUID = int64(classUID)*100 + int64(activityID)
@@ -222,14 +223,14 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		CreatedTime:   &createdAt,
 		FirstSeenTime: &createdAt,
 		LastSeenTime:  &lastSeenTime,
-		ModifiedTime:  &issue.Attributes.UpdatedAt,
-		DataSources:   []string{"snyk"},
-		Types:         []string{"Vulnerability"},
+		ModifiedTime:  &updatedAt,
+		DataSources:   []*string{aws.String("snyk")},
+		Types:         []*string{aws.String("Vulnerability")},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
 		Time:            eventTime,
-		EventDay:        eventTime,
+		EventDay:        int32(eventTime / 86400000),
 		StartTime:       &createdAt,
 		EndTime:         endTime,
 		ActivityID:      activityID,
@@ -240,7 +241,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		ClassName:       &className,
 		Message:         &issue.Attributes.Description,
 		Metadata:        metadata,
-		Resources:       []ocsf.ResourceDetails{resource},
+		Resources:       []*ocsf.ResourceDetails{&resource},
 		Status:          &status,
 		StatusID:        &statusID,
 		TypeUID:         typeUID,
@@ -287,8 +288,8 @@ func snykProblemToCVE(problem snyk.Problem) *ocsf.CVE {
 	if problem.Source == "NVD" {
 		return &ocsf.CVE{
 			UID: problem.ID,
-			References: []string{
-				*problem.URL,
+			References: []*string{
+				problem.URL,
 			},
 		}
 	}
@@ -307,8 +308,8 @@ func snykIssueCWE(issue snyk.Issue) *ocsf.CWE {
 	return nil
 }
 
-func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []ocsf.AffectedCode {
-	var affectedCode []ocsf.AffectedCode
+func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedCode {
+	var affectedCode []*ocsf.AffectedCode
 	for _, coordinate := range issue.Attributes.Coordinates {
 		for _, representation := range coordinate.Representations {
 			fileName := project.Attributes.TargetFile
@@ -330,7 +331,7 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []ocsf.AffectedCo
 				Path: fileName,
 			}
 
-			affectedCode = append(affectedCode, ocsf.AffectedCode{
+			affectedCode = append(affectedCode, &ocsf.AffectedCode{
 				File:      fileObj,
 				StartLine: lineNumber,
 				EndLine:   endLine,
@@ -341,15 +342,15 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []ocsf.AffectedCo
 	return affectedCode
 }
 
-func snykAffectedPackages(issue snyk.Issue) []ocsf.AffectedSoftwarePackage {
-	var affectedPackage []ocsf.AffectedSoftwarePackage
+func snykAffectedPackages(issue snyk.Issue) []*ocsf.AffectedSoftwarePackage {
+	var affectedPackage []*ocsf.AffectedSoftwarePackage
 	for _, coordinate := range issue.Attributes.Coordinates {
 		for _, representation := range coordinate.Representations {
 			if representation.Dependency == nil {
 				continue
 			}
 
-			affectedPackage = append(affectedPackage, ocsf.AffectedSoftwarePackage{
+			affectedPackage = append(affectedPackage, &ocsf.AffectedSoftwarePackage{
 				Name:    representation.Dependency.PackageName,
 				Version: representation.Dependency.PackageVersion,
 			})

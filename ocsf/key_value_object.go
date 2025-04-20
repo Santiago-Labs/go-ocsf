@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // KeyValueObjectFields defines the Arrow fields for KeyValueObject.
@@ -15,7 +15,7 @@ var KeyValueObjectStruct = arrow.StructOf(KeyValueObjectFields...)
 var KeyValueObjectClassname = "key_value_object"
 
 type KeyValueObject struct {
-	Name   string   `json:"name" parquet:"name"`
-	Value  *string  `json:"value,omitempty" parquet:"value"`
-	Values []string `json:"values,omitempty" parquet:"values"`
+	Name   string    `json:"name" parquet:"name"`
+	Value  *string   `json:"value,omitempty" parquet:"value,optional"`
+	Values []*string `json:"values,omitempty" parquet:"values,list,optional"`
 }

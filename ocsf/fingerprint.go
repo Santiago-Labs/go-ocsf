@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // FingerprintFields defines the Arrow fields for Fingerprint.
@@ -15,7 +15,7 @@ var FingerprintStruct = arrow.StructOf(FingerprintFields...)
 var FingerprintClassname = "fingerprint"
 
 type Fingerprint struct {
-	Algorithm   *string `json:"algorithm,omitempty" parquet:"algorithm"`
+	Algorithm   *string `json:"algorithm,omitempty" parquet:"algorithm,optional"`
 	AlgorithmID int32   `json:"algorithm_id" parquet:"algorithm_id"`
 	Value       string  `json:"value" parquet:"value"`
 }

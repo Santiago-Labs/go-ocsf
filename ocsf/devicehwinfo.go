@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var DeviceHWInfoFields = []arrow.Field{
@@ -25,17 +25,17 @@ var DeviceHWInfoClassname = "device_hw_info"
 
 // DeviceHWInfo contains hardware information.
 type DeviceHWInfo struct {
-	BiosDate         *string       `json:"bios_date,omitempty" parquet:"bios_date"`
-	BiosManufacturer *string       `json:"bios_manufacturer,omitempty" parquet:"bios_manufacturer"`
-	BiosVer          *string       `json:"bios_ver,omitempty" parquet:"bios_ver"`
-	Chassis          *string       `json:"chassis,omitempty" parquet:"chassis"`
-	CPUBits          *int          `json:"cpu_bits,omitempty" parquet:"cpu_bits"`
-	CPUCores         *int          `json:"cpu_cores,omitempty" parquet:"cpu_cores"`
-	CPUCount         *int          `json:"cpu_count,omitempty" parquet:"cpu_count"`
-	CPUSpeed         *int          `json:"cpu_speed,omitempty" parquet:"cpu_speed"`
-	CPUType          *string       `json:"cpu_type,omitempty" parquet:"cpu_type"`
-	DesktopDisplay   *Display      `json:"desktop_display,omitempty" parquet:"desktop_display"`
-	KeyboardInfo     *KeyboardInfo `json:"keyboard_info,omitempty" parquet:"keyboard_info"`
-	RamSize          *int          `json:"ram_size,omitempty" parquet:"ram_size"`
-	SerialNumber     *string       `json:"serial_number,omitempty" parquet:"serial_number"`
+	BiosDate         *string       `json:"bios_date,omitempty" parquet:"bios_date,optional"`
+	BiosManufacturer *string       `json:"bios_manufacturer,omitempty" parquet:"bios_manufacturer,optional"`
+	BiosVer          *string       `json:"bios_ver,omitempty" parquet:"bios_ver,optional"`
+	Chassis          *string       `json:"chassis,omitempty" parquet:"chassis,optional"`
+	CPUBits          *int          `json:"cpu_bits,omitempty" parquet:"cpu_bits,optional"`
+	CPUCores         *int          `json:"cpu_cores,omitempty" parquet:"cpu_cores,optional"`
+	CPUCount         *int          `json:"cpu_count,omitempty" parquet:"cpu_count,optional"`
+	CPUSpeed         *int          `json:"cpu_speed,omitempty" parquet:"cpu_speed,optional"`
+	CPUType          *string       `json:"cpu_type,omitempty" parquet:"cpu_type,optional"`
+	DesktopDisplay   *Display      `json:"desktop_display,omitempty" parquet:"desktop_display,optional"`
+	KeyboardInfo     *KeyboardInfo `json:"keyboard_info,omitempty" parquet:"keyboard_info,optional"`
+	RamSize          *int          `json:"ram_size,omitempty" parquet:"ram_size,optional"`
+	SerialNumber     *string       `json:"serial_number,omitempty" parquet:"serial_number,optional"`
 }

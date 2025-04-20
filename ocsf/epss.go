@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var EPSSFields = []arrow.Field{
@@ -16,9 +16,9 @@ var EPSSStruct = arrow.StructOf(EPSSFields...)
 var EPSSClassname = "epss"
 
 type EPSS struct {
-	CreatedTime   *int     `json:"created_time,omitempty" parquet:"created_time"`
-	CreatedTimeDt *string  `json:"created_time_dt,omitempty" parquet:"created_time_dt"`
-	Percentile    *float64 `json:"percentile,omitempty" parquet:"percentile"`
+	CreatedTime   *int     `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTimeDt *string  `json:"created_time_dt,omitempty" parquet:"created_time_dt,optional"`
+	Percentile    *float64 `json:"percentile,omitempty" parquet:"percentile,optional"`
 	Score         string   `json:"score" parquet:"score"`
-	Version       *string  `json:"version,omitempty" parquet:"version"`
+	Version       *string  `json:"version,omitempty" parquet:"version,optional"`
 }

@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log/slog"
 	"path/filepath"
 	"strings"
@@ -43,26 +42,26 @@ func NewS3JsonDatastore(ctx context.Context, bucketName string, s3Client *s3.Cli
 }
 
 // GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
-// It reads the JSON file and parses it into a slice of vulnerability findings.
+// It reads the gzipped JSON file and parses it into a slice of vulnerability findings.
 func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) ([]ocsf.VulnerabilityFinding, error) {
 	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(s.s3Bucket),
 		Key:    aws.String(key),
 	})
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get JSON file from S3")
+		return nil, oops.Wrapf(err, "failed to get gzipped JSON file from S3")
 	}
 	defer result.Body.Close()
 
-	data, err := io.ReadAll(result.Body)
+	gzipReader, err := gzip.NewReader(result.Body)
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to read JSON file data")
+		return nil, oops.Wrapf(err, "failed to create gzip reader")
 	}
+	defer gzipReader.Close()
 
 	var findings []ocsf.VulnerabilityFinding
-
-	if err := json.Unmarshal(data, &findings); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse JSON file")
+	if err := json.NewDecoder(gzipReader).Decode(&findings); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse gzipped JSON file")
 	}
 
 	return findings, nil
@@ -145,19 +144,19 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 		Key:    aws.String(key),
 	})
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get JSON file from S3")
+		return nil, oops.Wrapf(err, "failed to get gzipped JSON file from S3")
 	}
 	defer result.Body.Close()
 
-	data, err := io.ReadAll(result.Body)
+	gzipReader, err := gzip.NewReader(result.Body)
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to read JSON file data")
+		return nil, oops.Wrapf(err, "failed to create gzip reader")
 	}
+	defer gzipReader.Close()
 
 	var activities []ocsf.APIActivity
-
-	if err := json.Unmarshal(data, &activities); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse JSON file")
+	if err := json.NewDecoder(gzipReader).Decode(&activities); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse gzipped JSON file")
 	}
 
 	return activities, nil

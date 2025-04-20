@@ -7,22 +7,15 @@ toolchain go1.24.2
 require (
 	cloud.google.com/go/logging v1.13.0
 	github.com/apache/arrow-go/v18 v18.2.1-0.20250325140533-276892c275de
-	github.com/apache/arrow/go/v15 v15.0.2
-	github.com/apache/iceberg-go v0.2.1-0.20250415201541-bc8f0c41c62e
+	github.com/apache/iceberg-go v0.2.1-0.20250420133620-1dbffabc82f2
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
-	github.com/aws/aws-sdk-go-v2/service/athena v1.50.2
-	github.com/aws/aws-sdk-go-v2/service/glue v1.109.1
-	github.com/aws/aws-sdk-go-v2/service/iam v1.41.1
 	github.com/aws/aws-sdk-go-v2/service/inspector2 v1.36.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.2
-	github.com/aws/aws-sdk-go-v2/service/s3tables v1.2.2
 	github.com/aws/aws-sdk-go-v2/service/securityhub v1.57.0
-	github.com/jmoiron/sqlx v1.4.0
-	github.com/marcboeker/go-duckdb/v2 v2.1.0
 	github.com/parquet-go/parquet-go v0.25.0
 	github.com/samsarahq/go/oops v0.0.0-20220211150445-4b291d6feac4
-	google.golang.org/api v0.228.0
+	google.golang.org/api v0.229.0
 	google.golang.org/genproto v0.0.0-20250324211829-b45e905df463
 	google.golang.org/genproto/googleapis/api v0.0.0-20250324211829-b45e905df463
 )
@@ -33,7 +26,7 @@ require (
 	atomicgo.dev/schedule v0.1.0 // indirect
 	cel.dev/expr v0.22.1 // indirect
 	cloud.google.com/go v0.120.0 // indirect
-	cloud.google.com/go/auth v0.15.0 // indirect
+	cloud.google.com/go/auth v0.16.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	cloud.google.com/go/iam v1.4.2 // indirect
@@ -76,12 +69,6 @@ require (
 	github.com/containerd/console v1.0.4 // indirect
 	github.com/creasty/defaults v1.8.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/duckdb/duckdb-go-bindings v0.1.13 // indirect
-	github.com/duckdb/duckdb-go-bindings/darwin-amd64 v0.1.8 // indirect
-	github.com/duckdb/duckdb-go-bindings/darwin-arm64 v0.1.8 // indirect
-	github.com/duckdb/duckdb-go-bindings/linux-amd64 v0.1.8 // indirect
-	github.com/duckdb/duckdb-go-bindings/linux-arm64 v0.1.8 // indirect
-	github.com/duckdb/duckdb-go-bindings/windows-amd64 v0.1.8 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -108,8 +95,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
-	github.com/marcboeker/go-duckdb/arrowmapping v0.0.6 // indirect
-	github.com/marcboeker/go-duckdb/mapping v0.0.6 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/minio/asm2plan9s v0.0.0-20200509001527-cdd76441f9d8 // indirect
 	github.com/minio/c2goasm v0.0.0-20190812172519-36a3d3bbc4f3 // indirect
@@ -145,7 +130,7 @@ require (
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
-	golang.org/x/oauth2 v0.28.0 // indirect
+	golang.org/x/oauth2 v0.29.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/term v0.31.0 // indirect
@@ -153,8 +138,8 @@ require (
 	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.31.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
-	google.golang.org/grpc v1.71.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250414145226-207652e42e2e // indirect
+	google.golang.org/grpc v1.71.1 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

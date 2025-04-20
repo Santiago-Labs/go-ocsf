@@ -1,9 +1,7 @@
 package ocsf
 
 import (
-	"time"
-
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // SCIMFields defines the Arrow fields for SCIM.
@@ -34,24 +32,24 @@ var SCIMStruct = arrow.StructOf(SCIMFields...)
 var SCIMClassname = "scim"
 
 type SCIM struct {
-	AuthProtocol               *string    `json:"auth_protocol,omitempty" parquet:"auth_protocol"`
-	AuthProtocolID             *int32     `json:"auth_protocol_id,omitempty" parquet:"auth_protocol_id"`
-	CreatedTime                *time.Time `json:"created_time,omitempty" parquet:"created_time"`
-	ErrorMessage               *string    `json:"error_message,omitempty" parquet:"error_message"`
-	IsGroupProvisioningEnabled *bool      `json:"is_group_provisioning_enabled,omitempty" parquet:"is_group_provisioning_enabled"`
-	IsUserProvisioningEnabled  *bool      `json:"is_user_provisioning_enabled,omitempty" parquet:"is_user_provisioning_enabled"`
-	LastRunTime                *time.Time `json:"last_run_time,omitempty" parquet:"last_run_time"`
-	ModifiedTime               *time.Time `json:"modified_time,omitempty" parquet:"modified_time"`
-	Name                       *string    `json:"name,omitempty" parquet:"name"`
-	ProtocolName               *string    `json:"protocol_name,omitempty" parquet:"protocol_name"`
-	RateLimit                  *int32     `json:"rate_limit,omitempty" parquet:"rate_limit"`
-	SCIMGroupSchema            *string    `json:"scim_group_schema,omitempty" parquet:"scim_group_schema"`
-	SCIMUserSchema             *string    `json:"scim_user_schema,omitempty" parquet:"scim_user_schema"`
-	State                      *string    `json:"state,omitempty" parquet:"state"`
-	StateID                    *int32     `json:"state_id,omitempty" parquet:"state_id"`
-	UID                        *string    `json:"uid,omitempty" parquet:"uid"`
-	UIDAlt                     *string    `json:"uid_alt,omitempty" parquet:"uid_alt"`
-	URLString                  *string    `json:"url_string,omitempty" parquet:"url_string"`
-	VendorName                 *string    `json:"vendor_name,omitempty" parquet:"vendor_name"`
-	Version                    *string    `json:"version,omitempty" parquet:"version"`
+	AuthProtocol               *string `json:"auth_protocol,omitempty" parquet:"auth_protocol,optional"`
+	AuthProtocolID             *int32  `json:"auth_protocol_id,omitempty" parquet:"auth_protocol_id,optional"`
+	CreatedTime                *int64  `json:"created_time,omitempty" parquet:"created_time,optional"`
+	ErrorMessage               *string `json:"error_message,omitempty" parquet:"error_message,optional"`
+	IsGroupProvisioningEnabled *bool   `json:"is_group_provisioning_enabled,omitempty" parquet:"is_group_provisioning_enabled,optional"`
+	IsUserProvisioningEnabled  *bool   `json:"is_user_provisioning_enabled,omitempty" parquet:"is_user_provisioning_enabled,optional"`
+	LastRunTime                *int64  `json:"last_run_time,omitempty" parquet:"last_run_time,optional"`
+	ModifiedTime               *int64  `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	Name                       *string `json:"name,omitempty" parquet:"name,optional"`
+	ProtocolName               *string `json:"protocol_name,omitempty" parquet:"protocol_name,optional"`
+	RateLimit                  *int32  `json:"rate_limit,omitempty" parquet:"rate_limit,optional"`
+	SCIMGroupSchema            *string `json:"scim_group_schema,omitempty" parquet:"scim_group_schema,optional"`
+	SCIMUserSchema             *string `json:"scim_user_schema,omitempty" parquet:"scim_user_schema,optional"`
+	State                      *string `json:"state,omitempty" parquet:"state,optional"`
+	StateID                    *int32  `json:"state_id,omitempty" parquet:"state_id,optional"`
+	UID                        *string `json:"uid,omitempty" parquet:"uid,optional"`
+	UIDAlt                     *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
+	URLString                  *string `json:"url_string,omitempty" parquet:"url_string,optional"`
+	VendorName                 *string `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`
+	Version                    *string `json:"version,omitempty" parquet:"version,optional"`
 }

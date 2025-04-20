@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var EnrichmentFields = []arrow.Field{
@@ -19,7 +19,7 @@ var EnrichmentClassname = "enrichment"
 type Enrichment struct {
 	Data     string  `json:"data" parquet:"data"` // JSON string
 	Name     string  `json:"name" parquet:"name"` // JSON string
-	Provider *string `json:"provider,omitempty" parquet:"provider"`
-	Type     *string `json:"type,omitempty" parquet:"type"`
+	Provider *string `json:"provider,omitempty" parquet:"provider,optional"`
+	Type     *string `json:"type,omitempty" parquet:"type,optional"`
 	Value    string  `json:"value" parquet:"value"`
 }

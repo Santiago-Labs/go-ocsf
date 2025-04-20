@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // ResponseFields defines the Arrow fields for Response.
@@ -19,11 +19,11 @@ var ResponseStruct = arrow.StructOf(ResponseFields...)
 var ResponseClassname = "response"
 
 type Response struct {
-	Code         *int32      `json:"code,omitempty" parquet:"code"`
-	Containers   []Container `json:"containers,omitempty" parquet:"containers"`
-	Data         *string     `json:"data,omitempty" parquet:"data"`
-	Error        *string     `json:"error,omitempty" parquet:"error"`
-	ErrorMessage *string     `json:"error_message,omitempty" parquet:"error_message"`
-	Flags        []string    `json:"flags,omitempty" parquet:"flags"`
-	Message      *string     `json:"message,omitempty" parquet:"message"`
+	Code         *int32       `json:"code,omitempty" parquet:"code,optional"`
+	Containers   []*Container `json:"containers,omitempty" parquet:"containers,list,optional"`
+	Data         *string      `json:"data,omitempty" parquet:"data,optional"`
+	Error        *string      `json:"error,omitempty" parquet:"error,optional"`
+	ErrorMessage *string      `json:"error_message,omitempty" parquet:"error_message,optional"`
+	Flags        []*string    `json:"flags,omitempty" parquet:"flags,list,optional"`
+	Message      *string      `json:"message,omitempty" parquet:"message,optional"`
 }

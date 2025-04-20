@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // AutonomousSystemFields defines the Arrow fields for AutonomousSystem.
@@ -14,6 +14,6 @@ var AutonomousSystemStruct = arrow.StructOf(AutonomousSystemFields...)
 var AutonomousSystemClassname = "autonomous_system"
 
 type AutonomousSystem struct {
-	Name   *string `json:"name,omitempty" parquet:"name"`
-	Number *int    `json:"number,omitempty" parquet:"number"`
+	Name   *string `json:"name,omitempty" parquet:"name,optional"`
+	Number *int    `json:"number,omitempty" parquet:"number,optional"`
 }

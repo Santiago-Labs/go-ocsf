@@ -84,20 +84,22 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	severity, severityID := mapSecurityHubSeverity(securityHubFinding.Severity)
 	status, statusID := mapSecurityHubStatus(securityHubFinding.Workflow)
 
-	var createdAt *time.Time
+	var createdAt *int64
 	if securityHubFinding.CreatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.CreatedAt)
 		if err == nil {
-			createdAt = &parsedTime
+			createdAtUnix := parsedTime.UnixMilli()
+			createdAt = &createdAtUnix
 		}
 	}
 
-	var endTime *time.Time
+	var endTime *int64
 	if status == "Closed" {
 		if securityHubFinding.UpdatedAt != nil {
 			parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 			if err == nil {
-				endTime = &parsedTime
+				endTimeUnix := parsedTime.UnixMilli()
+				endTime = &endTimeUnix
 			}
 		}
 	}
@@ -126,7 +128,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 
 		remediation = &ocsf.Remediation{
 			Description: description,
-			References:  references,
+			References:  aws.StringSlice(references),
 		}
 	}
 
@@ -136,15 +138,16 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	}
 
 	// Convert UpdatedAt string to time.Time for LastSeenTime
-	var lastSeenTime *time.Time
+	var lastSeenTime *int64
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			lastSeenTime = &parsedTime
+			lastSeenTimeUnix := parsedTime.UnixMilli()
+			lastSeenTime = &lastSeenTimeUnix
 		}
 	}
 
-	vulnerabilities := []ocsf.VulnerabilityDetails{
+	vulnerabilities := []*ocsf.VulnerabilityDetails{
 		{
 			UID:                securityHubFinding.Id,
 			CWE:                mapSecurityHubCWE(securityHubFinding),
@@ -165,7 +168,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	var activityName string
 	var typeUID int64
 	var typeName string
-	var eventTime time.Time
+	var eventTime int64
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -188,11 +191,11 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		activityName = "Update"
 		typeUID = int64(classUID)*100 + int64(activityID)
 		typeName = "Vulnerability Finding: Update"
-		var err error
-		eventTime, err = time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
+		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err != nil {
 			return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
 		}
+		eventTime = parsedTime.UnixMilli()
 	}
 
 	productName := "SecurityHub"
@@ -205,11 +208,12 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Version: "1.4.0",
 	}
 
-	var modifiedTime *time.Time
+	var modifiedTime *int64
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			modifiedTime = &parsedTime
+			modifiedTimeUnix := parsedTime.UnixMilli()
+			modifiedTime = &modifiedTimeUnix
 		}
 	}
 
@@ -221,14 +225,14 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		FirstSeenTime: createdAt,
 		LastSeenTime:  lastSeenTime,
 		ModifiedTime:  modifiedTime,
-		DataSources:   []string{"securityhub"},
-		Types:         []string{"Vulnerability"},
+		DataSources:   []*string{aws.String("securityhub")},
+		Types:         []*string{aws.String("Vulnerability")},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
 		Time:            eventTime,
 		StartTime:       createdAt,
-		EventDay:        eventTime,
+		EventDay:        int32(eventTime / 86400000),
 		EndTime:         endTime,
 		ActivityID:      activityID,
 		ActivityName:    &activityName,
@@ -295,11 +299,11 @@ func mapSecurityHubStatus(workflow *types.Workflow) (string, int32) {
 	}
 }
 
-func mapSecurityHubResources(finding types.AwsSecurityFinding) []ocsf.ResourceDetails {
-	var resources []ocsf.ResourceDetails
+func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceDetails {
+	var resources []*ocsf.ResourceDetails
 	for _, resource := range finding.Resources {
 		resourceType := *resource.Type
-		resources = append(resources, ocsf.ResourceDetails{
+		resources = append(resources, &ocsf.ResourceDetails{
 			UID:  resource.Id,
 			Type: &resourceType,
 		})
@@ -312,11 +316,11 @@ func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
 	if finding.Vulnerabilities != nil && len(finding.Vulnerabilities) > 0 {
 		for _, vuln := range finding.Vulnerabilities {
 			if vuln.Id != nil && vuln.Cvss != nil && len(vuln.Cvss) > 0 {
-				var cvss []ocsf.CVSS
+				var cvss []*ocsf.CVSS
 				for _, c := range vuln.Cvss {
 					if c.BaseScore != nil && c.Version != nil {
 						// The field is VectorString, not Vector
-						cvss = append(cvss, ocsf.CVSS{
+						cvss = append(cvss, &ocsf.CVSS{
 							BaseScore:    *c.BaseScore,
 							VectorString: c.BaseVector,
 							Version:      *c.Version,
@@ -331,7 +335,7 @@ func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
 
 				return &ocsf.CVE{
 					UID:        *vuln.Id,
-					References: references,
+					References: aws.StringSlice(references),
 					CVSS:       cvss,
 				}
 			}

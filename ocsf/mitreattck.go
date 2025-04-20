@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // MITREATTCKFields defines the Arrow fields for MITREATTCK.
@@ -18,9 +18,9 @@ var MITREATTCKClassname = "attack"
 
 // MITREATTCK represents MITRE ATT&CK® details.
 type MITREATTCK struct {
-	SubTechnique *SubTechnique `json:"sub_technique,omitempty" parquet:"sub_technique"`
-	Tactic       *Tactic       `json:"tactic,omitempty" parquet:"tactic"`
-	Tactics      []Tactic      `json:"tactics,omitempty" parquet:"tactics"`
-	Technique    *Technique    `json:"technique,omitempty" parquet:"technique"`
+	SubTechnique *SubTechnique `json:"sub_technique,omitempty" parquet:"sub_technique,optional"`
+	Tactic       *Tactic       `json:"tactic,omitempty" parquet:"tactic,optional"`
+	Tactics      []*Tactic     `json:"tactics,omitempty" parquet:"tactics,list,optional"`
+	Technique    *Technique    `json:"technique,omitempty" parquet:"technique,optional"`
 	Version      string        `json:"version" parquet:"version"`
 }

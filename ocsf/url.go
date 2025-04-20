@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // URLFields defines the Arrow fields for URL.
@@ -23,15 +23,15 @@ var URLStruct = arrow.StructOf(URLFields...)
 var URLClassname = "url"
 
 type URL struct {
-	Domain       *string  `json:"domain,omitempty" parquet:"domain"`
-	Hostname     *string  `json:"hostname,omitempty" parquet:"hostname"`
-	Path         *string  `json:"path,omitempty" parquet:"path"`
-	Port         *int     `json:"port,omitempty" parquet:"port"`
-	QueryString  *string  `json:"query_string,omitempty" parquet:"query_string"`
-	ResourceType *string  `json:"resource_type,omitempty" parquet:"resource_type"`
-	Scheme       *string  `json:"scheme,omitempty" parquet:"scheme"`
-	Subdomain    *string  `json:"subdomain,omitempty" parquet:"subdomain"`
-	URLString    *string  `json:"url_string,omitempty" parquet:"url_string"`
-	Categories   []string `json:"categories,omitempty" parquet:"categories"`
-	CategoryIDs  []int    `json:"category_ids,omitempty" parquet:"category_ids"`
+	Domain       *string   `json:"domain,omitempty" parquet:"domain,optional"`
+	Hostname     *string   `json:"hostname,omitempty" parquet:"hostname,optional"`
+	Path         *string   `json:"path,omitempty" parquet:"path,optional"`
+	Port         *int      `json:"port,omitempty" parquet:"port,optional"`
+	QueryString  *string   `json:"query_string,omitempty" parquet:"query_string,optional"`
+	ResourceType *string   `json:"resource_type,omitempty" parquet:"resource_type,optional"`
+	Scheme       *string   `json:"scheme,omitempty" parquet:"scheme,optional"`
+	Subdomain    *string   `json:"subdomain,omitempty" parquet:"subdomain,optional"`
+	URLString    *string   `json:"url_string,omitempty" parquet:"url_string,optional"`
+	Categories   []*string `json:"categories,omitempty" parquet:"categories,list,optional"`
+	CategoryIDs  []*int    `json:"category_ids,omitempty" parquet:"category_ids,list,optional"`
 }

@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // AffectedCodeFields defines the Arrow fields for AffectedCode.
@@ -20,6 +20,6 @@ type AffectedCode struct {
 	EndLine     int32        `json:"end_line" parquet:"end_line"`
 	StartLine   int32        `json:"start_line" parquet:"start_line"`
 	File        File         `json:"file" parquet:"file"`
-	Owner       *User        `json:"owner" parquet:"owner"`
-	Remediation *Remediation `json:"remediation" parquet:"remediation"`
+	Owner       *User        `json:"owner" parquet:"owner,optional"`
+	Remediation *Remediation `json:"remediation" parquet:"remediation,optional"`
 }

@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // OrganizationFields defines the Arrow fields for Organization.
@@ -16,8 +16,8 @@ var OrganizationStruct = arrow.StructOf(OrganizationFields...)
 var OrganizationClassname = "organization"
 
 type Organization struct {
-	Name   *string `json:"name,omitempty" parquet:"name"`
-	OUName *string `json:"ou_name,omitempty" parquet:"ou_name"`
-	OUID   *string `json:"ou_uid,omitempty" parquet:"ou_uid"`
-	UID    *string `json:"uid,omitempty" parquet:"uid"`
+	Name   *string `json:"name,omitempty" parquet:"name,optional"`
+	OUName *string `json:"ou_name,omitempty" parquet:"ou_name,optional"`
+	OUID   *string `json:"ou_uid,omitempty" parquet:"ou_uid,optional"`
+	UID    *string `json:"uid,omitempty" parquet:"uid,optional"`
 }

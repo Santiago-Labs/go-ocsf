@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // AffectedSoftwarePackageFields defines the Arrow fields for AffectedSoftwarePackage.
@@ -23,15 +23,15 @@ var AffectedSoftwarePackageStruct = arrow.StructOf(AffectedSoftwarePackageFields
 var AffectedSoftwarePackageClassname = "affected_software_package"
 
 type AffectedSoftwarePackage struct {
-	Architecture   *string      `json:"architecture,omitempty" parquet:"architecture"`
-	Epoch          *int32       `json:"epoch,omitempty" parquet:"epoch"`
-	FixedInVersion *string      `json:"fixed_in_version,omitempty" parquet:"fixed_in_version"`
-	License        *string      `json:"license,omitempty" parquet:"license"`
+	Architecture   *string      `json:"architecture,omitempty" parquet:"architecture,optional"`
+	Epoch          *int32       `json:"epoch,omitempty" parquet:"epoch,optional"`
+	FixedInVersion *string      `json:"fixed_in_version,omitempty" parquet:"fixed_in_version,optional"`
+	License        *string      `json:"license,omitempty" parquet:"license,optional"`
 	Name           string       `json:"name" parquet:"name"`
-	PackageManager *string      `json:"package_manager,omitempty" parquet:"package_manager"`
-	Path           *string      `json:"path,omitempty" parquet:"path"`
-	Purl           *string      `json:"purl,omitempty" parquet:"purl"`
-	Release        *string      `json:"release,omitempty" parquet:"release"`
-	Remediation    *Remediation `json:"remediation,omitempty" parquet:"remediation"`
+	PackageManager *string      `json:"package_manager,omitempty" parquet:"package_manager,optional"`
+	Path           *string      `json:"path,omitempty" parquet:"path,optional"`
+	Purl           *string      `json:"purl,omitempty" parquet:"purl,optional"`
+	Release        *string      `json:"release,omitempty" parquet:"release,optional"`
+	Remediation    *Remediation `json:"remediation,omitempty" parquet:"remediation,optional"`
 	Version        string       `json:"version" parquet:"version"`
 }

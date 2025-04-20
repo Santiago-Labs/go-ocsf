@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // RelatedEventFields defines the Arrow fields for RelatedEvent.
@@ -19,11 +19,11 @@ var RelatedEventStruct = arrow.StructOf(RelatedEventFields...)
 var RelatedEventClassname = "related_event"
 
 type RelatedEvent struct {
-	Attacks     []MITREATTCK     `json:"attacks,omitempty" parquet:"attacks"`
-	KillChain   []KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain"`
-	Observables []Observable     `json:"observables,omitempty" parquet:"observables"`
-	ProductUID  *string          `json:"product_uid,omitempty" parquet:"product_uid"`
-	Type        *string          `json:"type,omitempty" parquet:"type"`
-	TypeUID     *int64           `json:"type_uid,omitempty" parquet:"type_uid"`
-	UID         string           `json:"uid" parquet:"uid"` // required field
+	Attacks     []*MITREATTCK     `json:"attacks,omitempty" parquet:"attacks,list,optional"`
+	KillChain   []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
+	Observables []*Observable     `json:"observables,omitempty" parquet:"observables,list,optional"`
+	ProductUID  *string           `json:"product_uid,omitempty" parquet:"product_uid,optional"`
+	Type        *string           `json:"type,omitempty" parquet:"type,optional"`
+	TypeUID     *int64            `json:"type_uid,omitempty" parquet:"type_uid,optional"`
+	UID         string            `json:"uid" parquet:"uid"` // required field
 }

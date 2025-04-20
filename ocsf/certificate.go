@@ -1,9 +1,7 @@
 package ocsf
 
 import (
-	"time"
-
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // DigitalCertificateFields defines the Arrow fields for Digital Certificate.
@@ -17,21 +15,21 @@ var DigitalCertificateFields = []arrow.Field{
 	{Name: "serial_number", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "subject", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var DigitalCertificateStruct = arrow.StructOf(DigitalCertificateFields...)
 var DigitalCertificateClassname = "certificate"
 
 type DigitalCertificate struct {
-	CreatedTime    *time.Time                `json:"created_time,omitempty" parquet:"created_time"`
-	ExpirationTime *time.Time                `json:"expiration_time,omitempty" parquet:"expiration_time"`
-	Fingerprints   []*Fingerprint            `json:"fingerprints,omitempty" parquet:"fingerprints"`
-	IsSelfSigned   *bool                     `json:"is_self_signed,omitempty" parquet:"is_self_signed"`
+	CreatedTime    *int64                    `json:"created_time,omitempty" parquet:"created_time,optional"`
+	ExpirationTime *int64                    `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	Fingerprints   []*Fingerprint            `json:"fingerprints,omitempty" parquet:"fingerprints,list,optional"`
+	IsSelfSigned   *bool                     `json:"is_self_signed,omitempty" parquet:"is_self_signed,optional"`
 	Issuer         string                    `json:"issuer" parquet:"issuer"`
-	SANs           []*SubjectAlternativeName `json:"sans,omitempty" parquet:"sans"`
+	SANs           []*SubjectAlternativeName `json:"sans,omitempty" parquet:"sans,list,optional"`
 	SerialNumber   string                    `json:"serial_number" parquet:"serial_number"`
-	Subject        *string                   `json:"subject,omitempty" parquet:"subject"`
-	UID            *string                   `json:"uid,omitempty" parquet:"uid"`
-	Version        *string                   `json:"version,omitempty" parquet:"version"`
+	Subject        *string                   `json:"subject,omitempty" parquet:"subject,optional"`
+	UID            *string                   `json:"uid,omitempty" parquet:"uid,optional"`
+	Version        *string                   `json:"version,omitempty" parquet:"version,optional"`
 }

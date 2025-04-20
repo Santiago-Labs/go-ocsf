@@ -1,9 +1,7 @@
 package ocsf
 
 import (
-	"time"
-
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var ParentProcessFields = []arrow.Field{
@@ -26,6 +24,7 @@ var ParentProcessFields = []arrow.Field{
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "user", Type: UserStruct, Nullable: true},
 	{Name: "working_directory", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "xattributes", Type: arrow.MapOf(arrow.BinaryTypes.String, arrow.BinaryTypes.String), Nullable: true},
 }
 
 // ProcessFields defines the Arrow fields for Process.
@@ -60,48 +59,48 @@ var ProcessStruct = arrow.StructOf(ProcessFields...)
 var ProcessClassname = "process"
 
 type Process struct {
-	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry"`
-	CmdLine          *string            `json:"cmd_line,omitempty" parquet:"cmd_line"`
-	CreatedTime      *int64             `json:"created_time,omitempty" parquet:"created_time"`
-	EnvironmentVars  []EnvironmentVar   `json:"environment_variables,omitempty" parquet:"environment_variables"`
-	File             *File              `json:"file,omitempty" parquet:"file"`
-	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity"`
-	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id"`
-	Lineage          []string           `json:"lineage,omitempty" parquet:"lineage"`
-	LoadedModules    []string           `json:"loaded_modules,omitempty" parquet:"loaded_modules"`
-	Name             *string            `json:"name,omitempty" parquet:"name"`
-	ParentProcess    *ParentProcess     `json:"parent_process,omitempty" parquet:"parent_process"`
-	Path             *string            `json:"path,omitempty" parquet:"path"`
-	PID              *int               `json:"pid,omitempty" parquet:"pid"`
-	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox"`
-	Session          *Session           `json:"session,omitempty" parquet:"session"`
-	TerminatedTime   *time.Time         `json:"terminated_time,omitempty" parquet:"terminated_time"`
-	TID              *int               `json:"tid,omitempty" parquet:"tid"`
-	UID              *string            `json:"uid,omitempty" parquet:"uid"`
-	User             *User              `json:"user,omitempty" parquet:"user"`
-	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory"`
-	XAttributes      *map[string]string `json:"xattributes,omitempty" parquet:"xattributes"`
+	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry,optional"`
+	CmdLine          *string            `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
+	CreatedTime      *int64             `json:"created_time,omitempty" parquet:"created_time,optional"`
+	EnvironmentVars  []*EnvironmentVar  `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
+	File             *File              `json:"file,omitempty" parquet:"file,optional"`
+	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity,optional"`
+	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
+	Lineage          []*string          `json:"lineage,omitempty" parquet:"lineage,list,optional"`
+	LoadedModules    []*string          `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
+	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
+	ParentProcess    *ParentProcess     `json:"parent_process,omitempty" parquet:"parent_process,optional"`
+	Path             *string            `json:"path,omitempty" parquet:"path,optional"`
+	PID              *int               `json:"pid,omitempty" parquet:"pid,optional"`
+	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox,optional"`
+	Session          *Session           `json:"session,omitempty" parquet:"session,optional"`
+	TerminatedTime   *int64             `json:"terminated_time,omitempty" parquet:"terminated_time,optional"`
+	TID              *int               `json:"tid,omitempty" parquet:"tid,optional"`
+	UID              *string            `json:"uid,omitempty" parquet:"uid,optional"`
+	User             *User              `json:"user,omitempty" parquet:"user,optional"`
+	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory,optional"`
+	XAttributes      map[string]*string `json:"xattributes,omitempty" parquet:"xattributes,optional"`
 }
 
 type ParentProcess struct {
-	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry"`
-	CmdLine          *string            `json:"cmd_line,omitempty" parquet:"cmd_line"`
-	CreatedTime      *int64             `json:"created_time,omitempty" parquet:"created_time"`
-	EnvironmentVars  []EnvironmentVar   `json:"environment_variables,omitempty" parquet:"environment_variables"`
-	File             *File              `json:"file,omitempty" parquet:"file"`
-	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity"`
-	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id"`
-	Lineage          []string           `json:"lineage,omitempty" parquet:"lineage"`
-	LoadedModules    []string           `json:"loaded_modules,omitempty" parquet:"loaded_modules"`
-	Name             *string            `json:"name,omitempty" parquet:"name"`
-	Path             *string            `json:"path,omitempty" parquet:"path"`
-	PID              *int               `json:"pid,omitempty" parquet:"pid"`
-	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox"`
-	Session          *Session           `json:"session,omitempty" parquet:"session"`
-	TerminatedTime   *time.Time         `json:"terminated_time,omitempty" parquet:"terminated_time"`
-	TID              *int               `json:"tid,omitempty" parquet:"tid"`
-	UID              *string            `json:"uid,omitempty" parquet:"uid"`
-	User             *User              `json:"user,omitempty" parquet:"user"`
-	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory"`
-	XAttributes      *map[string]string `json:"xattributes,omitempty" parquet:"xattributes"`
+	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry,optional"`
+	CmdLine          *string            `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
+	CreatedTime      *int64             `json:"created_time,omitempty" parquet:"created_time,optional"`
+	EnvironmentVars  []*EnvironmentVar  `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
+	File             *File              `json:"file,omitempty" parquet:"file,optional"`
+	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity,optional"`
+	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
+	Lineage          []*string          `json:"lineage,omitempty" parquet:"lineage,list,optional"`
+	LoadedModules    []*string          `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
+	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
+	Path             *string            `json:"path,omitempty" parquet:"path,optional"`
+	PID              *int               `json:"pid,omitempty" parquet:"pid,optional"`
+	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox,optional"`
+	Session          *Session           `json:"session,omitempty" parquet:"session,optional"`
+	TerminatedTime   *int64             `json:"terminated_time,omitempty" parquet:"terminated_time,optional"`
+	TID              *int               `json:"tid,omitempty" parquet:"tid,optional"`
+	UID              *string            `json:"uid,omitempty" parquet:"uid,optional"`
+	User             *User              `json:"user,omitempty" parquet:"user,optional"`
+	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory,optional"`
+	XAttributes      map[string]*string `json:"xattributes,omitempty" parquet:"xattributes,optional"`
 }

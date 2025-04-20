@@ -1,15 +1,15 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type Observable struct {
 	Name       string      `json:"name" parquet:"name"`
-	Reputation *Reputation `json:"reputation,omitempty" parquet:"reputation"`
-	Type       *string     `json:"type,omitempty" parquet:"type"`
+	Reputation *Reputation `json:"reputation,omitempty" parquet:"reputation,optional"`
+	Type       *string     `json:"type,omitempty" parquet:"type,optional"`
 	TypeID     int         `json:"type_id" parquet:"type_id"`
-	Value      *string     `json:"value,omitempty" parquet:"value"`
+	Value      *string     `json:"value,omitempty" parquet:"value,optional"`
 }
 
 var ObservableFields = []arrow.Field{

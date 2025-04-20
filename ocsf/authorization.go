@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // AuthorizationFields defines the Arrow fields for Authorization.
@@ -14,6 +14,6 @@ var AuthorizationStruct = arrow.StructOf(AuthorizationFields...)
 var AuthorizationClassname = "authorization"
 
 type Authorization struct {
-	Decision *string `json:"decision,omitempty" parquet:"decision"`
-	Policy   *Policy `json:"policy,omitempty" parquet:"policy"`
+	Decision *string `json:"decision,omitempty" parquet:"decision,optional"`
+	Policy   *Policy `json:"policy,omitempty" parquet:"policy,optional"`
 }

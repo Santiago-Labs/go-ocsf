@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // MetricFields defines the Arrow fields for Metric.
@@ -15,5 +15,5 @@ var MetricClassname = "metric"
 
 type Metric struct {
 	Name  string  `json:"name" parquet:"name"`
-	Value *string `json:"value" parquet:"value"`
+	Value *string `json:"value" parquet:"value,optional"`
 }

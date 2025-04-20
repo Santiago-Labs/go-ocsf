@@ -1,7 +1,7 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // ReputationFields defines the Arrow fields for Reputation.
@@ -17,7 +17,7 @@ var ReputationClassname = "reputation"
 
 type Reputation struct {
 	BaseScore float64 `json:"base_score" parquet:"base_score"`
-	Provider  *string `json:"provider,omitempty" parquet:"provider"`
-	Score     *string `json:"score,omitempty" parquet:"score"`
+	Provider  *string `json:"provider,omitempty" parquet:"provider,optional"`
+	Score     *string `json:"score,omitempty" parquet:"score,optional"`
 	ScoreID   int     `json:"score_id" parquet:"score_id"`
 }
