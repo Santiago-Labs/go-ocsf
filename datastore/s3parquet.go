@@ -7,7 +7,6 @@ import (
 	"io"
 	"log/slog"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
@@ -21,15 +20,20 @@ type s3ParquetDatastore struct {
 	s3Bucket string
 	s3Client *s3.Client
 
+	currentFindingsPath   string
+	currentActivitiesPath string
+
 	BaseDatastore
 }
 
 // NewS3ParquetDatastore creates a new S3 Parquet datastore.
-// It initializes an in-memory index of finding IDs to file paths.
 func NewS3ParquetDatastore(ctx context.Context, bucketName string, s3Client *s3.Client) (Datastore, error) {
 	s := &s3ParquetDatastore{
 		s3Bucket: bucketName,
 		s3Client: s3Client,
+
+		currentFindingsPath:   filepath.Join(BasepathFindings, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z"))),
+		currentActivitiesPath: filepath.Join(BasepathActivities, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z"))),
 	}
 
 	s.BaseDatastore = BaseDatastore{
@@ -67,14 +71,13 @@ func (s *s3ParquetDatastore) GetFindingsFromFile(ctx context.Context, key string
 }
 
 // WriteBatch creates a new Parquet file for storing vulnerability findings.
-// It writes the findings to the specified file path and updates the datastore's in-memory index.
-func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, keyPrefix string) error {
+// It writes the findings to the specified file path
+func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
 
-	var fullKey string
 	resp, err := s.s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
 		Bucket: &s.s3Bucket,
-		Prefix: &keyPrefix,
+		Prefix: &s.currentFindingsPath,
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to list objects in S3")
@@ -82,33 +85,23 @@ func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 
 	files := resp.Contents
 	if len(files) > 0 {
-		for _, file := range files {
-			if strings.HasSuffix(*file.Key, ".parquet.gz") {
-				fullKey = *file.Key
-
-				fileFindings, err := s.GetFindingsFromFile(ctx, *file.Key)
-				if err != nil {
-					return oops.Wrapf(err, "failed to get existing activities from disk")
-				}
-
-				allFindings = append(allFindings, fileFindings...)
-			}
+		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from disk")
 		}
-	}
 
-	if fullKey == "" {
-		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
+		allFindings = append(allFindings, fileFindings...)
 	}
 
 	var buf bytes.Buffer
 	writer := io.Writer(&buf)
-	if err := goParquet.Write(writer, allFindings, goParquet.Compression(&goParquet.Gzip)); err != nil {
+	if err := goParquet.Write[ocsf.VulnerabilityFinding](writer, allFindings, goParquet.Compression(&goParquet.Gzip)); err != nil {
 		return oops.Wrapf(err, "failed to write findings to parquet buffer")
 	}
 
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:          &s.s3Bucket,
-		Key:             &fullKey,
+		Key:             &s.currentFindingsPath,
 		Body:            bytes.NewReader(buf.Bytes()),
 		ContentType:     aws.String("application/octet-stream"),
 		ContentEncoding: aws.String("gzip"),
@@ -119,19 +112,18 @@ func (s *s3ParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 
 	slog.Info("Wrote Parquet file to S3",
 		"bucket", s.s3Bucket,
-		"key", fullKey,
+		"key", s.currentFindingsPath,
 		"findings", len(allFindings),
 	)
 	return nil
 }
 
-func (s *s3ParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, keyPrefix string) error {
+func (s *s3ParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
 
-	var fullKey string
 	resp, err := s.s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
 		Bucket: &s.s3Bucket,
-		Prefix: &keyPrefix,
+		Prefix: &s.currentActivitiesPath,
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to list objects in S3")
@@ -139,33 +131,23 @@ func (s *s3ParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activiti
 
 	files := resp.Contents
 	if len(files) > 0 {
-		for _, file := range files {
-			if strings.HasSuffix(*file.Key, ".parquet.gz") {
-				fullKey = *file.Key
-
-				fileActivities, err := s.GetAPIActivitiesFromFile(ctx, *file.Key)
-				if err != nil {
-					return oops.Wrapf(err, "failed to get existing activities from s3")
-				}
-
-				allActivities = append(allActivities, fileActivities...)
-			}
+		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from s3")
 		}
-	}
 
-	if fullKey == "" {
-		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
+		allActivities = append(allActivities, fileActivities...)
 	}
 
 	var buf bytes.Buffer
 	writer := io.Writer(&buf)
-	if err := goParquet.Write(writer, allActivities, goParquet.Compression(&goParquet.Gzip)); err != nil {
+	if err := goParquet.Write[ocsf.APIActivity](writer, allActivities, goParquet.Compression(&goParquet.Gzip)); err != nil {
 		return oops.Wrapf(err, "failed to write activities to parquet buffer")
 	}
 
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:          &s.s3Bucket,
-		Key:             &fullKey,
+		Key:             &s.currentActivitiesPath,
 		Body:            bytes.NewReader(buf.Bytes()),
 		ContentType:     aws.String("application/octet-stream"),
 		ContentEncoding: aws.String("gzip"),
@@ -176,7 +158,7 @@ func (s *s3ParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activiti
 
 	slog.Info("Wrote Parquet file to S3",
 		"bucket", s.s3Bucket,
-		"key", fullKey,
+		"key", s.currentActivitiesPath,
 		"activities", len(allActivities),
 	)
 	return nil

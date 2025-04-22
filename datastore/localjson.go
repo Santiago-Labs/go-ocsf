@@ -16,13 +16,46 @@ import (
 
 type localJsonDatastore struct {
 	BaseDatastore
+
+	currentFindingsPath   string
+	currentActivitiesPath string
 }
 
 // localJsonDatastore implements the Datastore interface using local JSON files for storage.
 // It provides methods to retrieve, save, and manage vulnerability findings in JSON format.
-// The datastore maintains an in-memory index of finding IDs to file paths for quick lookups.
 func NewLocalJsonDatastore(ctx context.Context) (Datastore, error) {
-	s := &localJsonDatastore{}
+	currentFindingsPath := filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
+	if _, err := os.Stat(BasepathFindings); err != nil {
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
+				return nil, oops.Wrapf(err, "failed to create directory")
+			}
+		}
+	}
+
+	_, err := os.Create(currentFindingsPath)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to create file")
+	}
+
+	currentActivitiesPath := filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
+	if _, err := os.Stat(currentActivitiesPath); err != nil {
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
+				return nil, oops.Wrapf(err, "failed to create directory")
+			}
+		}
+	}
+
+	_, err = os.Create(currentActivitiesPath)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to create file")
+	}
+
+	s := &localJsonDatastore{
+		currentFindingsPath:   filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
+		currentActivitiesPath: filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
+	}
 
 	s.BaseDatastore = BaseDatastore{
 		store:                  s,
@@ -66,49 +99,22 @@ func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path strin
 
 // WriteBatch creates a new JSON file for storing vulnerability findings.
 // It marshals the findings into a JSON object and writes it to the specified file path.
-func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, pathPrefix string) error {
+func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
 
-	var fullPath string
-	if _, err := os.Stat(pathPrefix); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(pathPrefix, 0755); err != nil {
-				return oops.Wrapf(err, "failed to create directory")
-			}
-
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-		} else {
-			return oops.Wrapf(err, "failed to check if directory exists")
-		}
-	} else {
-		// Get all files in the directory
-		files, err := filepath.Glob(filepath.Join(pathPrefix, "*.json.gz"))
-		if err != nil {
-			return oops.Wrapf(err, "failed to get files from directory")
-		}
-
-		if len(files) > 0 {
-			for _, file := range files {
-				fileFindings, err := s.GetFindingsFromFile(ctx, file)
-				if err != nil {
-					return oops.Wrapf(err, "failed to get existing findings from disk")
-				}
-
-				allFindings = append(allFindings, fileFindings...)
-
-				fullPath = file
-			}
-		} else {
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-		}
+	fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
+	if err != nil {
+		return oops.Wrapf(err, "failed to get existing findings from disk")
 	}
+
+	allFindings = append(allFindings, fileFindings...)
 
 	jsonData, err := json.Marshal(allFindings)
 	if err != nil {
 		return oops.Wrapf(err, "failed to marshal findings to JSON")
 	}
 
-	file, err := os.Create(fullPath)
+	file, err := os.OpenFile(s.currentFindingsPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return oops.Wrapf(err, "failed to create gzip file")
 	}
@@ -121,53 +127,27 @@ func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 		return oops.Wrapf(err, "failed to write gzip data")
 	}
 
-	slog.Info("Wrote JSON file to disk", "path", fullPath, "findings", len(allFindings))
+	slog.Info("Wrote JSON file to disk", "path", s.currentFindingsPath, "findings", len(allFindings))
 
 	return nil
 }
 
-func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, pathPrefix string) error {
+func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
 
-	var fullPath string
-	if _, err := os.Stat(pathPrefix); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(pathPrefix, 0755); err != nil {
-				return oops.Wrapf(err, "failed to create directory")
-			}
-
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-		} else {
-			return oops.Wrapf(err, "failed to check if directory exists")
-		}
-	} else {
-		files, err := filepath.Glob(filepath.Join(pathPrefix, "*.json.gz"))
-		if err != nil {
-			return oops.Wrapf(err, "failed to get files from directory")
-		}
-
-		if len(files) > 0 {
-			for _, file := range files {
-				fileActivities, err := s.GetAPIActivitiesFromFile(ctx, file)
-				if err != nil {
-					return oops.Wrapf(err, "failed to get existing activities from disk")
-				}
-
-				allActivities = append(allActivities, fileActivities...)
-
-				fullPath = file
-			}
-		} else {
-			fullPath = filepath.Join(pathPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-		}
+	fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
+	if err != nil {
+		return oops.Wrapf(err, "failed to get existing activities from disk")
 	}
+
+	allActivities = append(allActivities, fileActivities...)
 
 	jsonData, err := json.Marshal(allActivities)
 	if err != nil {
 		return oops.Wrapf(err, "failed to marshal activities to JSON")
 	}
 
-	file, err := os.Create(fullPath)
+	file, err := os.OpenFile(s.currentActivitiesPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return oops.Wrapf(err, "failed to create gzip file")
 	}
@@ -181,7 +161,7 @@ func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activiti
 	}
 
 	slog.Info("Wrote JSON file to disk",
-		"path", fullPath,
+		"path", s.currentActivitiesPath,
 		"activities", len(allActivities),
 	)
 

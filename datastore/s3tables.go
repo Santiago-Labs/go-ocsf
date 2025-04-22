@@ -8,7 +8,6 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 	"github.com/apache/arrow-go/v18/arrow/array"
-	"github.com/apache/arrow-go/v18/arrow/memory"
 	"github.com/apache/iceberg-go"
 	"github.com/apache/iceberg-go/catalog"
 	"github.com/apache/iceberg-go/table"
@@ -33,7 +32,6 @@ type s3TablesDatastore struct {
 }
 
 // NewS3TablesDatastore creates a new S3 Tables datastore.
-// It initializes an in-memory index of finding IDs to file paths.
 func NewS3TablesDatastore(ctx context.Context, bucketName string, s3Client *s3.Client) (Datastore, error) {
 	bucketRegion, err := s3Client.GetBucketLocation(ctx, &s3.GetBucketLocationInput{
 		Bucket: aws.String(bucketName),
@@ -171,30 +169,25 @@ func buildPartitionSpec(s *iceberg.Schema) (*iceberg.PartitionSpec, error) {
 }
 
 // WriteBatch creates a new Parquet file for storing vulnerability findings.
-// It writes the findings to the specified file path and updates the datastore's in-memory index.
-func (s *s3TablesDatastore) WriteBatch(ctx context.Context,
-	findings []ocsf.VulnerabilityFinding, keyPrefix string) error {
+// It writes the findings to the specified file path.
+func (s *s3TablesDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 
-	rec, err := SliceToRecordBatch(findings, ocsf.VulnerabilityFindingSchema)
+	recFixed, err := SliceToRecordBatch(findings, ocsf.VulnerabilityFindingSchema)
 	if err != nil {
 		return oops.Wrapf(err, "failed to create record batch")
 	}
-	rec, err = PurgeAllNullOptionalColumns(rec)
-	if err != nil {
-		return oops.Wrapf(err, "failed to purge optional columns")
-	}
-	defer rec.Release()
+	defer recFixed.Release()
 
-	annot, err := attachFieldIDs(rec.Schema(), s.findingsTable.Schema())
+	annot, err := attachFieldIDs(recFixed.Schema(), s.findingsTable.Schema())
 	if err != nil {
 		return oops.Wrapf(err, "failed to attach field IDs")
 	}
 
-	cols := rec.Columns()
+	cols := recFixed.Columns()
 	for _, col := range cols {
 		col.Retain()
 	}
-	newRec := array.NewRecord(annot, cols, rec.NumRows())
+	newRec := array.NewRecord(annot, cols, recFixed.NumRows())
 	defer newRec.Release()
 
 	columns := make([]arrow.Column, newRec.NumCols())
@@ -230,31 +223,50 @@ func (s *s3TablesDatastore) WriteBatch(ctx context.Context,
 	return nil
 }
 
-func (s *s3TablesDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, keyPrefix string) error {
-	parquetData, err := serializeActivitiesToParquet(activities, s.activitiesTableSchema)
+func (s *s3TablesDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
+	recFixed, err := SliceToRecordBatch(activities, ocsf.APIActivitySchema)
 	if err != nil {
-		return oops.Wrapf(err, "failed to serialize activities to parquet")
+		return oops.Wrapf(err, "failed to create record batch")
+	}
+	defer recFixed.Release()
+
+	annot, err := attachFieldIDs(recFixed.Schema(), s.apiActivitiesTable.Schema())
+	if err != nil {
+		return oops.Wrapf(err, "failed to attach field IDs")
 	}
 
-	mem := memory.NewGoAllocator()
-	arrowTable, err := parquetBytesToArrowTable(parquetData, mem)
-	if err != nil {
-		return oops.Wrapf(err, "failed to serialize activities to parquet")
+	cols := recFixed.Columns()
+	for _, col := range cols {
+		col.Retain()
 	}
-	defer arrowTable.Release()
+	newRec := array.NewRecord(annot, cols, recFixed.NumRows())
+	defer newRec.Release()
+
+	columns := make([]arrow.Column, newRec.NumCols())
+	for i := 0; i < int(newRec.NumCols()); i++ {
+		arr := newRec.Column(i)
+		arr.Retain()
+
+		chunked := arrow.NewChunked(arr.DataType(), []arrow.Array{arr})
+
+		columns[i] = *arrow.NewColumn(
+			annot.Field(i),
+			chunked,
+		)
+	}
+
+	tbl := array.NewTable(annot, columns, newRec.NumRows())
+	defer tbl.Release()
 
 	txn := s.apiActivitiesTable.NewTransaction()
-
-	if err := txn.AppendTable(ctx, arrowTable, 1024, s.apiActivitiesTable.Properties()); err != nil {
-		return oops.Wrapf(err, "failed to append activities to table")
+	if err := txn.AppendTable(ctx, tbl, 1024, s.apiActivitiesTable.Properties()); err != nil {
+		return oops.Wrapf(err, "failed to append table")
 	}
-
-	newTbl, err := txn.Commit(ctx)
+	updated, err := txn.Commit(ctx)
 	if err != nil {
-		return oops.Wrapf(err, "failed to commit activities")
+		return oops.Wrapf(err, "failed to commit")
 	}
-
-	s.apiActivitiesTable = newTbl
+	s.apiActivitiesTable = updated
 
 	slog.Info("Inserted activities using Athena",
 		"bucket", s.s3Bucket,

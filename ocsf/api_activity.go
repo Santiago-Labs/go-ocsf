@@ -1,8 +1,6 @@
 package ocsf
 
 import (
-	"encoding/json"
-
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
@@ -120,75 +118,4 @@ type APIActivityDTO struct {
 	Resources      JSONB   `json:"resources,omitempty" parquet:"resources,list,optional"`
 	SrcEndpoint    JSONB   `json:"src_endpoint" parquet:"src_endpoint"`
 	Unmapped       *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
-}
-
-func (dto *APIActivityDTO) ToStruct() (*APIActivity, error) {
-	var activity APIActivity
-
-	activity.EventDay = dto.EventDay
-	activity.ActivityID = dto.ActivityID
-	activity.ActivityName = dto.ActivityName
-	activity.CategoryName = dto.CategoryName
-	activity.CategoryUID = dto.CategoryUID
-	activity.ClassName = dto.ClassName
-	activity.ClassUID = dto.ClassUID
-	activity.Count = dto.Count
-	activity.Duration = dto.Duration
-	activity.Message = dto.Message
-	activity.RawData = dto.RawData
-	activity.Severity = dto.Severity
-	activity.SeverityID = dto.SeverityID
-	activity.Status = dto.Status
-	activity.StatusCode = dto.StatusCode
-	activity.StatusDetail = dto.StatusDetail
-	activity.StatusID = dto.StatusID
-	activity.Time = dto.Time
-	activity.TimezoneOffset = dto.TimezoneOffset
-	activity.TypeName = dto.TypeName
-	activity.TypeUID = dto.TypeUID
-	activity.Unmapped = dto.Unmapped
-	activity.EndTime = dto.EndTime
-	activity.StartTime = dto.StartTime
-
-	if err := json.Unmarshal(dto.Actor, &activity.Actor); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.API, &activity.API); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.DstEndpoint, &activity.DstEndpoint); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.Enrichments, &activity.Enrichments); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.HTTPRequest, &activity.HTTPRequest); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.HTTPResponse, &activity.HTTPResponse); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.Metadata, &activity.Metadata); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.Observables, &activity.Observables); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.Resources, &activity.Resources); err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(dto.SrcEndpoint, &activity.SrcEndpoint); err != nil {
-		return nil, err
-	}
-
-	return &activity, nil
 }

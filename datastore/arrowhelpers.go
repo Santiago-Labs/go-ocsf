@@ -11,10 +11,6 @@ import (
 	"github.com/apache/iceberg-go"
 )
 
-// SliceToRecordBatch converts a slice of structs to an Arrow record batch (arrow.Record).
-// It matches struct fields to Arrow schema fields by the `parquet:"..."` tag.
-// Nested structs and slices are handled recursively. Each Arrow field's metadata
-// is assigned an Iceberg field ID (key "iceberg.field_id") from the provided schema.
 func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, error) {
 	val := reflect.ValueOf(slice)
 	if val.Kind() != reflect.Slice {
@@ -81,7 +77,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 		case *arrow.FixedSizeBinaryType:
 			b = array.NewFixedSizeBinaryBuilder(pool, dt)
 		case *arrow.Decimal128Type:
-			b = array.NewDecimal128Builder(pool, dt) // requires arrow.Decimal128Type
+			b = array.NewDecimal128Builder(pool, dt)
 		case *arrow.Decimal256Type:
 			b = array.NewDecimal256Builder(pool, dt)
 		case *arrow.Date32Type:
@@ -89,7 +85,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 		case *arrow.Date64Type:
 			b = array.NewDate64Builder(pool)
 		case *arrow.TimestampType:
-			b = array.NewTimestampBuilder(pool, dt) // dt carries time unit and timezone
+			b = array.NewTimestampBuilder(pool, dt)
 		case *arrow.ListType:
 			elemType := dt.Elem()
 			b = array.NewListBuilder(pool, elemType)
@@ -104,18 +100,17 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 			itemType := dt.ItemType()
 			b = array.NewMapBuilder(pool, keyType, itemType, dt.KeysSorted)
 		default:
-			// Unsupported Arrow type
+
 			return nil, fmt.Errorf("unsupported arrow type: %s", dt)
 		}
 		builders[j] = b
 		fieldIndices[j] = idx
 	}
 
-	// Helper function to append a single value (possibly nested) to a builder
 	var appendValue func(b array.Builder, arrowType arrow.DataType, val reflect.Value) error
 	appendValue = func(b array.Builder, arrowType arrow.DataType, val reflect.Value) error {
 		if !val.IsValid() {
-			// Treat zero reflect.Value as null
+
 			switch builder := b.(type) {
 			case *array.StructBuilder:
 				builder.AppendNull()
@@ -131,10 +126,9 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 			return nil
 		}
 
-		// If pointer, dereference for actual value (and handle nil)
 		if val.Kind() == reflect.Ptr {
 			if val.IsNil() {
-				// Null pointer -> append null
+
 				switch builder := b.(type) {
 				case *array.StructBuilder:
 					builder.AppendNull()
@@ -149,12 +143,11 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				}
 				return nil
 			}
-			val = val.Elem() // dereference
+			val = val.Elem()
 		}
 
-		// Append based on Arrow type kind
 		switch builder := b.(type) {
-		// Primitive types:
+
 		case *array.Int8Builder:
 			if val.Kind() != reflect.Int && val.Kind() != reflect.Int8 {
 				return fmt.Errorf("type mismatch: expected int8 for arrow INT8. got %s", val.Kind())
@@ -174,7 +167,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 			if val.Kind() != reflect.Int && val.Kind() != reflect.Int64 {
 				return fmt.Errorf("type mismatch: expected int64 for arrow INT64. got %s", val.Kind())
 			}
-			builder.Append(val.Int()) // reflect.Value.Int gives int64
+			builder.Append(val.Int())
 		case *array.Uint8Builder:
 			if val.Kind() != reflect.Uint && val.Kind() != reflect.Uint8 {
 				return fmt.Errorf("type mismatch: expected uint8 for arrow UINT8. got %s", val.Kind())
@@ -216,7 +209,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 			}
 			builder.AppendString(val.String())
 		case *array.BinaryBuilder:
-			// Accept []byte or string for binary
+
 			if val.Kind() == reflect.Slice && val.Type().Elem().Kind() == reflect.Uint8 {
 				builder.Append(val.Bytes())
 			} else if val.Kind() == reflect.String {
@@ -249,14 +242,14 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				return fmt.Errorf("type mismatch: expected int64 for arrow TIMESTAMP. got %s", val.Kind())
 			}
 			builder.Append(arrow.Timestamp(val.Int()))
-		// Nested types:
+
 		case *array.StructBuilder:
-			// Struct: recursively append each child field
+
 			if val.Kind() != reflect.Struct {
 				return fmt.Errorf("type mismatch: expected struct for arrow STRUCT. got %s", val.Kind())
 			}
-			// If the struct is considered null? (We handle pointer nil above, so here it's real struct)
-			builder.Append(true) // mark struct present
+
+			builder.Append(true)
 			structType := val.Type()
 			structFieldsByTag := make(map[string]int)
 			for i := 0; i < structType.NumField(); i++ {
@@ -274,7 +267,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				}
 				sfIdx, ok := structFieldsByTag[childField.Name]
 				if !ok {
-					// No matching field in nested struct
+
 					return fmt.Errorf("no struct field with tag %q in nested struct", childField.Name)
 				}
 				childVal := val.Field(sfIdx)
@@ -290,7 +283,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				builder.AppendNull()
 				break
 			}
-			// Append a new list (non-null)
+
 			builder.Append(true)
 			elemType := arrowType.(*arrow.ListType).Elem()
 			valueBuilder := builder.ValueBuilder()
@@ -302,7 +295,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				}
 			}
 		case *array.FixedSizeListBuilder:
-			// Fixed-size list: similar to list but length is fixed per slot
+
 			if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
 				return fmt.Errorf("type mismatch: expected array for arrow FixedSizeList. got %s", val.Kind())
 			}
@@ -310,7 +303,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				builder.AppendNull()
 				break
 			}
-			// Validate length matches fixed size
+
 			listLen := arrowType.(*arrow.FixedSizeListType).Len()
 			if val.Len() != int(listLen) {
 				return fmt.Errorf("length mismatch: expected %d elements for fixed-size list, got %d", listLen, val.Len())
@@ -318,7 +311,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 			builder.Append(true)
 			elemType := arrowType.(*arrow.FixedSizeListType).Elem()
 			valueBuilder := builder.ValueBuilder()
-			// Append each element in the fixed-size array
+
 			for i := 0; i < val.Len(); i++ {
 				itemVal := val.Index(i)
 				if err := appendValue(valueBuilder, elemType, itemVal); err != nil {
@@ -326,7 +319,7 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				}
 			}
 		case *array.MapBuilder:
-			// Map: treat as Go map[Key]Value
+
 			if val.Kind() != reflect.Map {
 				return fmt.Errorf("type mismatch: expected map for arrow MAP. got %s", val.Kind())
 			}
@@ -338,16 +331,16 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 			keyBuilder := builder.KeyBuilder()
 			itemBuilder := builder.ItemBuilder()
 			iter := val.MapRange()
-			// Append each key-value pair
+
 			for iter.Next() {
 				keyVal := iter.Key()
 				valVal := iter.Value()
-				// Map keys in Arrow are non-nullable (per Arrow spec), so no null check for key
+
 				keyType := arrowType.(*arrow.MapType).KeyType()
 				if err := appendValue(keyBuilder, keyType, keyVal); err != nil {
 					return err
 				}
-				// Map values can be nullable
+
 				itemType := arrowType.(*arrow.MapType).ItemType()
 				if err := appendValue(itemBuilder, itemType, valVal); err != nil {
 					return err
@@ -366,8 +359,8 @@ func SliceToRecordBatch(slice interface{}, schema *arrow.Schema) (arrow.Record, 
 				for j, b := range builders {
 					switch b.(type) {
 					case *array.StructBuilder, *array.ListBuilder, *array.FixedSizeListBuilder, *array.MapBuilder:
-						// For nested types, append null to entire structure/list
-						appendValue(b, schema.Field(j).Type, reflect.Value{}) // pass invalid to indicate null
+
+						appendValue(b, schema.Field(j).Type, reflect.Value{})
 					default:
 						b.AppendNull()
 					}
@@ -411,26 +404,26 @@ func ArrowSchemaToIceberg(schema *arrow.Schema) (*iceberg.Schema, error) {
 		switch t := field.Type.(type) {
 
 		case *arrow.BooleanType:
-			icebergType = iceberg.BooleanType{} // Iceberg boolean
+			icebergType = iceberg.BooleanType{}
 		case *arrow.Int8Type, *arrow.Int16Type, *arrow.Int32Type:
-			icebergType = iceberg.Int32Type{} // Iceberg 32-bit int
+			icebergType = iceberg.Int32Type{}
 		case *arrow.Int64Type:
-			icebergType = iceberg.Int64Type{} // Iceberg 64-bit long
+			icebergType = iceberg.Int64Type{}
 		case *arrow.Uint8Type, *arrow.Uint16Type:
-			icebergType = iceberg.Int32Type{} // Iceberg int (no unsigned, fits in 32-bit)
+			icebergType = iceberg.Int32Type{}
 		case *arrow.Uint32Type:
 			icebergType = iceberg.Int64Type{}
 		case *arrow.Uint64Type:
-			// Iceberg has no unsigned long; use signed 64-bit (values > 2^63-1 not representable)
+
 			icebergType = iceberg.Int64Type{}
 		case *arrow.Float32Type:
-			icebergType = iceberg.Float32Type{} // Iceberg float
+			icebergType = iceberg.Float32Type{}
 		case *arrow.Float64Type:
-			icebergType = iceberg.Float64Type{} // Iceberg double
+			icebergType = iceberg.Float64Type{}
 		case *arrow.StringType:
-			icebergType = iceberg.StringType{} // Iceberg string (utf8)
+			icebergType = iceberg.StringType{}
 		case *arrow.BinaryType:
-			icebergType = iceberg.BinaryType{} // Iceberg binary (variable-length)
+			icebergType = iceberg.BinaryType{}
 		case *arrow.FixedSizeBinaryType:
 			icebergType = iceberg.FixedTypeOf(t.ByteWidth)
 		case *arrow.Decimal128Type:
@@ -438,14 +431,14 @@ func ArrowSchemaToIceberg(schema *arrow.Schema) (*iceberg.Schema, error) {
 		case *arrow.Decimal256Type:
 			icebergType = iceberg.DecimalTypeOf(int(t.Precision), int(t.Scale))
 		case *arrow.Date32Type, *arrow.Date64Type:
-			icebergType = iceberg.DateType{} // Iceberg date (days)
+			icebergType = iceberg.DateType{}
 		case *arrow.Time32Type, *arrow.Time64Type:
-			icebergType = iceberg.TimeType{} // Iceberg time (microseconds of day)
+			icebergType = iceberg.TimeType{}
 		case *arrow.TimestampType:
 			if t.TimeZone != "" {
-				icebergType = iceberg.TimestampTzType{} // Iceberg timestamp with timezone
+				icebergType = iceberg.TimestampTzType{}
 			} else {
-				icebergType = iceberg.TimestampType{} // Iceberg timestamp without timezone
+				icebergType = iceberg.TimestampType{}
 			}
 
 		case *arrow.StructType:
@@ -523,105 +516,4 @@ func ArrowSchemaToIceberg(schema *arrow.Schema) (*iceberg.Schema, error) {
 
 	icebergSchema := iceberg.NewSchema(0, icebergFields...)
 	return icebergSchema, nil
-}
-
-func DropColumnByName(rec arrow.Record, name string) arrow.Record {
-	idx := rec.Schema().FieldIndices(name)
-	if len(idx) == 0 {
-		return rec // nothing to do
-	}
-	// produce new slices without that index
-	n := rec.NumCols()
-	fields := make([]arrow.Field, 0, n-1)
-	cols := make([]arrow.Array, 0, n-1)
-	for i := 0; i < int(n); i++ {
-		if i == idx[0] {
-			continue
-		}
-		fields = append(fields, rec.Schema().Field(i))
-		cols = append(cols, rec.Column(i))
-	}
-	newSchema := arrow.NewSchema(fields, nil)
-	return array.NewRecord(newSchema, cols, rec.NumRows())
-}
-
-func PurgeAllNullOptionalColumns(rec arrow.Record) (arrow.Record, error) {
-	newCols := make([]arrow.Array, 0, rec.NumCols())
-	newFields := make([]arrow.Field, 0, rec.NumCols())
-
-	for i := 0; i < int(rec.NumCols()); i++ {
-		col := rec.Column(i)
-		field := rec.Schema().Field(i)
-
-		if field.Nullable && int(col.NullN()) == int(col.Len()) {
-			continue
-		}
-
-		if st, ok := field.Type.(*arrow.StructType); ok {
-			prunedArr, prunedField, err := pruneStruct(col.(*array.Struct), field, st)
-			if err != nil {
-				return nil, err
-			}
-			if prunedField.Nullable && int(prunedArr.NullN()) == int(prunedArr.Len()) {
-				prunedArr.Release()
-				continue
-			}
-			col = prunedArr
-			field = prunedField
-		}
-
-		newCols = append(newCols, col)
-		newFields = append(newFields, field)
-	}
-
-	if len(newCols) == int(rec.NumCols()) {
-		rec.Retain()
-		return rec, nil
-	}
-
-	md := rec.Schema().Metadata()
-	newSchema := arrow.NewSchema(newFields, &md)
-	return array.NewRecord(newSchema, newCols, rec.NumRows()), nil
-}
-
-func pruneStruct(sa *array.Struct, parent arrow.Field, st *arrow.StructType) (arrow.Array, arrow.Field, error) {
-	keepFields := make([]arrow.Field, 0, st.NumFields())
-	keepArrays := make([]arrow.Array, 0, st.NumFields())
-
-	for i := 0; i < st.NumFields(); i++ {
-		cf := st.Field(i)
-		carr := sa.Field(i)
-
-		if cf.Nullable && int(carr.NullN()) == int(carr.Len()) {
-			continue
-		}
-
-		if cst, ok := cf.Type.(*arrow.StructType); ok {
-			prunedArr, prunedFld, err := pruneStruct(carr.(*array.Struct), cf, cst)
-			if err != nil {
-				return nil, arrow.Field{}, err
-			}
-			if prunedFld.Type.(*arrow.StructType).NumFields() == 0 {
-				prunedArr.Release()
-				continue
-			}
-			carr, cf = prunedArr, prunedFld
-		}
-
-		keepFields = append(keepFields, cf)
-		keepArrays = append(keepArrays, carr)
-	}
-
-	if len(keepFields) == st.NumFields() {
-		sa.Retain()
-		return sa, parent, nil
-	}
-
-	newSA, err := array.NewStructArrayWithFields(keepArrays, keepFields)
-	if err != nil {
-		return nil, arrow.Field{}, err
-	}
-
-	parent.Type = arrow.StructOf(keepFields...)
-	return newSA, parent, nil
 }

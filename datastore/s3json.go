@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
@@ -21,15 +20,20 @@ type s3JsonDatastore struct {
 	s3Bucket string
 	s3Client *s3.Client
 
+	currentFindingsPath   string
+	currentActivitiesPath string
+
 	BaseDatastore
 }
 
 // NewS3JsonDatastore creates a new S3 JSON datastore.
-// It initializes an in-memory index of finding IDs to file paths.
 func NewS3JsonDatastore(ctx context.Context, bucketName string, s3Client *s3.Client) (Datastore, error) {
 	s := &s3JsonDatastore{
 		s3Bucket: bucketName,
 		s3Client: s3Client,
+
+		currentFindingsPath:   filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
+		currentActivitiesPath: filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
 	}
 
 	s.BaseDatastore = BaseDatastore{
@@ -69,13 +73,12 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 
 // WriteBatch creates a new JSON file for storing vulnerability findings.
 // It marshals the findings into a JSON object and writes it to the specified file path.
-func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, keyPrefix string) error {
+func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
 
-	var fullKey string
 	resp, err := s.s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
 		Bucket: &s.s3Bucket,
-		Prefix: &keyPrefix,
+		Prefix: &s.currentFindingsPath,
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to list objects in S3")
@@ -83,23 +86,13 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 
 	files := resp.Contents
 	if len(files) > 0 {
-		for _, file := range files {
-			if strings.HasSuffix(*file.Key, ".json.gz") {
-
-				fileFindings, err := s.GetFindingsFromFile(ctx, *file.Key)
-				if err != nil {
-					return oops.Wrapf(err, "failed to get existing activities from s3")
-				}
-
-				allFindings = append(allFindings, fileFindings...)
-
-				fullKey = *file.Key
-			}
+		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from s3")
 		}
-	}
 
-	if fullKey == "" {
-		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
+		allFindings = append(allFindings, fileFindings...)
+
 	}
 
 	jsonData, err := json.Marshal(allFindings)
@@ -120,7 +113,7 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:          &s.s3Bucket,
-		Key:             &fullKey,
+		Key:             &s.currentFindingsPath,
 		Body:            bytes.NewReader(gzippedData.Bytes()),
 		ContentType:     aws.String("application/json"),
 		ContentEncoding: aws.String("gzip"),
@@ -131,7 +124,7 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 
 	slog.Info("Wrote JSON file to S3",
 		"bucket", s.s3Bucket,
-		"key", fullKey,
+		"key", s.currentFindingsPath,
 		"findings", len(allFindings),
 	)
 
@@ -162,13 +155,12 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 	return activities, nil
 }
 
-func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, keyPrefix string) error {
+func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
 
-	var fullKey string
 	resp, err := s.s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
 		Bucket: &s.s3Bucket,
-		Prefix: &keyPrefix,
+		Prefix: &s.currentActivitiesPath,
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to list objects in S3")
@@ -176,22 +168,13 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 
 	files := resp.Contents
 	if len(files) > 0 {
-		for _, file := range files {
-			if strings.HasSuffix(*file.Key, ".json.gz") {
-				fullKey = *file.Key
 
-				fileActivities, err := s.GetAPIActivitiesFromFile(ctx, *file.Key)
-				if err != nil {
-					return oops.Wrapf(err, "failed to get existing activities from disk")
-				}
-
-				allActivities = append(allActivities, fileActivities...)
-			}
+		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from disk")
 		}
-	}
 
-	if fullKey == "" {
-		fullKey = filepath.Join(keyPrefix, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
+		allActivities = append(allActivities, fileActivities...)
 	}
 
 	jsonData, err := json.Marshal(allActivities)
@@ -212,7 +195,7 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:          &s.s3Bucket,
-		Key:             &fullKey,
+		Key:             &s.currentActivitiesPath,
 		Body:            bytes.NewReader(gzippedData.Bytes()),
 		ContentType:     aws.String("application/json"),
 		ContentEncoding: aws.String("gzip"),
@@ -223,7 +206,7 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 
 	slog.Info("Wrote JSON file to S3",
 		"bucket", s.s3Bucket,
-		"key", fullKey,
+		"key", s.currentActivitiesPath,
 		"activities", len(allActivities),
 	)
 

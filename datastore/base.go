@@ -2,11 +2,9 @@ package datastore
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -22,51 +20,22 @@ type BaseDatastore struct {
 
 // SaveFindings saves a batch of findings to the datastore. Datastore implementations handle file formats.
 func (d *BaseDatastore) SaveFindings(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
-	findingsByDay := make(map[string][]ocsf.VulnerabilityFinding)
-	for _, finding := range findings {
-		partitionPath := d.getPartitionPath(finding)
-		findingsByDay[partitionPath] = append(findingsByDay[partitionPath], finding)
+	if err := d.store.WriteBatch(ctx, findings); err != nil {
+		return err
 	}
-
-	for partitionPath, dayFindings := range findingsByDay {
-		if err := d.store.WriteBatch(ctx, dayFindings, partitionPath); err != nil {
-			return oops.Wrapf(err, "failed to write batch")
-		}
-	}
-
 	slog.Info("upserted findings", "findings", len(findings))
 
 	return nil
 }
 
 func (d *BaseDatastore) SaveAPIActivities(ctx context.Context, activities []ocsf.APIActivity) error {
-	activitiesByDay := make(map[string][]ocsf.APIActivity)
-	for _, activity := range activities {
-		partitionPath := d.getAPIActivityPartitionPath(activity)
-		activitiesByDay[partitionPath] = append(activitiesByDay[partitionPath], activity)
-	}
-
-	for partitionPath, dayActivities := range activitiesByDay {
-		if err := d.store.WriteAPIActivityBatch(ctx, dayActivities, partitionPath); err != nil {
-			return oops.Wrapf(err, "failed to write batch")
-		}
+	if err := d.store.WriteAPIActivityBatch(ctx, activities); err != nil {
+		return oops.Wrapf(err, "failed to write batch")
 	}
 
 	slog.Info("upserted activities", "activities", len(activities))
 
 	return nil
-}
-
-// getPartitionPath returns a path for a finding based on its event time
-func (d *BaseDatastore) getPartitionPath(finding ocsf.VulnerabilityFinding) string {
-	eventDay := time.UnixMilli(finding.Time).Format("2006-01-02")
-	return filepath.Join(BasepathFindings, fmt.Sprintf("event_day=%s", eventDay))
-}
-
-// getAPIActivityPartitionPath returns a path for an API activity based on its event time
-func (d *BaseDatastore) getAPIActivityPartitionPath(activity ocsf.APIActivity) string {
-	eventDay := time.UnixMilli(activity.Time).Format("2006-01-02")
-	return filepath.Join(BasepathActivities, fmt.Sprintf("event_day=%s", eventDay))
 }
 
 func filesExist(pattern string) bool {
