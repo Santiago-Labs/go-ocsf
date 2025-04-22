@@ -30,7 +30,7 @@ type FindingInfo struct {
 	Analytic         *Analytic         `json:"analytic,omitempty" parquet:"analytic,optional"`
 	Attacks          []*MITREATTCK     `json:"attacks,omitempty" parquet:"attacks,list,optional"`
 	CreatedTime      *int64            `json:"created_time,omitempty" parquet:"created_time,optional"`
-	DataSources      []*string         `json:"data_sources,omitempty" parquet:"data_sources,list,optional"`
+	DataSources      []string          `json:"data_sources,omitempty" parquet:"data_sources,list,optional"`
 	Desc             *string           `json:"desc,omitempty" parquet:"desc,optional"`
 	FirstSeenTime    *int64            `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
 	KillChain        []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
@@ -41,6 +41,6 @@ type FindingInfo struct {
 	RelatedEvents    []*RelatedEvent   `json:"related_events,omitempty" parquet:"related_events,list,optional"`
 	SrcURL           *string           `json:"src_url,omitempty" parquet:"src_url,optional"`
 	Title            string            `json:"title" parquet:"title"`
-	Types            []*string         `json:"types,omitempty" parquet:"types,list,optional"`
+	Types            []string          `json:"types,omitempty" parquet:"types,list,optional"`
 	UID              string            `json:"uid" parquet:"uid"`
 }

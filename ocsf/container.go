@@ -26,7 +26,7 @@ var ContainerClassname = "container"
 type Container struct {
 	Hash          *Fingerprint      `json:"hash,omitempty" parquet:"hash,optional"`
 	Image         *Image            `json:"image,omitempty" parquet:"image,optional"`
-	Labels        []*string         `json:"labels,omitempty" parquet:"labels,list,optional"`
+	Labels        []string          `json:"labels,omitempty" parquet:"labels,list,optional"`
 	Name          *string           `json:"name,omitempty" parquet:"name,optional"`
 	NetworkDriver *string           `json:"network_driver,omitempty" parquet:"network_driver,optional"`
 	Orchestrator  *string           `json:"orchestrator,omitempty" parquet:"orchestrator,optional"`

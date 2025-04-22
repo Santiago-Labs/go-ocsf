@@ -66,8 +66,8 @@ type Process struct {
 	File             *File              `json:"file,omitempty" parquet:"file,optional"`
 	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity,optional"`
 	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
-	Lineage          []*string          `json:"lineage,omitempty" parquet:"lineage,list,optional"`
-	LoadedModules    []*string          `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
+	Lineage          []string           `json:"lineage,omitempty" parquet:"lineage,list,optional"`
+	LoadedModules    []string           `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
 	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
 	ParentProcess    *ParentProcess     `json:"parent_process,omitempty" parquet:"parent_process,optional"`
 	Path             *string            `json:"path,omitempty" parquet:"path,optional"`
@@ -90,8 +90,8 @@ type ParentProcess struct {
 	File             *File              `json:"file,omitempty" parquet:"file,optional"`
 	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity,optional"`
 	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
-	Lineage          []*string          `json:"lineage,omitempty" parquet:"lineage,list,optional"`
-	LoadedModules    []*string          `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
+	Lineage          []string           `json:"lineage,omitempty" parquet:"lineage,list,optional"`
+	LoadedModules    []string           `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
 	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
 	Path             *string            `json:"path,omitempty" parquet:"path,optional"`
 	PID              *int               `json:"pid,omitempty" parquet:"pid,optional"`

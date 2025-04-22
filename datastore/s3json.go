@@ -2,10 +2,10 @@ package datastore
 
 import (
 	"bytes"
-	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"path/filepath"
 	"time"
@@ -31,15 +31,10 @@ func NewS3JsonDatastore(ctx context.Context, bucketName string, s3Client *s3.Cli
 	s := &s3JsonDatastore{
 		s3Bucket: bucketName,
 		s3Client: s3Client,
-
-		currentFindingsPath:   filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
-		currentActivitiesPath: filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
 	}
 
 	s.BaseDatastore = BaseDatastore{
-		store:                  s,
-		findingsTableName:      "vulnerability_finding",
-		apiActivitiesTableName: "api_activities",
+		store: s,
 	}
 
 	return s, nil
@@ -57,15 +52,14 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 	}
 	defer result.Body.Close()
 
-	gzipReader, err := gzip.NewReader(result.Body)
+	data, err := io.ReadAll(result.Body)
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create gzip reader")
+		return nil, oops.Wrapf(err, "failed to read JSON file data")
 	}
-	defer gzipReader.Close()
 
 	var findings []ocsf.VulnerabilityFinding
-	if err := json.NewDecoder(gzipReader).Decode(&findings); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse gzipped JSON file")
+	if err := json.Unmarshal(data, &findings); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
 	return findings, nil
@@ -76,23 +70,15 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
 
-	resp, err := s.s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: &s.s3Bucket,
-		Prefix: &s.currentFindingsPath,
-	})
-	if err != nil {
-		return oops.Wrapf(err, "failed to list objects in S3")
-	}
-
-	files := resp.Contents
-	if len(files) > 0 {
+	if s.currentFindingsPath == "" {
+		s.currentFindingsPath = filepath.Join(BasepathFindings, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+	} else {
 		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
 		if err != nil {
 			return oops.Wrapf(err, "failed to get existing activities from s3")
 		}
 
 		allFindings = append(allFindings, fileFindings...)
-
 	}
 
 	jsonData, err := json.Marshal(allFindings)
@@ -100,23 +86,11 @@ func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vulner
 		return oops.Wrapf(err, "failed to marshal findings to JSON")
 	}
 
-	var gzippedData bytes.Buffer
-	gzipWriter := gzip.NewWriter(&gzippedData)
-
-	if _, err := gzipWriter.Write(jsonData); err != nil {
-		return oops.Wrapf(err, "failed to write gzip data")
-	}
-
-	if err := gzipWriter.Close(); err != nil {
-		return oops.Wrapf(err, "failed to close gzip writer")
-	}
-
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:          &s.s3Bucket,
-		Key:             &s.currentFindingsPath,
-		Body:            bytes.NewReader(gzippedData.Bytes()),
-		ContentType:     aws.String("application/json"),
-		ContentEncoding: aws.String("gzip"),
+		Bucket:      &s.s3Bucket,
+		Key:         &s.currentFindingsPath,
+		Body:        bytes.NewReader(jsonData),
+		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")
@@ -141,15 +115,15 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 	}
 	defer result.Body.Close()
 
-	gzipReader, err := gzip.NewReader(result.Body)
+	data, err := io.ReadAll(result.Body)
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create gzip reader")
+		return nil, oops.Wrapf(err, "failed to read JSON file data")
 	}
-	defer gzipReader.Close()
 
 	var activities []ocsf.APIActivity
-	if err := json.NewDecoder(gzipReader).Decode(&activities); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse gzipped JSON file")
+
+	if err := json.Unmarshal(data, &activities); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
 	return activities, nil
@@ -158,17 +132,9 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
 
-	resp, err := s.s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: &s.s3Bucket,
-		Prefix: &s.currentActivitiesPath,
-	})
-	if err != nil {
-		return oops.Wrapf(err, "failed to list objects in S3")
-	}
-
-	files := resp.Contents
-	if len(files) > 0 {
-
+	if s.currentActivitiesPath == "" {
+		s.currentActivitiesPath = filepath.Join(BasepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+	} else {
 		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
 		if err != nil {
 			return oops.Wrapf(err, "failed to get existing activities from disk")
@@ -182,23 +148,11 @@ func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities 
 		return oops.Wrapf(err, "failed to marshal activities to JSON")
 	}
 
-	var gzippedData bytes.Buffer
-	gzipWriter := gzip.NewWriter(&gzippedData)
-
-	if _, err := gzipWriter.Write(jsonData); err != nil {
-		return oops.Wrapf(err, "failed to write gzip data")
-	}
-
-	if err := gzipWriter.Close(); err != nil {
-		return oops.Wrapf(err, "failed to close gzip writer")
-	}
-
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:          &s.s3Bucket,
-		Key:             &s.currentActivitiesPath,
-		Body:            bytes.NewReader(gzippedData.Bytes()),
-		ContentType:     aws.String("application/json"),
-		ContentEncoding: aws.String("gzip"),
+		Bucket:      &s.s3Bucket,
+		Key:         &s.currentActivitiesPath,
+		Body:        bytes.NewReader(jsonData),
+		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")

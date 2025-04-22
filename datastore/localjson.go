@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -32,27 +31,10 @@ func NewLocalJsonDatastore(ctx context.Context) (Datastore, error) {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
-	currentFindingsPath := filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-	_, err := os.Create(currentFindingsPath)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create file")
-	}
-
-	currentActivitiesPath := filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-	_, err = os.Create(currentActivitiesPath)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create file")
-	}
-
-	s := &localJsonDatastore{
-		currentFindingsPath:   filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
-		currentActivitiesPath: filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z"))),
-	}
+	s := &localJsonDatastore{}
 
 	s.BaseDatastore = BaseDatastore{
-		store:                  s,
-		findingsTableName:      "vulnerability_finding",
-		apiActivitiesTableName: "api_activities",
+		store: s,
 	}
 
 	return s, nil
@@ -61,21 +43,14 @@ func NewLocalJsonDatastore(ctx context.Context) (Datastore, error) {
 // GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
 // It reads the gzipped JSON file and parses it into a slice of vulnerability findings.
 func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path string) ([]ocsf.VulnerabilityFinding, error) {
-	file, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to open gzip file")
+		return nil, oops.Wrapf(err, "failed to read JSON file from disk")
 	}
-	defer file.Close()
-
-	gzipReader, err := gzip.NewReader(file)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create gzip reader")
-	}
-	defer gzipReader.Close()
 
 	var findings []ocsf.VulnerabilityFinding
-	if err := json.NewDecoder(gzipReader).Decode(&findings); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse gzipped JSON file")
+	if err := json.Unmarshal(data, &findings); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
 	return findings, nil
@@ -86,29 +61,24 @@ func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path strin
 func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
 
-	fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
-	if err != nil {
-		return oops.Wrapf(err, "failed to get existing findings from disk")
-	}
+	if s.currentFindingsPath == "" {
+		s.currentFindingsPath = filepath.Join(BasepathFindings, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+	} else {
+		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing findings from disk")
+		}
 
-	allFindings = append(allFindings, fileFindings...)
+		allFindings = append(allFindings, fileFindings...)
+	}
 
 	jsonData, err := json.Marshal(allFindings)
 	if err != nil {
 		return oops.Wrapf(err, "failed to marshal findings to JSON")
 	}
 
-	file, err := os.OpenFile(s.currentFindingsPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		return oops.Wrapf(err, "failed to create gzip file")
-	}
-	defer file.Close()
-
-	gzipWriter := gzip.NewWriter(file)
-	defer gzipWriter.Close()
-
-	if _, err := gzipWriter.Write(jsonData); err != nil {
-		return oops.Wrapf(err, "failed to write gzip data")
+	if err := os.WriteFile(s.currentFindingsPath, jsonData, 0644); err != nil {
+		return oops.Wrapf(err, "failed to write JSON to disk")
 	}
 
 	slog.Info("Wrote JSON file to disk", "path", s.currentFindingsPath, "findings", len(allFindings))
@@ -119,31 +89,25 @@ func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.Vul
 func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
 
-	fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
-	if err != nil {
-		return oops.Wrapf(err, "failed to get existing activities from disk")
-	}
+	if s.currentActivitiesPath == "" {
+		s.currentActivitiesPath = filepath.Join(BasepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+	} else {
+		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from disk")
+		}
 
-	allActivities = append(allActivities, fileActivities...)
+		allActivities = append(allActivities, fileActivities...)
+	}
 
 	jsonData, err := json.Marshal(allActivities)
 	if err != nil {
-		return oops.Wrapf(err, "failed to marshal activities to JSON")
+		return oops.Wrapf(err, "failed to marshal findings to JSON")
 	}
 
-	file, err := os.OpenFile(s.currentActivitiesPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		return oops.Wrapf(err, "failed to create gzip file")
+	if err := os.WriteFile(s.currentActivitiesPath, jsonData, 0644); err != nil {
+		return oops.Wrapf(err, "failed to write JSON to disk")
 	}
-	defer file.Close()
-
-	gzipWriter := gzip.NewWriter(file)
-	defer gzipWriter.Close()
-
-	if _, err := gzipWriter.Write(jsonData); err != nil {
-		return oops.Wrapf(err, "failed to write gzip data")
-	}
-
 	slog.Info("Wrote JSON file to disk",
 		"path", s.currentActivitiesPath,
 		"activities", len(allActivities),
@@ -156,21 +120,14 @@ func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activiti
 // GetAPIActivitiesFromFile retrieves all API activities from a specific file path.
 // It reads the gzipped JSON file and parses it into a slice of API activities.
 func (s *localJsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, path string) ([]ocsf.APIActivity, error) {
-	file, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to open gzip file")
+		return nil, oops.Wrapf(err, "failed to read JSON file from disk")
 	}
-	defer file.Close()
-
-	gzipReader, err := gzip.NewReader(file)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to create gzip reader")
-	}
-	defer gzipReader.Close()
 
 	var activities []ocsf.APIActivity
-	if err := json.NewDecoder(gzipReader).Decode(&activities); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse gzipped JSON file")
+	if err := json.Unmarshal(data, &activities); err != nil {
+		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
 	return activities, nil

@@ -39,7 +39,7 @@ type SSO struct {
 	ModifiedTime     *int64              `json:"modified_time,omitempty" parquet:"modified_time,optional"`
 	Name             *string             `json:"name,omitempty" parquet:"name,optional"`
 	ProtocolName     *string             `json:"protocol_name,omitempty" parquet:"protocol_name,optional"`
-	Scopes           []*string           `json:"scopes,omitempty" parquet:"scopes,list,optional"`
+	Scopes           []string            `json:"scopes,omitempty" parquet:"scopes,list,optional"`
 	UID              *string             `json:"uid,omitempty" parquet:"uid,optional"`
 	VendorName       *string             `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`
 }

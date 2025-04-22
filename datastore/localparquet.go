@@ -22,20 +22,12 @@ type localParquetDatastore struct {
 
 // NewLocalParquetDatastore creates a new local Parquet datastore.
 func NewLocalParquetDatastore(ctx context.Context) (Datastore, error) {
-	if _, err := os.Stat(BasepathFindings); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
-				return nil, oops.Wrapf(err, "failed to create directory")
-			}
-		}
+	if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
+		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
-	if _, err := os.Stat(BasepathActivities); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
-				return nil, oops.Wrapf(err, "failed to create directory")
-			}
-		}
+	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
+		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
 	s := &localParquetDatastore{}
@@ -44,13 +36,6 @@ func NewLocalParquetDatastore(ctx context.Context) (Datastore, error) {
 		store:                  s,
 		findingsTableName:      "vulnerability_finding",
 		apiActivitiesTableName: "api_activities",
-	}
-
-	if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
-		return nil, oops.Wrapf(err, "failed to create directory")
-	}
-	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
-		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
 	return s, nil

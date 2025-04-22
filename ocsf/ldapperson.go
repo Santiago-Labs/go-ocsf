@@ -10,13 +10,13 @@ type LdapPerson struct {
 	CreatedTimeDt   *string      `json:"created_time_dt,omitempty" parquet:"created_time_dt,optional"`
 	DeletedTime     *int         `json:"deleted_time,omitempty" parquet:"deleted_time,optional"`
 	DeletedTimeDt   *string      `json:"deleted_time_dt,omitempty" parquet:"deleted_time_dt,optional"`
-	EmailAddrs      []*string    `json:"email_addrs,omitempty" parquet:"email_addrs,list,optional"`
+	EmailAddrs      []string     `json:"email_addrs,omitempty" parquet:"email_addrs,list,optional"`
 	EmployeeUID     *string      `json:"employee_uid,omitempty" parquet:"employee_uid,optional"`
 	GivenName       *string      `json:"given_name,omitempty" parquet:"given_name,optional"`
 	HireTime        *int         `json:"hire_time,omitempty" parquet:"hire_time,optional"`
 	HireTimeDt      *string      `json:"hire_time_dt,omitempty" parquet:"hire_time_dt,optional"`
 	JobTitle        *string      `json:"job_title,omitempty" parquet:"job_title,optional"`
-	Labels          []*string    `json:"labels,omitempty" parquet:"labels,list,optional"`
+	Labels          []string     `json:"labels,omitempty" parquet:"labels,list,optional"`
 	LastLoginTime   *int         `json:"last_login_time,omitempty" parquet:"last_login_time,optional"`
 	LastLoginTimeDt *string      `json:"last_login_time_dt,omitempty" parquet:"last_login_time_dt,optional"`
 	LDAPCn          *string      `json:"ldap_cn,omitempty" parquet:"ldap_cn,optional"`

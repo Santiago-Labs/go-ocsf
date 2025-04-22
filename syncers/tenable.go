@@ -9,7 +9,6 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/samsarahq/go/oops"
 )
 
@@ -130,7 +129,7 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		cveID := fmt.Sprintf("PLUGIN-%d", finding.Plugin.ID)
 		cve = &ocsf.CVE{
 			UID:        cveID,
-			References: aws.StringSlice(references),
+			References: references,
 		}
 	}
 
@@ -146,7 +145,7 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		LastSeenTime:       &lastSeenTime,
 		VendorName:         &vendorName,
 		Remediation:        remediation,
-		References:         aws.StringSlice(references),
+		References:         references,
 	})
 
 	resource := ocsf.ResourceDetails{
@@ -203,8 +202,8 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		FirstSeenTime: &firstSeenTime,
 		LastSeenTime:  &lastSeenTime,
 		ModifiedTime:  &lastSeenTime,
-		DataSources:   []*string{aws.String("tenable")},
-		Types:         []*string{aws.String("Vulnerability")},
+		DataSources:   []string{"tenable"},
+		Types:         []string{"Vulnerability"},
 	}
 
 	ocsfFinding := ocsf.VulnerabilityFinding{

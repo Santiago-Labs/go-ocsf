@@ -17,7 +17,7 @@ var ServiceStruct = arrow.StructOf(ServiceFields...)
 var ServiceClassname = "service"
 
 type Service struct {
-	Labels  []*string         `json:"labels,omitempty" parquet:"labels,list,optional"`
+	Labels  []string          `json:"labels,omitempty" parquet:"labels,list,optional"`
 	Name    *string           `json:"name,omitempty" parquet:"name,optional"`
 	Tags    []*KeyValueObject `json:"tags,omitempty" parquet:"tags,list,optional"`
 	UID     *string           `json:"uid,omitempty" parquet:"uid,optional"`

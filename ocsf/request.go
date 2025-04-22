@@ -18,6 +18,6 @@ var RequestClassname = "request"
 type Request struct {
 	Containers []*Container `json:"containers,omitempty" parquet:"containers,list,optional"`
 	Data       *string      `json:"data,omitempty" parquet:"data,optional"`
-	Flags      []*string    `json:"flags,omitempty" parquet:"flags,list,optional"`
+	Flags      []string     `json:"flags,omitempty" parquet:"flags,list,optional"`
 	UID        string       `json:"uid" parquet:"uid"`
 }

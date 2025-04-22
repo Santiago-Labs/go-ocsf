@@ -18,9 +18,9 @@ var ImageClassname = "image"
 
 // Image represents image details.
 type Image struct {
-	Labels []*string `json:"labels,omitempty" parquet:"labels,list,optional"`
-	Name   *string   `json:"name,omitempty" parquet:"name,optional"`
-	Path   *string   `json:"path,omitempty" parquet:"path,optional"`
-	Tag    *string   `json:"tag,omitempty" parquet:"tag,optional"`
-	UID    string    `json:"uid" parquet:"uid"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
+	Name   *string  `json:"name,omitempty" parquet:"name,optional"`
+	Path   *string  `json:"path,omitempty" parquet:"path,optional"`
+	Tag    *string  `json:"tag,omitempty" parquet:"tag,optional"`
+	UID    string   `json:"uid" parquet:"uid"`
 }

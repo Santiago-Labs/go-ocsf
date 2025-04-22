@@ -12,9 +12,6 @@ import (
 
 type BaseDatastore struct {
 	store Datastore
-
-	apiActivitiesTableName string
-	findingsTableName      string
 }
 
 // SaveFindings saves a batch of findings to the datastore. Datastore implementations handle file formats.

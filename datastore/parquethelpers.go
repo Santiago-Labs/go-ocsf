@@ -140,68 +140,6 @@ func buildParquetSchemaFromIceberg(tbl table.Table) *parquet.Schema {
 	return parquet.NewSchema("root", rootGroup)
 }
 
-func applyFieldIDs(iceberg parquet.Node, parquetSchema parquet.Node) (parquet.Node, error) {
-	if iceberg.Leaf() != parquetSchema.Leaf() {
-		name := "<root>"
-		if f, ok := iceberg.(parquet.Field); ok {
-			name = f.Name()
-		}
-		return nil, fmt.Errorf("schema mismatch at field %q: one node is leaf, the other is group", name)
-	}
-	if iceberg.Optional() != parquetSchema.Optional() || iceberg.Repeated() != parquetSchema.Repeated() {
-		name := "<root>"
-		if f, ok := iceberg.(parquet.Field); ok {
-			name = f.Name()
-		}
-		return nil, fmt.Errorf("schema nullability mismatch at field %q (Iceberg optional=%v, Parquet optional=%v)",
-			name, iceberg.Optional(), parquetSchema.Optional())
-	}
-
-	if iceberg.Leaf() && parquetSchema.Leaf() {
-		if iceberg.ID() != 0 {
-			parquetSchema = parquet.FieldID(parquetSchema, iceberg.ID())
-		}
-		return parquetSchema, nil
-	}
-
-	childrenIce := iceberg.Fields()
-	childrenPar := parquetSchema.Fields()
-
-	parFieldByName := make(map[string]parquet.Node, len(childrenPar))
-	for _, pf := range childrenPar {
-		parFieldByName[pf.Name()] = pf
-	}
-
-	resultGroup := parquet.Group{}
-	for _, iceField := range childrenIce {
-		name := iceField.Name()
-		parField, ok := parFieldByName[name]
-		if !ok {
-			return nil, fmt.Errorf("field %q present in Iceberg schema not found in Parquet schema", name)
-		}
-		updatedChild, err := applyFieldIDs(iceField, parField)
-		if err != nil {
-			return nil, err
-		}
-		resultGroup[name] = updatedChild
-	}
-	if len(childrenPar) != len(childrenIce) {
-		return nil, fmt.Errorf("Parquet schema has fields not present in Iceberg schema")
-	}
-
-	var updatedNode parquet.Node = resultGroup
-	if parquetSchema.Optional() {
-		updatedNode = parquet.Optional(updatedNode)
-	}
-	if parquetSchema.Repeated() {
-		updatedNode = parquet.Repeated(updatedNode)
-	}
-	if iceberg.ID() != 0 {
-		updatedNode = parquet.FieldID(updatedNode, iceberg.ID())
-	}
-	return updatedNode, nil
-}
-
 func attachFieldIDs(arSchema *arrow.Schema, iceSchema *iceberg.Schema) (*arrow.Schema, error) {
 	nextMeta := func(md arrow.Metadata, k, v string) arrow.Metadata {
 		keys, vals := md.Keys(), md.Values()

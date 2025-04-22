@@ -24,6 +24,6 @@ type Response struct {
 	Data         *string      `json:"data,omitempty" parquet:"data,optional"`
 	Error        *string      `json:"error,omitempty" parquet:"error,optional"`
 	ErrorMessage *string      `json:"error_message,omitempty" parquet:"error_message,optional"`
-	Flags        []*string    `json:"flags,omitempty" parquet:"flags,list,optional"`
+	Flags        []string     `json:"flags,omitempty" parquet:"flags,list,optional"`
 	Message      *string      `json:"message,omitempty" parquet:"message,optional"`
 }

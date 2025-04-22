@@ -33,7 +33,7 @@ type HTTPRequest struct {
 	Version       *string       `json:"version,omitempty" parquet:"version,optional"`
 	HTTPHeaders   []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional"`
 	URL           *URL          `json:"url,omitempty" parquet:"url"`
-	XForwardedFor []*string     `json:"x_forwarded_for,omitempty" parquet:"x_forwarded_for,list,optional"`
+	XForwardedFor []string      `json:"x_forwarded_for,omitempty" parquet:"x_forwarded_for,list,optional"`
 }
 
 // HTTPResponseFields defines the Arrow fields for HTTPResponse.

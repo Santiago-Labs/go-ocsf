@@ -128,7 +128,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 
 		remediation = &ocsf.Remediation{
 			Description: description,
-			References:  aws.StringSlice(references),
+			References:  references,
 		}
 	}
 
@@ -225,8 +225,8 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		FirstSeenTime: createdAt,
 		LastSeenTime:  lastSeenTime,
 		ModifiedTime:  modifiedTime,
-		DataSources:   []*string{aws.String("securityhub")},
-		Types:         []*string{aws.String("Vulnerability")},
+		DataSources:   []string{"securityhub"},
+		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
@@ -335,7 +335,7 @@ func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
 
 				return &ocsf.CVE{
 					UID:        *vuln.Id,
-					References: aws.StringSlice(references),
+					References: references,
 					CVSS:       cvss,
 				}
 			}

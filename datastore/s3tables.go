@@ -14,7 +14,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/parquet-go/parquet-go"
 	"github.com/samsarahq/go/oops"
 
 	_ "github.com/apache/iceberg-go/catalog/rest"
@@ -24,9 +23,6 @@ type s3TablesDatastore struct {
 	s3Bucket           string
 	apiActivitiesTable *table.Table
 	findingsTable      *table.Table
-
-	findingsTableSchema   *parquet.Schema
-	activitiesTableSchema *parquet.Schema
 
 	BaseDatastore
 }
@@ -80,11 +76,6 @@ func NewS3TablesDatastore(ctx context.Context, bucketName string, s3Client *s3.C
 		return nil, oops.Wrapf(err, "failed to load table")
 	}
 
-	patchedfindingsSchema, err := patchParquetSchema(*findingsTable, parquet.SchemaOf(new(ocsf.VulnerabilityFinding)), "VulnerabilityFinding")
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to patch parquet schema")
-	}
-
 	activityIdent := table.Identifier([]string{"ocsf_data", "api_activity"})
 	// err = createIcebergTable(ctx, cat, ocsf.APIActivitySchema, activityIdent)
 	// if err != nil {
@@ -95,17 +86,10 @@ func NewS3TablesDatastore(ctx context.Context, bucketName string, s3Client *s3.C
 		return nil, oops.Wrapf(err, "failed to load table")
 	}
 
-	patchedActivitiesSchema, err := patchParquetSchema(*activitiesTable, parquet.SchemaOf(new(ocsf.APIActivity)), "APIActivity")
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to patch parquet schema")
-	}
-
 	s := &s3TablesDatastore{
-		s3Bucket:              bucketName,
-		apiActivitiesTable:    activitiesTable,
-		findingsTable:         findingsTable,
-		findingsTableSchema:   patchedfindingsSchema,
-		activitiesTableSchema: patchedActivitiesSchema,
+		s3Bucket:           bucketName,
+		apiActivitiesTable: activitiesTable,
+		findingsTable:      findingsTable,
 	}
 
 	s.BaseDatastore = BaseDatastore{
@@ -113,19 +97,6 @@ func NewS3TablesDatastore(ctx context.Context, bucketName string, s3Client *s3.C
 	}
 
 	return s, nil
-}
-
-func patchParquetSchema(icebergTable table.Table, parquetSchema *parquet.Schema, tableName string) (*parquet.Schema, error) {
-	icebergSchema := buildParquetSchemaFromIceberg(icebergTable)
-
-	patchedRoot, err := applyFieldIDs(icebergSchema, parquetSchema)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to apply field IDs")
-	}
-
-	patchedSchema := parquet.NewSchema(tableName, patchedRoot)
-
-	return patchedSchema, nil
 }
 
 func createIcebergTable(ctx context.Context, cat catalog.Catalog, arrowSchema *arrow.Schema, tableName table.Identifier) error {

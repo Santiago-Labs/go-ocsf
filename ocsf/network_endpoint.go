@@ -57,7 +57,7 @@ type NetworkEndpoint struct {
 	AgentList        []*Agent              `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 	AutonomousSystem *AutonomousSystem     `json:"autonomous_system,omitempty" parquet:"autonomous_system,optional"`
 	HWInfo           *DeviceHWInfo         `json:"hw_info,omitempty" parquet:"hw_info,optional"`
-	IntermediateIPs  []*string             `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,list,optional"`
+	IntermediateIPs  []string              `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,list,optional"`
 	Location         *GeoLocation          `json:"location,omitempty" parquet:"location,optional"`
 	OS               *OS                   `json:"os,omitempty" parquet:"os,optional"`
 	Owner            *User                 `json:"owner,omitempty" parquet:"owner,optional"`

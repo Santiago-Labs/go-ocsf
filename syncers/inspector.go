@@ -123,7 +123,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 
 		remediation = &ocsf.Remediation{
 			Description: description,
-			References:  aws.StringSlice(references),
+			References:  references,
 		}
 	}
 
@@ -203,8 +203,8 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		FirstSeenTime: &firstSeenTime,
 		LastSeenTime:  &lastSeenTime,
 		ModifiedTime:  &modifiedTime,
-		DataSources:   []*string{aws.String("inspector")},
-		Types:         []*string{aws.String("Vulnerability")},
+		DataSources:   []string{"inspector"},
+		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
@@ -294,7 +294,7 @@ func mapInspectorCVE(finding types.Finding) *ocsf.CVE {
 
 		return &ocsf.CVE{
 			UID:        *finding.PackageVulnerabilityDetails.VulnerabilityId,
-			References: aws.StringSlice(finding.PackageVulnerabilityDetails.ReferenceUrls),
+			References: finding.PackageVulnerabilityDetails.ReferenceUrls,
 			CVSS:       cvss,
 		}
 	}

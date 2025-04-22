@@ -17,5 +17,5 @@ var RemediationClassname = "remediation"
 type Remediation struct {
 	Description   string       `json:"desc" parquet:"desc"`
 	KbArticleList []*KBArticle `json:"kb_article_list" parquet:"kb_article_list,list,optional"`
-	References    []*string    `json:"references,omitempty" parquet:"references,list,optional"`
+	References    []string     `json:"references,omitempty" parquet:"references,list,optional"`
 }

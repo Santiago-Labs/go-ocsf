@@ -8,7 +8,6 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/samsarahq/go/oops"
 )
 
@@ -140,7 +139,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 			AffectedCode:       snykAffectedCode(issue, project),
 			AffectedPackages:   snykAffectedPackages(issue),
 			Remediation:        remediation,
-			References:         []*string{&issueURL},
+			References:         []string{issueURL},
 		})
 	} else {
 		for _, problem := range issue.Attributes.Problems {
@@ -164,7 +163,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				LastSeenTime:       &lastSeenTime,
 				VendorName:         &vendorName,
 				Remediation:        remediation,
-				References:         []*string{&reference},
+				References:         []string{reference},
 			})
 		}
 	}
@@ -224,8 +223,8 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		FirstSeenTime: &createdAt,
 		LastSeenTime:  &lastSeenTime,
 		ModifiedTime:  &updatedAt,
-		DataSources:   []*string{aws.String("snyk")},
-		Types:         []*string{aws.String("Vulnerability")},
+		DataSources:   []string{"snyk"},
+		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
@@ -286,10 +285,14 @@ func mapSnykStatus(snykStatus string) (string, int32) {
 
 func snykProblemToCVE(problem snyk.Problem) *ocsf.CVE {
 	if problem.Source == "NVD" {
+		var problemURL string
+		if problem.URL != nil {
+			problemURL = *problem.URL
+		}
 		return &ocsf.CVE{
 			UID: problem.ID,
-			References: []*string{
-				problem.URL,
+			References: []string{
+				problemURL,
 			},
 		}
 	}
