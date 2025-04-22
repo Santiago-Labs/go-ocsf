@@ -1,13 +1,13 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var TechniqueFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "src_url", Type: arrow.BinaryTypes.String},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var TechniqueStruct = arrow.StructOf(TechniqueFields...)

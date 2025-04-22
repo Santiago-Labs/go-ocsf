@@ -1,13 +1,13 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // EnvironmentVarFields defines the Arrow fields for EnvironmentVar.
 var EnvironmentVarFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "value", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var EnvironmentVarStruct = arrow.StructOf(EnvironmentVarFields...)

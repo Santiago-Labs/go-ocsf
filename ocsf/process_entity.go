@@ -1,29 +1,27 @@
 package ocsf
 
 import (
-	"time"
-
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // ProcessEntityFields defines the Arrow fields for Process Entity.
 var ProcessEntityFields = []arrow.Field{
-	{Name: "cmd_line", Type: arrow.BinaryTypes.String},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "path", Type: arrow.BinaryTypes.String},
-	{Name: "pid", Type: arrow.PrimitiveTypes.Int64},
-	{Name: "uid", Type: arrow.BinaryTypes.String},
+	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "pid", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 
 var ProcessEntityStruct = arrow.StructOf(ProcessEntityFields...)
 var ProcessEntityClassname = "process_entity"
 
 type ProcessEntity struct {
-	CmdLine     *string    `json:"cmd_line,omitempty" parquet:"cmd_line"`
-	CreatedTime *time.Time `json:"created_time,omitempty" parquet:"created_time"`
-	Name        *string    `json:"name,omitempty" parquet:"name"`
-	Path        *string    `json:"path,omitempty" parquet:"path"`
-	PID         *int64     `json:"pid,omitempty" parquet:"pid"`
-	UID         *string    `json:"uid,omitempty" parquet:"uid"`
+	CmdLine     *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
+	CreatedTime *int64  `json:"created_time,omitempty" parquet:"created_time,optional"`
+	Name        *string `json:"name,omitempty" parquet:"name,optional"`
+	Path        *string `json:"path,omitempty" parquet:"path,optional"`
+	PID         *int64  `json:"pid,omitempty" parquet:"pid,optional"`
+	UID         *string `json:"uid,omitempty" parquet:"uid,optional"`
 }

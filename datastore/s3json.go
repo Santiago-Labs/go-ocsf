@@ -8,7 +8,6 @@ import (
 	"io"
 	"log/slog"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
@@ -21,45 +20,35 @@ type s3JsonDatastore struct {
 	s3Bucket string
 	s3Client *s3.Client
 
+	currentFindingsPath   string
+	currentActivitiesPath string
+
 	BaseDatastore
 }
 
 // NewS3JsonDatastore creates a new S3 JSON datastore.
-// It initializes an in-memory index of finding IDs to file paths.
-func NewS3JsonDatastore(bucketName string, s3Client *s3.Client) Datastore {
+func NewS3JsonDatastore(ctx context.Context, bucketName string, s3Client *s3.Client) (Datastore, error) {
 	s := &s3JsonDatastore{
 		s3Bucket: bucketName,
 		s3Client: s3Client,
 	}
+
 	s.BaseDatastore = BaseDatastore{
-		findingIndex:      make(map[string]string),
-		fileIndex:         make(map[string]int),
-		activityIndex:     make(map[string]string),
-		activityFileIndex: make(map[string]int),
-		store:             s,
+		store: s,
 	}
 
-	ctx := context.Background()
-	if err := s.buildFindingIndex(ctx); err != nil {
-		slog.Warn("failed to build complete finding index", "error", err)
-	}
-
-	if err := s.buildActivityIndex(ctx); err != nil {
-		slog.Warn("failed to build complete activity index", "error", err)
-	}
-
-	return s
+	return s, nil
 }
 
 // GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
-// It reads the JSON file and parses it into a slice of vulnerability findings.
+// It reads the gzipped JSON file and parses it into a slice of vulnerability findings.
 func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) ([]ocsf.VulnerabilityFinding, error) {
 	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(s.s3Bucket),
 		Key:    aws.String(key),
 	})
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get JSON file from S3")
+		return nil, oops.Wrapf(err, "failed to get gzipped JSON file from S3")
 	}
 	defer result.Body.Close()
 
@@ -68,120 +57,51 @@ func (s *s3JsonDatastore) GetFindingsFromFile(ctx context.Context, key string) (
 		return nil, oops.Wrapf(err, "failed to read JSON file data")
 	}
 
-	var findings struct {
-		VulnerabilityFindings []ocsf.VulnerabilityFinding `json:"vulnerability_findings"`
-	}
-
+	var findings []ocsf.VulnerabilityFinding
 	if err := json.Unmarshal(data, &findings); err != nil {
 		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
-	return findings.VulnerabilityFindings, nil
+	return findings, nil
 }
 
 // WriteBatch creates a new JSON file for storing vulnerability findings.
 // It marshals the findings into a JSON object and writes it to the specified file path.
-func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, key *string) error {
+func (s *s3JsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
-	if key == nil {
-		newkey := filepath.Join(basepath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
-		key = &newkey
+
+	if s.currentFindingsPath == "" {
+		s.currentFindingsPath = filepath.Join(BasepathFindings, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 	} else {
-		var err error
-		allFindings, err = s.GetFindingsFromFile(ctx, *key)
+		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
 		if err != nil {
-			return oops.Wrapf(err, "failed to get existing findings from disk")
+			return oops.Wrapf(err, "failed to get existing activities from s3")
 		}
 
-		allFindings = append(allFindings, findings...)
+		allFindings = append(allFindings, fileFindings...)
 	}
 
-	outerSchema := map[string]interface{}{
-		"vulnerability_findings": allFindings,
-	}
-	jsonData, err := json.Marshal(outerSchema)
+	jsonData, err := json.Marshal(allFindings)
 	if err != nil {
 		return oops.Wrapf(err, "failed to marshal findings to JSON")
 	}
 
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &s.s3Bucket,
-		Key:    key,
-		Body:   bytes.NewReader(jsonData),
+		Bucket:      &s.s3Bucket,
+		Key:         &s.currentFindingsPath,
+		Body:        bytes.NewReader(jsonData),
+		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")
 	}
 
-	for _, f := range allFindings {
-		s.BaseDatastore.findingIndex[f.FindingInfo.UID] = *key
-	}
-	s.BaseDatastore.fileIndex[*key] = len(allFindings)
-
 	slog.Info("Wrote JSON file to S3",
 		"bucket", s.s3Bucket,
-		"key", *key,
+		"key", s.currentFindingsPath,
 		"findings", len(allFindings),
 	)
 
-	return nil
-}
-
-// buildFindingIndex builds the datastore's in-memory index of finding IDs to file paths.
-// It reads all JSON files in the S3 bucket and parses them into a slice of vulnerability findings.
-func (s *s3JsonDatastore) buildFindingIndex(ctx context.Context) error {
-	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
-		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(basepath),
-	})
-
-	for paginator.HasMorePages() {
-		output, err := paginator.NextPage(ctx)
-		if err != nil {
-			return oops.Wrapf(err, "failed to list objects in S3")
-		}
-
-		for _, object := range output.Contents {
-			if strings.HasSuffix(*object.Key, "/") || !strings.HasSuffix(*object.Key, ".json") {
-				continue
-			}
-
-			if err := s.loadFileIntoIndex(ctx, *object.Key); err != nil {
-				slog.Warn("error indexing json file", "key", *object.Key, "error", err)
-			}
-		}
-	}
-
-	slog.Info("built finding index from S3", "count", len(s.BaseDatastore.findingIndex))
-	return nil
-}
-
-// buildActivityIndex builds the datastore's in-memory index of activity IDs to file paths.
-// It reads all JSON files in the S3 bucket and parses them into a slice of API activities.
-func (s *s3JsonDatastore) buildActivityIndex(ctx context.Context) error {
-	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
-		Bucket: aws.String(s.s3Bucket),
-		Prefix: aws.String(basepathActivities),
-	})
-
-	for paginator.HasMorePages() {
-		output, err := paginator.NextPage(ctx)
-		if err != nil {
-			return oops.Wrapf(err, "failed to list objects in S3")
-		}
-
-		for _, object := range output.Contents {
-			if strings.HasSuffix(*object.Key, "/") || !strings.HasSuffix(*object.Key, ".json") {
-				continue
-			}
-
-			if err := s.loadActivityFileIntoIndex(ctx, *object.Key); err != nil {
-				slog.Warn("error indexing json file", "key", *object.Key, "error", err)
-			}
-		}
-	}
-
-	slog.Info("built finding index from S3", "count", len(s.BaseDatastore.findingIndex))
 	return nil
 }
 
@@ -191,7 +111,7 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 		Key:    aws.String(key),
 	})
 	if err != nil {
-		return nil, oops.Wrapf(err, "failed to get JSON file from S3")
+		return nil, oops.Wrapf(err, "failed to get gzipped JSON file from S3")
 	}
 	defer result.Body.Close()
 
@@ -200,57 +120,47 @@ func (s *s3JsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, key stri
 		return nil, oops.Wrapf(err, "failed to read JSON file data")
 	}
 
-	var activities struct {
-		APIActivities []ocsf.APIActivity `json:"api_activities"`
-	}
+	var activities []ocsf.APIActivity
 
 	if err := json.Unmarshal(data, &activities); err != nil {
 		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
-	return activities.APIActivities, nil
+	return activities, nil
 }
 
-func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, key *string) error {
+func (s *s3JsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
-	if key == nil {
-		newkey := filepath.Join(basepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
-		key = &newkey
+
+	if s.currentActivitiesPath == "" {
+		s.currentActivitiesPath = filepath.Join(BasepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 	} else {
-		var err error
-		allActivities, err = s.GetAPIActivitiesFromFile(ctx, *key)
+		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
 		if err != nil {
 			return oops.Wrapf(err, "failed to get existing activities from disk")
 		}
 
-		allActivities = append(allActivities, activities...)
+		allActivities = append(allActivities, fileActivities...)
 	}
 
-	outerSchema := map[string]interface{}{
-		"api_activities": allActivities,
-	}
-	jsonData, err := json.Marshal(outerSchema)
+	jsonData, err := json.Marshal(allActivities)
 	if err != nil {
 		return oops.Wrapf(err, "failed to marshal activities to JSON")
 	}
 
 	_, err = s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &s.s3Bucket,
-		Key:    key,
-		Body:   bytes.NewReader(jsonData),
+		Bucket:      &s.s3Bucket,
+		Key:         &s.currentActivitiesPath,
+		Body:        bytes.NewReader(jsonData),
+		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "failed to upload JSON to S3")
 	}
 
-	for _, activity := range allActivities {
-		s.BaseDatastore.findingIndex[*activity.Metadata.CorrelationUID] = *key
-	}
-	s.BaseDatastore.fileIndex[*key] = len(allActivities)
-
 	slog.Info("Wrote JSON file to S3",
 		"bucket", s.s3Bucket,
-		"key", *key,
+		"key", s.currentActivitiesPath,
 		"activities", len(allActivities),
 	)
 

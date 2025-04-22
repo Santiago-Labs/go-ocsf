@@ -1,13 +1,13 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // SubjectAlternativeNameFields defines the Arrow fields for Subject Alternative Name.
 var SubjectAlternativeNameFields = []arrow.Field{
-	{Name: "name", Type: arrow.BinaryTypes.String},
-	{Name: "type", Type: arrow.BinaryTypes.String},
+	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var SubjectAlternativeNameStruct = arrow.StructOf(SubjectAlternativeNameFields...)

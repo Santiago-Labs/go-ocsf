@@ -1,16 +1,16 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 // MITREATTCKFields defines the Arrow fields for MITREATTCK.
 var MITREATTCKFields = []arrow.Field{
-	{Name: "sub_technique", Type: SubTechniqueStruct},
-	{Name: "tactic", Type: TacticStruct},
-	{Name: "tactics", Type: arrow.ListOf(TacticStruct)},
-	{Name: "technique", Type: TechniqueStruct},
-	{Name: "version", Type: arrow.BinaryTypes.String},
+	{Name: "sub_technique", Type: SubTechniqueStruct, Nullable: true},
+	{Name: "tactic", Type: TacticStruct, Nullable: true},
+	{Name: "tactics", Type: arrow.ListOf(TacticStruct), Nullable: true},
+	{Name: "technique", Type: TechniqueStruct, Nullable: true},
+	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var MITREATTCKStruct = arrow.StructOf(MITREATTCKFields...)
@@ -18,9 +18,9 @@ var MITREATTCKClassname = "attack"
 
 // MITREATTCK represents MITRE ATT&CK® details.
 type MITREATTCK struct {
-	SubTechnique *SubTechnique `json:"sub_technique,omitempty" parquet:"sub_technique"`
-	Tactic       *Tactic       `json:"tactic,omitempty" parquet:"tactic"`
-	Tactics      []Tactic      `json:"tactics,omitempty" parquet:"tactics"`
-	Technique    *Technique    `json:"technique,omitempty" parquet:"technique"`
+	SubTechnique *SubTechnique `json:"sub_technique,omitempty" parquet:"sub_technique,optional"`
+	Tactic       *Tactic       `json:"tactic,omitempty" parquet:"tactic,optional"`
+	Tactics      []*Tactic     `json:"tactics,omitempty" parquet:"tactics,list,optional"`
+	Technique    *Technique    `json:"technique,omitempty" parquet:"technique,optional"`
 	Version      string        `json:"version" parquet:"version"`
 }

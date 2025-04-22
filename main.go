@@ -12,6 +12,7 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
 	"github.com/Santiago-Labs/go-ocsf/syncers/gcpauditlog"
+	"github.com/samsarahq/go/oops"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -24,7 +25,13 @@ func main() {
 	isParquet := flag.Bool("parquet", false, "Use parquet format")
 	isJSON := flag.Bool("json", false, "Use JSON format")
 	bucketName := flag.String("bucket-name", "", "S3 bucket name")
-
+	tableBucketName := flag.String("table-bucket-name", "", "Table bucket name")
+	// Sync data.
+	syncSnykOption := flag.Bool("sync-snyk", false, "Sync Snyk data.")
+	syncTenableOption := flag.Bool("sync-tenable", false, "Sync Tenable data.")
+	syncSecurityHubOption := flag.Bool("sync-security-hub", false, "Sync SecurityHub data.")
+	syncInspectorOption := flag.Bool("sync-inspector", false, "Sync Inspector data.")
+	syncGCPAuditLogOption := flag.Bool("sync-gcp-audit-log", false, "Sync GCP AuditLog data.")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -35,78 +42,113 @@ func main() {
 	tenableAPIKey := os.Getenv("TENABLE_API_KEY")
 	tenableSecretKey := os.Getenv("TENABLE_SECRET_KEY")
 
-	storage, _, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName)
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		log.Fatalf("Failed to load AWS config: %v", err)
+	}
+
+	storage, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName, *tableBucketName)
 	if err != nil {
 		log.Fatalf("Failed to setup storage: %v", err)
 	}
 
-	if snykAPIKey != "" && snykOrganizationID != "" {
+	if *syncSnykOption {
+		if snykAPIKey == "" || snykOrganizationID == "" {
+			log.Fatal("SNYK_API_KEY and SNYK_ORGANIZATION_ID must be set when --sync-snyk is set")
+		}
+
 		if err := syncSnyk(ctx, snykAPIKey, snykOrganizationID, storage); err != nil {
 			log.Fatalf("Failed to sync Snyk data: %v", err)
 		}
 	}
 
-	if tenableAPIKey != "" && tenableSecretKey != "" {
+	if *syncTenableOption {
+		if tenableAPIKey == "" || tenableSecretKey == "" {
+			log.Fatal("TENABLE_API_KEY and TENABLE_SECRET_KEY must be set when --sync-tenable is set")
+		}
+
 		if err := syncTenable(ctx, tenableAPIKey, tenableSecretKey, storage); err != nil {
 			log.Fatalf("Failed to sync Tenable data: %v", err)
 		}
 	}
 
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		log.Printf("Warning: Failed to load AWS config: %v. AWS services will be skipped.", err)
-	} else {
-		if err := inspectorSync(ctx, storage, cfg); err != nil {
-			log.Fatalf("Failed to sync Inspector data: %v", err)
-		}
-
+	if *syncSecurityHubOption {
 		if err := syncSecurityHub(ctx, storage, cfg); err != nil {
 			log.Fatalf("Failed to sync SecurityHub data: %v", err)
 		}
 	}
 
-	if err := syncGCPAuditLog(ctx, storage); err != nil {
-		log.Fatalf("Failed to sync GCPAuditLog data: %v", err)
+	if *syncGCPAuditLogOption {
+		if err := syncGCPAuditLog(ctx, storage); err != nil {
+			log.Fatalf("Failed to sync GCPAuditLog data: %v", err)
+		}
+	}
+
+	if *syncInspectorOption {
+		if err := inspectorSync(ctx, storage, cfg); err != nil {
+			log.Fatalf("Failed to sync Inspector data: %v", err)
+		}
 	}
 }
 
-func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName string) (datastore.Datastore, *s3.Client, error) {
+func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, tableBucketName string) (datastore.Datastore, error) {
 	var storage datastore.Datastore
 	var s3Client *s3.Client
 	var err error
 
-	if bucketName != "" {
-		cfg, err := config.LoadDefaultConfig(ctx)
-		if err != nil {
-			return nil, nil, fmt.Errorf("error loading AWS config: %v", err)
-		}
-
-		s3Client = s3.NewFromConfig(cfg)
-	}
-
 	if isParquet {
-		if bucketName != "" {
-			storage = datastore.NewS3ParquetDatastore(bucketName, s3Client)
-		} else {
-			storage, err = datastore.NewLocalParquetDatastore()
+		if tableBucketName != "" {
+
+			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
-				return nil, nil, fmt.Errorf("failed to create local parquet datastore: %v", err)
+				return nil, oops.Wrapf(err, "failed to load config")
+			}
+			s3Client := s3.NewFromConfig(cfg)
+
+			storage, err = datastore.NewS3TablesDatastore(ctx, tableBucketName, s3Client)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create S3 tables datastore: %v", err)
+			}
+		} else if bucketName != "" {
+			cfg, err := config.LoadDefaultConfig(ctx)
+			if err != nil {
+				return nil, fmt.Errorf("error loading AWS config: %v", err)
+			}
+
+			s3Client = s3.NewFromConfig(cfg)
+			storage, err = datastore.NewS3ParquetDatastore(ctx, bucketName, s3Client)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create S3 parquet datastore: %v", err)
+			}
+		} else {
+			storage, err = datastore.NewLocalParquetDatastore(ctx)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create local parquet datastore: %v", err)
 			}
 		}
 	} else if isJSON {
 		if bucketName != "" {
-			storage = datastore.NewS3JsonDatastore(bucketName, s3Client)
-		} else {
-			storage, err = datastore.NewLocalJsonDatastore()
+			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
-				return nil, nil, fmt.Errorf("failed to create local json datastore: %v", err)
+				return nil, fmt.Errorf("error loading AWS config: %v", err)
+			}
+
+			s3Client = s3.NewFromConfig(cfg)
+			storage, err = datastore.NewS3JsonDatastore(ctx, bucketName, s3Client)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create S3 json datastore: %v", err)
+			}
+		} else {
+			storage, err = datastore.NewLocalJsonDatastore(ctx)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create local json datastore: %v", err)
 			}
 		}
 	} else {
-		return nil, nil, fmt.Errorf("no storage format specified, use --parquet or --json")
+		return nil, fmt.Errorf("no storage format specified, use --parquet or --json")
 	}
 
-	return storage, s3Client, nil
+	return storage, nil
 }
 
 func syncSnyk(ctx context.Context, apiKey, orgID string, storage datastore.Datastore) error {

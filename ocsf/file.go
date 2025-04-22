@@ -1,12 +1,12 @@
 package ocsf
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
+	"github.com/apache/arrow-go/v18/arrow"
 )
 
 var FileFields = []arrow.Field{
-	{Name: "path", Type: arrow.BinaryTypes.String},
-	{Name: "owner", Type: arrow.BinaryTypes.String},
+	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "owner", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var FileStruct = arrow.StructOf(FileFields...)

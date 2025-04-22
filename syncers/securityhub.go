@@ -53,29 +53,17 @@ func (s *SecurityHubOCSFSyncer) Sync(ctx context.Context) error {
 
 		slog.Info("SecurityHub findings", "num_findings", len(securityHubFindingsOutput.Findings))
 
-		var findings []ocsf.VulnerabilityFinding
+		var findingsToSave []ocsf.VulnerabilityFinding
 		for _, securityHubFinding := range securityHubFindingsOutput.Findings {
-			existingFinding, err := s.datastore.GetFinding(ctx, *securityHubFinding.Id)
-			if err != nil && err != datastore.ErrNotFound {
-				return oops.Wrapf(err, "failed to get existing finding")
-			}
-
-			finding, err := s.ToOCSF(ctx, securityHubFinding, existingFinding)
+			finding, err := s.ToOCSF(ctx, securityHubFinding)
 			if err != nil {
 				return oops.Wrapf(err, "failed to build OCSF finding")
 			}
 
-			// Only save the finding if it is new or has changed.
-			if existingFinding == nil || existingFinding.SeverityID != finding.SeverityID ||
-				existingFinding.StatusID != nil && finding.StatusID == nil ||
-				existingFinding.StatusID == nil && finding.StatusID != nil ||
-				*existingFinding.StatusID != *finding.StatusID {
-
-				findings = append(findings, finding)
-			}
+			findingsToSave = append(findingsToSave, finding)
 		}
 
-		err = s.datastore.SaveFindings(ctx, findings)
+		err = s.datastore.SaveFindings(ctx, findingsToSave)
 		if err != nil {
 			return oops.Wrapf(err, "failed to save findings")
 		}
@@ -92,25 +80,26 @@ func (s *SecurityHubOCSFSyncer) Sync(ctx context.Context) error {
 }
 
 // ToOCSF converts a SecurityHub finding into an OCSF vulnerability finding.
-func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding types.AwsSecurityFinding, existingFinding *ocsf.VulnerabilityFinding) (ocsf.VulnerabilityFinding, error) {
+func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding types.AwsSecurityFinding) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapSecurityHubSeverity(securityHubFinding.Severity)
 	status, statusID := mapSecurityHubStatus(securityHubFinding.Workflow)
 
-	// Convert string timestamps to time.Time
-	var createdAt *time.Time
+	var createdAt *int64
 	if securityHubFinding.CreatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.CreatedAt)
 		if err == nil {
-			createdAt = &parsedTime
+			createdAtUnix := parsedTime.UnixMilli()
+			createdAt = &createdAtUnix
 		}
 	}
 
-	var endTime *time.Time
+	var endTime *int64
 	if status == "Closed" {
 		if securityHubFinding.UpdatedAt != nil {
 			parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 			if err == nil {
-				endTime = &parsedTime
+				endTimeUnix := parsedTime.UnixMilli()
+				endTime = &endTimeUnix
 			}
 		}
 	}
@@ -149,15 +138,16 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	}
 
 	// Convert UpdatedAt string to time.Time for LastSeenTime
-	var lastSeenTime *time.Time
+	var lastSeenTime *int64
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			lastSeenTime = &parsedTime
+			lastSeenTimeUnix := parsedTime.UnixMilli()
+			lastSeenTime = &lastSeenTimeUnix
 		}
 	}
 
-	vulnerabilities := []ocsf.VulnerabilityDetails{
+	vulnerabilities := []*ocsf.VulnerabilityDetails{
 		{
 			UID:                securityHubFinding.Id,
 			CWE:                mapSecurityHubCWE(securityHubFinding),
@@ -167,7 +157,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
 			FirstSeenTime:      createdAt,
-			IsFixAvailable:     fixAvailable,
+			IsFixAvailable:     &fixAvailable,
 			LastSeenTime:       lastSeenTime,
 			VendorName:         &vendorName,
 			Remediation:        remediation,
@@ -178,35 +168,34 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	var activityName string
 	var typeUID int64
 	var typeName string
+	var eventTime int64
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if existingFinding == nil {
-		if status == "Closed" {
-			activityID = int32(3)
-			activityName = "Close"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Close"
-		} else {
-			activityID = int32(1)
-			activityName = "Create"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Create"
-		}
+	if securityHubFinding.UpdatedAt == securityHubFinding.CreatedAt {
+		activityID = int32(1)
+		activityName = "Create"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Create"
+		eventTime = *createdAt
+	} else if status == "Closed" {
+		activityID = int32(3)
+		activityName = "Close"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Close"
+		eventTime = *endTime
 	} else {
-		if status == "Closed" {
-			activityID = int32(3)
-			activityName = "Close"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Close"
-		} else {
-			activityID = int32(2)
-			activityName = "Update"
-			typeUID = int64(classUID)*100 + int64(activityID)
-			typeName = "Vulnerability Finding: Update"
+		activityID = int32(2)
+		activityName = "Update"
+		typeUID = int64(classUID)*100 + int64(activityID)
+		typeName = "Vulnerability Finding: Update"
+		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
+		if err != nil {
+			return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
 		}
+		eventTime = parsedTime.UnixMilli()
 	}
 
 	productName := "SecurityHub"
@@ -219,14 +208,12 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Version: "1.4.0",
 	}
 
-	now := time.Now()
-
-	// Convert string timestamps to time.Time for FindingInfo
-	var modifiedTime *time.Time
+	var modifiedTime *int64
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			modifiedTime = &parsedTime
+			modifiedTimeUnix := parsedTime.UnixMilli()
+			modifiedTime = &modifiedTimeUnix
 		}
 	}
 
@@ -234,7 +221,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		UID:           *securityHubFinding.Id,
 		Title:         *securityHubFinding.Title,
 		Desc:          securityHubFinding.Description,
-		CreatedTime:   &now,
+		CreatedTime:   createdAt,
 		FirstSeenTime: createdAt,
 		LastSeenTime:  lastSeenTime,
 		ModifiedTime:  modifiedTime,
@@ -243,8 +230,9 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            time.Now(),
+		Time:            eventTime,
 		StartTime:       createdAt,
+		EventDay:        int32(eventTime / 86400000),
 		EndTime:         endTime,
 		ActivityID:      activityID,
 		ActivityName:    &activityName,
@@ -311,11 +299,11 @@ func mapSecurityHubStatus(workflow *types.Workflow) (string, int32) {
 	}
 }
 
-func mapSecurityHubResources(finding types.AwsSecurityFinding) []ocsf.ResourceDetails {
-	var resources []ocsf.ResourceDetails
+func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceDetails {
+	var resources []*ocsf.ResourceDetails
 	for _, resource := range finding.Resources {
 		resourceType := *resource.Type
-		resources = append(resources, ocsf.ResourceDetails{
+		resources = append(resources, &ocsf.ResourceDetails{
 			UID:  resource.Id,
 			Type: &resourceType,
 		})
@@ -328,11 +316,11 @@ func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
 	if finding.Vulnerabilities != nil && len(finding.Vulnerabilities) > 0 {
 		for _, vuln := range finding.Vulnerabilities {
 			if vuln.Id != nil && vuln.Cvss != nil && len(vuln.Cvss) > 0 {
-				var cvss []ocsf.CVSS
+				var cvss []*ocsf.CVSS
 				for _, c := range vuln.Cvss {
 					if c.BaseScore != nil && c.Version != nil {
 						// The field is VectorString, not Vector
-						cvss = append(cvss, ocsf.CVSS{
+						cvss = append(cvss, &ocsf.CVSS{
 							BaseScore:    *c.BaseScore,
 							VectorString: c.BaseVector,
 							Version:      *c.Version,
