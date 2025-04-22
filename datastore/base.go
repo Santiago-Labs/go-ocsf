@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 	"log/slog"
-	"path/filepath"
 	"strings"
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
@@ -36,11 +35,6 @@ func (d *BaseDatastore) SaveAPIActivities(ctx context.Context, activities []ocsf
 	slog.Info("upserted activities", "activities", len(activities))
 
 	return nil
-}
-
-func filesExist(pattern string) bool {
-	files, err := filepath.Glob(pattern)
-	return err == nil && len(files) > 0
 }
 
 func filesExistS3(ctx context.Context, s3Client *s3.Client, s3Bucket, path, extension string) (bool, error) {

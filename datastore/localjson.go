@@ -24,29 +24,21 @@ type localJsonDatastore struct {
 // localJsonDatastore implements the Datastore interface using local JSON files for storage.
 // It provides methods to retrieve, save, and manage vulnerability findings in JSON format.
 func NewLocalJsonDatastore(ctx context.Context) (Datastore, error) {
-	currentFindingsPath := filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-	if _, err := os.Stat(BasepathFindings); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
-				return nil, oops.Wrapf(err, "failed to create directory")
-			}
-		}
+	if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
+		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
+	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
+		return nil, oops.Wrapf(err, "failed to create directory")
+	}
+
+	currentFindingsPath := filepath.Join(BasepathFindings, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
 	_, err := os.Create(currentFindingsPath)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to create file")
 	}
 
 	currentActivitiesPath := filepath.Join(BasepathActivities, fmt.Sprintf("%s.json.gz", time.Now().Format("20060102T150405Z")))
-	if _, err := os.Stat(currentActivitiesPath); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
-				return nil, oops.Wrapf(err, "failed to create directory")
-			}
-		}
-	}
-
 	_, err = os.Create(currentActivitiesPath)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to create file")
@@ -61,14 +53,6 @@ func NewLocalJsonDatastore(ctx context.Context) (Datastore, error) {
 		store:                  s,
 		findingsTableName:      "vulnerability_finding",
 		apiActivitiesTableName: "api_activities",
-	}
-
-	if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
-		return nil, oops.Wrapf(err, "failed to create directory")
-	}
-
-	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
-		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
 	return s, nil
