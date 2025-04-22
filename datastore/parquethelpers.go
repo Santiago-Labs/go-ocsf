@@ -8,7 +8,6 @@ import (
 
 	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
-	"github.com/apache/arrow-go/v18/arrow/array"
 	"github.com/apache/arrow-go/v18/arrow/memory"
 	"github.com/apache/arrow-go/v18/parquet/file"    // For reading parquet back to arrow
 	"github.com/apache/arrow-go/v18/parquet/pqarrow" // For reading parquet back to arrow
@@ -258,32 +257,4 @@ func fieldByName(s *iceberg.StructType, name string) (iceberg.NestedField, bool)
 		}
 	}
 	return iceberg.NestedField{}, false
-}
-
-func dumpArray(f arrow.Field, arr arrow.Array, indent string) {
-	fmt.Printf("%s%s (nullable=%v)  len=%d  nulls=%d  type=%s\n",
-		indent, f.Name, f.Nullable, arr.Len(), arr.NullN(), arr.DataType())
-
-	switch a := arr.(type) {
-	case *array.List:
-		values := a.ListValues()
-		dumpArray(
-			arrow.Field{Name: f.Name + ".element", Nullable: true, Type: values.DataType()},
-			values, indent+"  ",
-		)
-	case *array.Struct:
-		sa := a
-		for j := 0; j < sa.NumField(); j++ {
-			childField := sa.Field(j)
-			childArrowField := a.DataType().(*arrow.StructType).Field(j)
-			dumpArray(
-				arrow.Field{
-					Name:     childArrowField.Name,
-					Nullable: childArrowField.Nullable,
-					Type:     childArrowField.Type,
-				},
-				childField, indent+"  ",
-			)
-		}
-	}
 }

@@ -33,9 +33,7 @@ func NewLocalParquetDatastore(ctx context.Context) (Datastore, error) {
 	s := &localParquetDatastore{}
 
 	s.BaseDatastore = BaseDatastore{
-		store:                  s,
-		findingsTableName:      "vulnerability_finding",
-		apiActivitiesTableName: "api_activities",
+		store: s,
 	}
 
 	return s, nil
