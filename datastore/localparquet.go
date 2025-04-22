@@ -38,10 +38,7 @@ func NewLocalParquetDatastore(ctx context.Context) (Datastore, error) {
 		}
 	}
 
-	s := &localParquetDatastore{
-		currentFindingsPath:   filepath.Join(BasepathFindings, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z"))),
-		currentActivitiesPath: filepath.Join(BasepathActivities, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z"))),
-	}
+	s := &localParquetDatastore{}
 
 	s.BaseDatastore = BaseDatastore{
 		store:                  s,
@@ -62,10 +59,6 @@ func NewLocalParquetDatastore(ctx context.Context) (Datastore, error) {
 // GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
 // It reads the Parquet file and parses it into a slice of vulnerability findings.
 func (s *localParquetDatastore) GetFindingsFromFile(ctx context.Context, path string) ([]ocsf.VulnerabilityFinding, error) {
-	if _, exists := os.Stat(path); os.IsNotExist(exists) {
-		return []ocsf.VulnerabilityFinding{}, nil
-	}
-
 	findings, err := goParquet.ReadFile[ocsf.VulnerabilityFinding](path)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to read parquet file")
@@ -79,13 +72,17 @@ func (s *localParquetDatastore) GetFindingsFromFile(ctx context.Context, path st
 func (s *localParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	allFindings := findings
 
-	fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
-	if err != nil {
-		return oops.Wrapf(err, "failed to get existing findings from disk")
+	if s.currentFindingsPath == "" {
+		s.currentFindingsPath = filepath.Join(BasepathFindings, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
+	} else {
+		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing findings from disk")
+		}
+		allFindings = append(allFindings, fileFindings...)
 	}
-	allFindings = append(allFindings, fileFindings...)
 
-	err = goParquet.WriteFile[ocsf.VulnerabilityFinding](s.currentFindingsPath, allFindings, goParquet.Compression(&goParquet.Gzip))
+	err := goParquet.WriteFile(s.currentFindingsPath, allFindings, goParquet.Compression(&goParquet.Gzip))
 	if err != nil {
 		return oops.Wrapf(err, "failed to write activities to parquet")
 	}
@@ -101,14 +98,18 @@ func (s *localParquetDatastore) WriteBatch(ctx context.Context, findings []ocsf.
 func (s *localParquetDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	allActivities := activities
 
-	fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
-	if err != nil {
-		return oops.Wrapf(err, "failed to get existing activities from disk")
+	if s.currentActivitiesPath == "" {
+		s.currentActivitiesPath = filepath.Join(BasepathActivities, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
+	} else {
+		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
+		if err != nil {
+			return oops.Wrapf(err, "failed to get existing activities from disk")
+		}
+
+		allActivities = append(allActivities, fileActivities...)
 	}
 
-	allActivities = append(allActivities, fileActivities...)
-
-	err = goParquet.WriteFile[ocsf.APIActivity](s.currentActivitiesPath, allActivities, goParquet.Compression(&goParquet.Gzip))
+	err := goParquet.WriteFile(s.currentActivitiesPath, allActivities, goParquet.Compression(&goParquet.Gzip))
 	if err != nil {
 		return oops.Wrapf(err, "failed to write activities to parquet")
 	}
