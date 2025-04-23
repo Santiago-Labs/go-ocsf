@@ -10,10 +10,12 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
 	"github.com/Santiago-Labs/go-ocsf/syncers/gcpauditlog"
 	"github.com/samsarahq/go/oops"
 
+	"github.com/Santiago-Labs/go-ocsf/clients/clickhouse"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
@@ -24,6 +26,7 @@ import (
 func main() {
 	isParquet := flag.Bool("parquet", false, "Use parquet format")
 	isJSON := flag.Bool("json", false, "Use JSON format")
+	isClickhouse := flag.Bool("clickhouse", false, "Use Clickhouse format")
 	bucketName := flag.String("bucket-name", "", "S3 bucket name")
 	tableBucketName := flag.String("table-bucket-name", "", "Table bucket name")
 	// Sync data.
@@ -32,22 +35,42 @@ func main() {
 	syncSecurityHubOption := flag.Bool("sync-security-hub", false, "Sync SecurityHub data.")
 	syncInspectorOption := flag.Bool("sync-inspector", false, "Sync Inspector data.")
 	syncGCPAuditLogOption := flag.Bool("sync-gcp-audit-log", false, "Sync GCP AuditLog data.")
+	shouldSetupClickhouse := flag.Bool("setup-clickhouse", false, "Setup Clickhouse DB")
+
 	flag.Parse()
 
+	fmt.Println("Starting...", *shouldSetupClickhouse)
 	ctx := context.Background()
+	var clickhouseClient *clickhouse.Client
+	var err error
 
-	snykAPIKey := os.Getenv("SNYK_API_KEY")
-	snykOrganizationID := os.Getenv("SNYK_ORGANIZATION_ID")
+	if *isClickhouse || *shouldSetupClickhouse {
+		clickhouseClient, err = clickhouse.New(ctx, clickhouse.Options{})
+		if err != nil {
+			log.Fatalf("Failed to create Clickhouse client: %v", err)
+		}
+		defer clickhouseClient.Close()
+	}
 
-	tenableAPIKey := os.Getenv("TENABLE_API_KEY")
-	tenableSecretKey := os.Getenv("TENABLE_SECRET_KEY")
+	if *shouldSetupClickhouse {
+		if err := setupClickhouse(ctx, clickhouseClient); err != nil {
+			log.Fatalf("Failed to setup Clickhouse tables: %v", err)
+		}
+	}
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		log.Fatalf("Failed to load AWS config: %v", err)
 	}
 
-	storage, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName, *tableBucketName)
+	storage, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName, *tableBucketName, clickhouseClient)
+	// snykAPIKey := os.Getenv("SNYK_API_KEY")
+	// snykOrganizationID := os.Getenv("SNYK_ORGANIZATION_ID")
+
+	// tenableAPIKey := os.Getenv("TENABLE_API_KEY")
+	// tenableSecretKey := os.Getenv("TENABLE_SECRET_KEY")
+
+	// storage, _, err := setupStorage(ctx, *isParquet, *isJSON, *bucketName, clickhouseClient)
 	if err != nil {
 		log.Fatalf("Failed to setup storage: %v", err)
 	}
@@ -77,6 +100,30 @@ func main() {
 			log.Fatalf("Failed to sync SecurityHub data: %v", err)
 		}
 	}
+	// if snykAPIKey != "" && snykOrganizationID != "" {
+	// 	if err := syncSnyk(ctx, snykAPIKey, snykOrganizationID, storage); err != nil {
+	// 		log.Fatalf("Failed to sync Snyk data: %v", err)
+	// 	}
+	// }
+
+	// if tenableAPIKey != "" && tenableSecretKey != "" {
+	// 	if err := syncTenable(ctx, tenableAPIKey, tenableSecretKey, storage); err != nil {
+	// 		log.Fatalf("Failed to sync Tenable data: %v", err)
+	// 	}
+	// }
+
+	// cfg, err := config.LoadDefaultConfig(ctx)
+	// if err != nil {
+	// 	log.Printf("Warning: Failed to load AWS config: %v. AWS services will be skipped.", err)
+	// } else {
+	// 	if err := inspectorSync(ctx, storage, cfg); err != nil {
+	// 		log.Fatalf("Failed to sync Inspector data: %v", err)
+	// 	}
+
+	// 	if err := syncSecurityHub(ctx, storage, cfg); err != nil {
+	// 		log.Fatalf("Failed to sync SecurityHub data: %v", err)
+	// 	}
+	// }
 
 	if *syncGCPAuditLogOption {
 		if err := syncGCPAuditLog(ctx, storage); err != nil {
@@ -89,9 +136,13 @@ func main() {
 			log.Fatalf("Failed to sync Inspector data: %v", err)
 		}
 	}
+
+	// if err := syncToClickhouse(ctx, clickhouseClient, storage); err != nil {
+	// 	log.Fatalf("Failed to sync to Clickhouse: %v", err)
+	// }
 }
 
-func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, tableBucketName string) (datastore.Datastore, error) {
+func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, tableBucketName string, clickhouseClient *clieckhouse.Client) (datastore.Datastore, error) {
 	var storage datastore.Datastore
 	var s3Client *s3.Client
 	var err error
@@ -144,6 +195,8 @@ func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, table
 				return nil, fmt.Errorf("failed to create local json datastore: %v", err)
 			}
 		}
+	} else if clickhouseClient != nil {
+		storage = datastore.NewClickhouseStore(clickhouseClient)
 	} else {
 		return nil, fmt.Errorf("no storage format specified, use --parquet or --json")
 	}
@@ -206,3 +259,32 @@ func syncGCPAuditLog(ctx context.Context, storage datastore.Datastore) error {
 
 	return gcpauditlogSyncer.Sync(ctx)
 }
+
+func setupClickhouse(ctx context.Context, clickhouseClient *clickhouse.Client) error {
+	err := clickhouseClient.CreateTableFromStruct(ctx, "vulnerability_findings", "ActivityID", "", ocsf.VulnerabilityFinding{})
+	if err != nil {
+		return fmt.Errorf("failed to create vulnerability_findings table: %v", err)
+	}
+
+	err = clickhouseClient.CreateTableFromStruct(ctx, "api_activities", "CategoryUID", "", ocsf.APIActivity{})
+	if err != nil {
+		return fmt.Errorf("failed to create api_activities table: %v", err)
+	}
+
+	return nil
+}
+
+// func syncToClickhouse(ctx context.Context, clickhouseClient *clickhouse.Client, vulnerabilityFindings []ocsf.VulnerabilityFinding, apiActivities []ocsf.APIActivity) error {
+// 	// err := clickhouseClient.InsertFindings(ctx, vulnerabilityFindings)
+// 	// if err != nil {
+// 	// 	return fmt.Errorf("failed to insert vulnerability finding: %v", err)
+// 	// }
+
+// 	var err error
+// 	err = clickhouseClient.InsertAPIActivities(ctx, apiActivities)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to insert api activities: %v", err)
+// 	}
+
+// 	return nil
+// }

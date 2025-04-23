@@ -35,24 +35,24 @@ var MetadataStruct = arrow.StructOf(MetadataFields...)
 var MetadataClassname = "metadata"
 
 type Metadata struct {
-	CorrelationUID *string            `json:"correlation_uid,omitempty" parquet:"correlation_uid,optional"`
-	EventCode      *string            `json:"event_code,omitempty" parquet:"event_code,optional"`
-	Extension      *SchemaExtension   `json:"extension,omitempty" parquet:"extension,optional"`
-	Extensions     []*SchemaExtension `json:"extensions,omitempty" parquet:"extensions,list,optional"`
-	Labels         []string           `json:"labels,omitempty" parquet:"labels,list,optional"`
-	LogLevel       *string            `json:"log_level,omitempty" parquet:"log_level,optional"`
-	LogName        *string            `json:"log_name,omitempty" parquet:"log_name,optional"`
-	LogProvider    *string            `json:"log_provider,omitempty" parquet:"log_provider,optional"`
-	LogVersion     *string            `json:"log_version,omitempty" parquet:"log_version,optional"`
-	LoggedTime     *int64             `json:"logged_time,omitempty" parquet:"logged_time,optional"`
-	Loggers        []*Logger          `json:"loggers,omitempty" parquet:"loggers,list,optional"`
-	ModifiedTime   *int64             `json:"modified_time,omitempty" parquet:"modified_time,optional"`
-	OriginalTime   *int64             `json:"original_time,omitempty" parquet:"original_time,optional"`
-	ProcessedTime  *int64             `json:"processed_time,omitempty" parquet:"processed_time,optional"`
-	Product        Product            `json:"product" parquet:"product"`
-	Profiles       []string           `json:"profiles,omitempty" parquet:"profiles,list,optional"`
-	Sequence       *int               `json:"sequence,omitempty" parquet:"sequence,optional"`
-	TenantUID      *string            `json:"tenant_uid,omitempty" parquet:"tenant_uid,optional"`
-	UID            *string            `json:"uid,omitempty" parquet:"uid,optional"`
-	Version        string             `json:"version" parquet:"version"`
+	CorrelationUID *string            `json:"correlation_uid,omitempty" parquet:"correlation_uid,optional" ch:"correlation_uid,omitempty"`
+	EventCode      *string            `json:"event_code,omitempty" parquet:"event_code,optional" ch:"event_code,omitempty"`
+	Extension      *SchemaExtension   `json:"extension,omitempty" parquet:"extension,optional" ch:"extension,omitempty"`
+	Extensions     []*SchemaExtension `json:"extensions,omitempty" parquet:"extensions,list,optional" ch:"extensions,omitempty"`
+	Labels         []string           `json:"labels,omitempty" parquet:"labels,list,optional" ch:"labels,omitempty"`
+	LogLevel       *string            `json:"log_level,omitempty" parquet:"log_level,optional" ch:"log_level,omitempty"`
+	LogName        *string            `json:"log_name,omitempty" parquet:"log_name,optional" ch:"log_name,omitempty"`
+	LogProvider    *string            `json:"log_provider,omitempty" parquet:"log_provider,optional" ch:"log_provider,omitempty"`
+	LogVersion     *string            `json:"log_version,omitempty" parquet:"log_version,optional" ch:"log_version,omitempty"`
+	LoggedTime     *int64             `json:"logged_time,omitempty" parquet:"logged_time,optional" ch:"logged_time,omitempty"`
+	Loggers        []*Logger          `json:"loggers,omitempty" parquet:"loggers,list,optional" ch:"loggers,omitempty"`
+	ModifiedTime   *int64             `json:"modified_time,omitempty" parquet:"modified_time,optional" ch:"modified_time,omitempty"`
+	OriginalTime   *int64             `json:"original_time,omitempty" parquet:"original_time,optional" ch:"original_time,omitempty"`
+	ProcessedTime  *int64             `json:"processed_time,omitempty" parquet:"processed_time,optional" ch:"processed_time,omitempty"`
+	Product        Product            `json:"product" parquet:"product" ch:"product"`
+	Profiles       []string           `json:"profiles,omitempty" parquet:"profiles,list,optional" ch:"profiles,omitempty"`
+	Sequence       *int               `json:"sequence,omitempty" parquet:"sequence,optional" ch:"sequence,omitempty"`
+	TenantUID      *string            `json:"tenant_uid,omitempty" parquet:"tenant_uid,optional" ch:"tenant_uid,omitempty"`
+	UID            *string            `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	Version        string             `json:"version" parquet:"version" ch:"version"`
 }
