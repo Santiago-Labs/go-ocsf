@@ -85,11 +85,11 @@ func (s *ClickhouseStore) SaveAPIActivities(ctx context.Context, activities []oc
 }
 
 // WriteBatch writes a batch of vulnerability findings to a specific file in a specific format.
-func (s *ClickhouseStore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding, path *string) error {
+func (s *ClickhouseStore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
 	return nil
 }
 
 // WriteAPIActivityBatch writes a batch of API activities to a specific file in a specific format.
-func (s *ClickhouseStore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity, path *string) error {
+func (s *ClickhouseStore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
 	return nil
 }

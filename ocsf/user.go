@@ -25,18 +25,18 @@ var UserStruct = arrow.StructOf(UserFields...)
 var UserClassname = "user"
 
 type User struct {
-	Account       *Account      `json:"account,omitempty" parquet:"account,optional"`
-	CredentialUID *string       `json:"credential_uid,omitempty" parquet:"credential_uid,optional"`
-	Domain        *string       `json:"domain,omitempty" parquet:"domain,optional"`
-	EmailAddr     *string       `json:"email_addr,omitempty" parquet:"email_addr,optional"`
-	FullName      *string       `json:"full_name,omitempty" parquet:"full_name,optional"`
-	Groups        []*Group      `json:"groups,omitempty" parquet:"groups,list,optional"`
-	LDAPPerson    *LdapPerson   `json:"ldap_person,omitempty" parquet:"ldap_person,optional"`
-	Name          *string       `json:"name,omitempty" parquet:"name,optional"`
-	Org           *Organization `json:"org,omitempty" parquet:"org,optional"`
-	Type          *string       `json:"type,omitempty" parquet:"type,optional"`
+	Account       *Account      `json:"account,omitempty" parquet:"account,optional" ch:"account,omitempty"`
+	CredentialUID *string       `json:"credential_uid,omitempty" parquet:"credential_uid,optional" ch:"credential_uid,omitempty"`
+	Domain        *string       `json:"domain,omitempty" parquet:"domain,optional" ch:"domain,omitempty"`
+	EmailAddr     *string       `json:"email_addr,omitempty" parquet:"email_addr,optional" ch:"email_addr,omitempty"`
+	FullName      *string       `json:"full_name,omitempty" parquet:"full_name,optional" ch:"full_name,omitempty"`
+	Groups        []*Group      `json:"groups,omitempty" parquet:"groups,list,optional" ch:"groups,omitempty"`
+	LDAPPerson    *LdapPerson   `json:"ldap_person,omitempty" parquet:"ldap_person,optional" ch:"ldap_person,omitempty"`
+	Name          *string       `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
+	Org           *Organization `json:"org,omitempty" parquet:"org,optional" ch:"org,omitempty"`
+	Type          *string       `json:"type,omitempty" parquet:"type,optional" ch:"type,omitempty"`
 	// TypeID enum: [3,99,0,1,2]
-	TypeID *int    `json:"type_id,omitempty" parquet:"type_id,optional"`
-	UID    *string `json:"uid,omitempty" parquet:"uid,optional"`
-	UIDAlt *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
+	TypeID *int    `json:"type_id,omitempty" parquet:"type_id,optional" ch:"type_id,omitempty"`
+	UID    *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	UIDAlt *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional" ch:"uid_alt,omitempty"`
 }

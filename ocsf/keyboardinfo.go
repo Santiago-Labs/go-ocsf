@@ -17,9 +17,9 @@ var KeyboardInfoStruct = arrow.StructOf(KeyboardInfoFields...)
 var KeyboardInfoClassname = "keyboard_info"
 
 type KeyboardInfo struct {
-	FunctionKeys    *int    `json:"function_keys,omitempty" parquet:"function_keys,optional"`
-	IME             *string `json:"ime,omitempty" parquet:"ime,optional"`
-	KeyboardLayout  *string `json:"keyboard_layout,omitempty" parquet:"keyboard_layout,optional"`
-	KeyboardSubtype *int    `json:"keyboard_subtype,omitempty" parquet:"keyboard_subtype,optional"`
-	KeyboardType    *string `json:"keyboard_type,omitempty" parquet:"keyboard_type,optional"`
+	FunctionKeys    *int    `json:"function_keys,omitempty" parquet:"function_keys,optional" ch:"function_keys,omitempty"`
+	IME             *string `json:"ime,omitempty" parquet:"ime,optional" ch:"ime,omitempty"`
+	KeyboardLayout  *string `json:"keyboard_layout,omitempty" parquet:"keyboard_layout,optional" ch:"keyboard_layout,omitempty"`
+	KeyboardSubtype *int    `json:"keyboard_subtype,omitempty" parquet:"keyboard_subtype,optional" ch:"keyboard_subtype,omitempty"`
+	KeyboardType    *string `json:"keyboard_type,omitempty" parquet:"keyboard_type,optional" ch:"keyboard_type,omitempty"`
 }

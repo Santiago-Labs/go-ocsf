@@ -3,6 +3,7 @@ package clickhouse
 import (
 	"context"
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"sync"
@@ -144,10 +145,6 @@ func (c *Client) InsertAPIActivities(ctx context.Context, apiActivities []ocsf.A
 	it := 0
 	// Add each API activity to the batch as a whole struct
 	for _, activity := range apiActivities {
-		if activity.ActivityID == 0 {
-			fmt.Println("ACTIVITY ID ISNT SET")
-			continue
-		}
 		fmt.Println("ACTIVITY ID IS SET", it, "ACTIVITY ID", activity.ActivityID)
 		err = batch.AppendStruct(&activity)
 		if err != nil {
@@ -209,6 +206,10 @@ func (c *Client) CreateTableFromStruct(ctx context.Context, tableName, primaryKe
 
 	fmt.Println("Creating table...\n", query)
 
+	if err := os.WriteFile(fmt.Sprintf("%s.sql", "tmpquery"), []byte(query), 0644); err != nil {
+		return fmt.Errorf("failed to write table to file: %w", err)
+	}
+
 	if err := c.conn.Exec(ctx, query); err != nil {
 		return fmt.Errorf("failed to create table: %w", err)
 	}
@@ -252,6 +253,18 @@ func generateColumns(t reflect.Type, prefix string) ([]string, error) {
 		// Add prefix if we're in a nested field
 		if prefix != "" {
 			columnName = prefix + columnName
+		}
+
+		if tagName := field.Tag.Get("ch"); tagName != "" {
+			// We need to remove the suffix of ,omitempty if it exists
+			tagName = strings.Trim(tagName, "`")
+			tagName = strings.TrimSuffix(tagName, ",omitempty")
+			// We need to remove the quotes around the tag
+			if prefix != "" {
+				columnName = prefix + tagName
+			} else {
+				columnName = tagName
+			}
 		}
 
 		switch field.Type.Kind() {
@@ -347,6 +360,16 @@ func generateNestedTuple(t reflect.Type) (string, error) {
 		// Get the field name from the json tag or use the field name
 		fieldName := field.Name
 
+		if tagName := field.Tag.Get("ch"); tagName != "" {
+			// We need to remove the quotes around the tag
+			tagName = strings.Trim(tagName, "`")
+			// We need to remove the suffix of ,omitempty if it exists
+			tagName = strings.TrimSuffix(tagName, ",omitempty")
+			fieldName = tagName
+		} else {
+			fmt.Println("NO TAG FOUND FOR FIELD", fieldName)
+		}
+
 		switch field.Type.Kind() {
 		case reflect.Struct:
 			if field.Type.String() == "time.Time" {
@@ -410,6 +433,9 @@ func generateNestedTuple(t reflect.Type) (string, error) {
 
 	return fmt.Sprintf("Tuple(%s)", strings.Join(fields, ", ")), nil
 }
+
+// Clickhouse contains the inverse mapping here:
+// https://github.com/ClickHouse/clickhouse-go/blob/b66234469b8bd16ca99e0b3dbf999b1ab0184d0d/lib/column/object_json.go#L39C1-L54C2
 
 // goTypeToClickHouseType maps Go types to ClickHouse data types
 func goTypeToClickHouseType(t reflect.Type) (string, error) {

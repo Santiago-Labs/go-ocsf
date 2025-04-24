@@ -17,9 +17,9 @@ var EnrichmentClassname = "enrichment"
 
 // Enrichment represents an enrichment element.
 type Enrichment struct {
-	Data     string  `json:"data" parquet:"data"` // JSON string
-	Name     string  `json:"name" parquet:"name"` // JSON string
-	Provider *string `json:"provider,omitempty" parquet:"provider,optional"`
-	Type     *string `json:"type,omitempty" parquet:"type,optional"`
-	Value    string  `json:"value" parquet:"value"`
+	Data     string  `json:"data" parquet:"data" ch:"data"` // JSON string
+	Name     string  `json:"name" parquet:"name" ch:"name"` // JSON string
+	Provider *string `json:"provider,omitempty" parquet:"provider,optional" ch:"provider,omitempty"`
+	Type     *string `json:"type,omitempty" parquet:"type,optional" ch:"type,omitempty"`
+	Value    string  `json:"value" parquet:"value" ch:"value"`
 }

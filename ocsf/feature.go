@@ -14,7 +14,7 @@ var FeatureStruct = arrow.StructOf(FeatureFields...)
 var FeatureClassname = "feature"
 
 type Feature struct {
-	Name    *string `json:"name,omitempty" parquet:"name,optional"`
-	UID     *string `json:"uid,omitempty" parquet:"uid,optional"`
-	Version *string `json:"version,omitempty" parquet:"version,optional"`
+	Name    *string `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
+	UID     *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	Version *string `json:"version,omitempty" parquet:"version,optional" ch:"version,omitempty"`
 }

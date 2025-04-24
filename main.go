@@ -30,9 +30,9 @@ func main() {
 	bucketName := flag.String("bucket-name", "", "S3 bucket name")
 	tableBucketName := flag.String("table-bucket-name", "", "Table bucket name")
 	// Sync data.
-	syncSnykOption := flag.Bool("sync-snyk", false, "Sync Snyk data.")
-	syncTenableOption := flag.Bool("sync-tenable", false, "Sync Tenable data.")
-	syncSecurityHubOption := flag.Bool("sync-security-hub", false, "Sync SecurityHub data.")
+	// syncSnykOption := flag.Bool("sync-snyk", false, "Sync Snyk data.")
+	// syncTenableOption := flag.Bool("sync-tenable", false, "Sync Tenable data.")
+	// syncSecurityHubOption := flag.Bool("sync-security-hub", false, "Sync SecurityHub data.")
 	syncInspectorOption := flag.Bool("sync-inspector", false, "Sync Inspector data.")
 	syncGCPAuditLogOption := flag.Bool("sync-gcp-audit-log", false, "Sync GCP AuditLog data.")
 	shouldSetupClickhouse := flag.Bool("setup-clickhouse", false, "Setup Clickhouse DB")
@@ -75,31 +75,32 @@ func main() {
 		log.Fatalf("Failed to setup storage: %v", err)
 	}
 
-	if *syncSnykOption {
-		if snykAPIKey == "" || snykOrganizationID == "" {
-			log.Fatal("SNYK_API_KEY and SNYK_ORGANIZATION_ID must be set when --sync-snyk is set")
-		}
+	// if *syncSnykOption {
+	// 	if snykAPIKey == "" || snykOrganizationID == "" {
+	// 		log.Fatal("SNYK_API_KEY and SNYK_ORGANIZATION_ID must be set when --sync-snyk is set")
+	// 	}
 
-		if err := syncSnyk(ctx, snykAPIKey, snykOrganizationID, storage); err != nil {
-			log.Fatalf("Failed to sync Snyk data: %v", err)
-		}
-	}
+	// 	if err := syncSnyk(ctx, snykAPIKey, snykOrganizationID, storage); err != nil {
+	// 		log.Fatalf("Failed to sync Snyk data: %v", err)
+	// 	}
+	// }
 
-	if *syncTenableOption {
-		if tenableAPIKey == "" || tenableSecretKey == "" {
-			log.Fatal("TENABLE_API_KEY and TENABLE_SECRET_KEY must be set when --sync-tenable is set")
-		}
+	// if *syncTenableOption {
+	// 	if tenableAPIKey == "" || tenableSecretKey == "" {
+	// 		log.Fatal("TENABLE_API_KEY and TENABLE_SECRET_KEY must be set when --sync-tenable is set")
+	// 	}
 
-		if err := syncTenable(ctx, tenableAPIKey, tenableSecretKey, storage); err != nil {
-			log.Fatalf("Failed to sync Tenable data: %v", err)
-		}
-	}
+	// 	if err := syncTenable(ctx, tenableAPIKey, tenableSecretKey, storage); err != nil {
+	// 		log.Fatalf("Failed to sync Tenable data: %v", err)
+	// 	}
+	// }
 
-	if *syncSecurityHubOption {
-		if err := syncSecurityHub(ctx, storage, cfg); err != nil {
-			log.Fatalf("Failed to sync SecurityHub data: %v", err)
-		}
-	}
+	// if *syncSecurityHubOption {
+	// 	if err := syncSecurityHub(ctx, storage, cfg); err != nil {
+	// 		log.Fatalf("Failed to sync SecurityHub data: %v", err)
+	// 	}
+	// }
+
 	// if snykAPIKey != "" && snykOrganizationID != "" {
 	// 	if err := syncSnyk(ctx, snykAPIKey, snykOrganizationID, storage); err != nil {
 	// 		log.Fatalf("Failed to sync Snyk data: %v", err)
@@ -142,7 +143,7 @@ func main() {
 	// }
 }
 
-func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, tableBucketName string, clickhouseClient *clieckhouse.Client) (datastore.Datastore, error) {
+func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, tableBucketName string, clickhouseClient *clickhouse.Client) (datastore.Datastore, error) {
 	var storage datastore.Datastore
 	var s3Client *s3.Client
 	var err error
@@ -261,12 +262,12 @@ func syncGCPAuditLog(ctx context.Context, storage datastore.Datastore) error {
 }
 
 func setupClickhouse(ctx context.Context, clickhouseClient *clickhouse.Client) error {
-	err := clickhouseClient.CreateTableFromStruct(ctx, "vulnerability_findings", "ActivityID", "", ocsf.VulnerabilityFinding{})
+	err := clickhouseClient.CreateTableFromStruct(ctx, "vulnerability_findings", "activity_id", "", ocsf.VulnerabilityFinding{})
 	if err != nil {
 		return fmt.Errorf("failed to create vulnerability_findings table: %v", err)
 	}
 
-	err = clickhouseClient.CreateTableFromStruct(ctx, "api_activities", "CategoryUID", "", ocsf.APIActivity{})
+	err = clickhouseClient.CreateTableFromStruct(ctx, "api_activities", "category_uid", "", ocsf.APIActivity{})
 	if err != nil {
 		return fmt.Errorf("failed to create api_activities table: %v", err)
 	}
@@ -287,4 +288,74 @@ func setupClickhouse(ctx context.Context, clickhouseClient *clickhouse.Client) e
 // 	}
 
 // 	return nil
+// }
+
+// const ddl = `
+// CREATE TABLE benchmark (
+// 	  Col1 UInt64
+// 	, Col2 String
+// 	, Col3 Array(UInt8)
+// 	, Col4 DateTime
+// ) Engine Null
+// `
+
+// type row struct {
+// 	Col1 uint64
+// 	Col4 time.Time
+// 	Col2 string
+// 	Col3 []uint8
+// }
+
+// func benchmark(conn clickhouse.Conn) error {
+// 	batch, err := conn.PrepareBatch(context.Background(), "INSERT INTO benchmark")
+// 	if err != nil {
+// 		return err
+// 	}
+// 	for i := 0; i < 1_000_000; i++ {
+// 		err := batch.AppendStruct(&row{
+// 			Col1: uint64(i),
+// 			Col2: "Golang SQL database driver",
+// 			Col3: []uint8{1, 2, 3, 4, 5, 6, 7, 8, 9},
+// 			Col4: time.Now(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return batch.Send()
+// }
+
+// func ch() {
+// 	var (
+// 		ctx = context.Background()
+
+// 		conn, err = clickhouse.Open(&clickhouse.Options{
+// 			// Addr: []string{"127.0.0.1:9000"},
+// 			// Auth: clickhouse.Auth{
+// 			// 	Database: "default",
+// 			// 	Username: "default",
+// 			// 	Password: "",
+// 			// },
+// 			// //Debug:           true,
+// 			// DialTimeout:     time.Second,
+// 			// MaxOpenConns:    10,
+// 			// MaxIdleConns:    5,
+// 			// ConnMaxLifetime: time.Hour,
+// 		})
+// 	)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	if err := conn.Exec(ctx, "DROP TABLE IF EXISTS benchmark"); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	if err := conn.Exec(ctx, ddl); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	start := time.Now()
+// 	if err := benchmark(conn); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	fmt.Println(time.Since(start))
+
 // }

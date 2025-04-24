@@ -16,8 +16,8 @@ var OrganizationStruct = arrow.StructOf(OrganizationFields...)
 var OrganizationClassname = "organization"
 
 type Organization struct {
-	Name   *string `json:"name,omitempty" parquet:"name,optional"`
-	OUName *string `json:"ou_name,omitempty" parquet:"ou_name,optional"`
-	OUID   *string `json:"ou_uid,omitempty" parquet:"ou_uid,optional"`
-	UID    *string `json:"uid,omitempty" parquet:"uid,optional"`
+	Name   *string `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
+	OUName *string `json:"ou_name,omitempty" parquet:"ou_name,optional" ch:"ou_name,omitempty"`
+	OUID   *string `json:"ou_uid,omitempty" parquet:"ou_uid,optional" ch:"ou_uid,omitempty"`
+	UID    *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
 }

@@ -32,24 +32,24 @@ var SCIMStruct = arrow.StructOf(SCIMFields...)
 var SCIMClassname = "scim"
 
 type SCIM struct {
-	AuthProtocol               *string `json:"auth_protocol,omitempty" parquet:"auth_protocol,optional"`
-	AuthProtocolID             *int32  `json:"auth_protocol_id,omitempty" parquet:"auth_protocol_id,optional"`
-	CreatedTime                *int64  `json:"created_time,omitempty" parquet:"created_time,optional"`
-	ErrorMessage               *string `json:"error_message,omitempty" parquet:"error_message,optional"`
-	IsGroupProvisioningEnabled *bool   `json:"is_group_provisioning_enabled,omitempty" parquet:"is_group_provisioning_enabled,optional"`
-	IsUserProvisioningEnabled  *bool   `json:"is_user_provisioning_enabled,omitempty" parquet:"is_user_provisioning_enabled,optional"`
-	LastRunTime                *int64  `json:"last_run_time,omitempty" parquet:"last_run_time,optional"`
-	ModifiedTime               *int64  `json:"modified_time,omitempty" parquet:"modified_time,optional"`
-	Name                       *string `json:"name,omitempty" parquet:"name,optional"`
-	ProtocolName               *string `json:"protocol_name,omitempty" parquet:"protocol_name,optional"`
-	RateLimit                  *int32  `json:"rate_limit,omitempty" parquet:"rate_limit,optional"`
-	SCIMGroupSchema            *string `json:"scim_group_schema,omitempty" parquet:"scim_group_schema,optional"`
-	SCIMUserSchema             *string `json:"scim_user_schema,omitempty" parquet:"scim_user_schema,optional"`
-	State                      *string `json:"state,omitempty" parquet:"state,optional"`
-	StateID                    *int32  `json:"state_id,omitempty" parquet:"state_id,optional"`
-	UID                        *string `json:"uid,omitempty" parquet:"uid,optional"`
-	UIDAlt                     *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
-	URLString                  *string `json:"url_string,omitempty" parquet:"url_string,optional"`
-	VendorName                 *string `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`
-	Version                    *string `json:"version,omitempty" parquet:"version,optional"`
+	AuthProtocol               *string `json:"auth_protocol,omitempty" parquet:"auth_protocol,optional" ch:"auth_protocol,omitempty" ch:"auth_protocol,omitempty"`
+	AuthProtocolID             *int32  `json:"auth_protocol_id,omitempty" parquet:"auth_protocol_id,optional" ch:"auth_protocol_id,omitempty"`
+	CreatedTime                *int64  `json:"created_time,omitempty" parquet:"created_time,optional" ch:"created_time,omitempty"`
+	ErrorMessage               *string `json:"error_message,omitempty" parquet:"error_message,optional" ch:"error_message,omitempty"`
+	IsGroupProvisioningEnabled *bool   `json:"is_group_provisioning_enabled,omitempty" parquet:"is_group_provisioning_enabled,optional" ch:"is_group_provisioning_enabled,omitempty"`
+	IsUserProvisioningEnabled  *bool   `json:"is_user_provisioning_enabled,omitempty" parquet:"is_user_provisioning_enabled,optional" ch:"is_user_provisioning_enabled,omitempty"`
+	LastRunTime                *int64  `json:"last_run_time,omitempty" parquet:"last_run_time,optional" ch:"last_run_time,omitempty"`
+	ModifiedTime               *int64  `json:"modified_time,omitempty" parquet:"modified_time,optional" ch:"modified_time,omitempty"`
+	Name                       *string `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
+	ProtocolName               *string `json:"protocol_name,omitempty" parquet:"protocol_name,optional" ch:"protocol_name,omitempty"`
+	RateLimit                  *int32  `json:"rate_limit,omitempty" parquet:"rate_limit,optional" ch:"rate_limit,omitempty"`
+	SCIMGroupSchema            *string `json:"scim_group_schema,omitempty" parquet:"scim_group_schema,optional" ch:"scim_group_schema,omitempty"`
+	SCIMUserSchema             *string `json:"scim_user_schema,omitempty" parquet:"scim_user_schema,optional" ch:"scim_user_schema,omitempty"`
+	State                      *string `json:"state,omitempty" parquet:"state,optional" ch:"state,omitempty"`
+	StateID                    *int32  `json:"state_id,omitempty" parquet:"state_id,optional" ch:"state_id,omitempty"`
+	UID                        *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	UIDAlt                     *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional" ch:"uid_alt,omitempty"`
+	URLString                  *string `json:"url_string,omitempty" parquet:"url_string,optional" ch:"url_string,omitempty"`
+	VendorName                 *string `json:"vendor_name,omitempty" parquet:"vendor_name,optional" ch:"vendor_name,omitempty"`
+	Version                    *string `json:"version,omitempty" parquet:"version,optional" ch:"version,omitempty"`
 }
