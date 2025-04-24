@@ -20,10 +20,10 @@ var CVSSClassname = "cvss"
 
 type CVSS struct {
 	BaseScore    float64   `json:"base_score" parquet:"base_score" ch:"base_score"`
-	Depth        *string   `json:"depth,omitempty" parquet:"depth,optional" ch:"depth,omitempty"`
-	Metrics      []*Metric `json:"metrics,omitempty" parquet:"metrics,list,optional" ch:"metrics,omitempty"`
-	OverallScore *float64  `json:"overall_score,omitempty" parquet:"overall_score,optional" ch:"overall_score,omitempty"`
-	Severity     *string   `json:"severity,omitempty" parquet:"severity,optional" ch:"severity,omitempty"`
-	VectorString *string   `json:"vector_string,omitempty" parquet:"vector_string,optional" ch:"vector_string,omitempty"`
+	Depth        *string   `json:"depth,omitempty" parquet:"depth,optional" ch:"depth"`
+	Metrics      []*Metric `json:"metrics,omitempty" parquet:"metrics,list,optional" ch:"metrics"`
+	OverallScore *float64  `json:"overall_score,omitempty" parquet:"overall_score,optional" ch:"overall_score"`
+	Severity     *string   `json:"severity,omitempty" parquet:"severity,optional" ch:"severity"`
+	VectorString *string   `json:"vector_string,omitempty" parquet:"vector_string,optional" ch:"vector_string"`
 	Version      string    `json:"version" parquet:"version" ch:"version"`
 }

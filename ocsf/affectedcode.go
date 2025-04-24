@@ -20,6 +20,6 @@ type AffectedCode struct {
 	EndLine     int32        `json:"end_line" parquet:"end_line" ch:"end_line"`
 	StartLine   int32        `json:"start_line" parquet:"start_line" ch:"start_line"`
 	File        File         `json:"file" parquet:"file" ch:"file"`
-	Owner       *User        `json:"owner" parquet:"owner,optional" ch:"owner,omitempty"`
-	Remediation *Remediation `json:"remediation" parquet:"remediation,optional" ch:"remediation,omitempty"`
+	Owner       *User        `json:"owner" parquet:"owner,optional" ch:"owner"`
+	Remediation *Remediation `json:"remediation" parquet:"remediation,optional" ch:"remediation"`
 }

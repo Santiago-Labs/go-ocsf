@@ -16,9 +16,9 @@ var AccountStruct = arrow.StructOf(AccountFields...)
 var AccountClassname = "account"
 
 type Account struct {
-	Name *string `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
-	Type *string `json:"type,omitempty" parquet:"type,optional" ch:"type,omitempty"`
+	Name *string `json:"name,omitempty" parquet:"name,optional" ch:"name"`
+	Type *string `json:"type,omitempty" parquet:"type,optional" ch:"type"`
 	// TypeID enum: [3,6,99,0,1,2,10,4,5,7,8,9]
-	TypeID *int    `json:"type_id,omitempty" parquet:"type_id,optional" ch:"type_id,omitempty"`
-	UID    *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	TypeID *int    `json:"type_id,omitempty" parquet:"type_id,optional" ch:"type_id"`
+	UID    *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
 }

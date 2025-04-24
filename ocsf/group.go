@@ -7,12 +7,12 @@ import (
 var GroupClassname = "group"
 
 type Group struct {
-	Desc       *string  `json:"desc,omitempty" parquet:"desc,optional" ch:"desc,omitempty" ch:"desc,omitempty"`
-	Domain     *string  `json:"domain,omitempty" parquet:"domain,optional" ch:"domain,omitempty"`
-	Name       *string  `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
-	Privileges []string `json:"privileges,omitempty" parquet:"privileges,list,optional" ch:"privileges,omitempty"`
-	Type       *string  `json:"type,omitempty" parquet:"type,optional" ch:"type,omitempty"`
-	UID        *string  `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
+	Desc       *string  `json:"desc,omitempty" parquet:"desc,optional" ch:"desc" ch:"desc"`
+	Domain     *string  `json:"domain,omitempty" parquet:"domain,optional" ch:"domain"`
+	Name       *string  `json:"name,omitempty" parquet:"name,optional" ch:"name"`
+	Privileges []string `json:"privileges,omitempty" parquet:"privileges,list,optional" ch:"privileges"`
+	Type       *string  `json:"type,omitempty" parquet:"type,optional" ch:"type"`
+	UID        *string  `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
 }
 
 // GroupFields defines the fields for the Group Arrow schema.

@@ -22,14 +22,14 @@ var ResourceDetailsStruct = arrow.StructOf(ResourceDetailsFields...)
 var ResourceDetailsClassname = "resource_details"
 
 type ResourceDetails struct {
-	Criticality *string  `json:"criticality,omitempty" parquet:"criticality,optional" ch:"criticality,omitempty"`
-	Data        *string  `json:"data,omitempty" parquet:"data,optional" ch:"data,omitempty"` // JSON blob
-	Group       *Group   `json:"group,omitempty" parquet:"group,optional" ch:"group,omitempty"`
-	Labels      []string `json:"labels,omitempty" parquet:"labels,list,optional" ch:"labels,omitempty"`
-	UID         *string  `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
-	Name        *string  `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
-	Namespace   *string  `json:"namespace,omitempty" parquet:"namespace,optional" ch:"namespace,omitempty"`
-	Owner       *User    `json:"owner,omitempty" parquet:"owner,optional" ch:"owner,omitempty"`
-	Type        *string  `json:"type,omitempty" parquet:"type,optional" ch:"type,omitempty"`
-	Version     *string  `json:"version,omitempty" parquet:"version,optional" ch:"version,omitempty"`
+	Criticality *string  `json:"criticality,omitempty" parquet:"criticality,optional" ch:"criticality"`
+	Data        *string  `json:"data,omitempty" parquet:"data,optional" ch:"data"` // JSON blob
+	Group       *Group   `json:"group,omitempty" parquet:"group,optional" ch:"group"`
+	Labels      []string `json:"labels,omitempty" parquet:"labels,list,optional" ch:"labels"`
+	UID         *string  `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
+	Name        *string  `json:"name,omitempty" parquet:"name,optional" ch:"name"`
+	Namespace   *string  `json:"namespace,omitempty" parquet:"namespace,optional" ch:"namespace"`
+	Owner       *User    `json:"owner,omitempty" parquet:"owner,optional" ch:"owner"`
+	Type        *string  `json:"type,omitempty" parquet:"type,optional" ch:"type"`
+	Version     *string  `json:"version,omitempty" parquet:"version,optional" ch:"version"`
 }

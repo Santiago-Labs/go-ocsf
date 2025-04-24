@@ -26,18 +26,18 @@ var IdentityProviderStruct = arrow.StructOf(IdentityProviderFields...)
 var IdentityProviderClassname = "idp"
 
 type IdentityProvider struct {
-	AuthFactors  []*AuthFactor `json:"auth_factors,omitempty" parquet:"auth_factors,list,optional" ch:"auth_factors,omitempty"`
-	Domain       *string       `json:"domain,omitempty" parquet:"domain,optional" ch:"domain,omitempty"`
-	Fingerprint  *Fingerprint  `json:"fingerprint,omitempty" parquet:"fingerprint,optional" ch:"fingerprint,omitempty"`
-	HasMFA       *bool         `json:"has_mfa,omitempty" parquet:"has_mfa,optional" ch:"has_mfa,omitempty"`
-	Issuer       *string       `json:"issuer,omitempty" parquet:"issuer,optional" ch:"issuer,omitempty"`
-	Name         *string       `json:"name,omitempty" parquet:"name,optional" ch:"name,omitempty"`
-	ProtocolName *string       `json:"protocol_name,omitempty" parquet:"protocol_name,optional" ch:"protocol_name,omitempty"`
-	SCIM         *SCIM         `json:"scim,omitempty" parquet:"scim,optional" ch:"scim,omitempty"`
-	SSO          *SSO          `json:"sso,omitempty" parquet:"sso,optional" ch:"sso,omitempty"`
-	State        *string       `json:"state,omitempty" parquet:"state,optional" ch:"state,omitempty"`
-	StateID      *int          `json:"state_id,omitempty" parquet:"state_id,optional" ch:"state_id,omitempty"`
-	TenantUID    *string       `json:"tenant_uid,omitempty" parquet:"tenant_uid,optional" ch:"tenant_uid,omitempty"`
-	UID          *string       `json:"uid,omitempty" parquet:"uid,optional" ch:"uid,omitempty"`
-	URLString    *string       `json:"url_string,omitempty" parquet:"url_string,optional" ch:"url_string,omitempty"`
+	AuthFactors  []*AuthFactor `json:"auth_factors,omitempty" parquet:"auth_factors,list,optional" ch:"auth_factors"`
+	Domain       *string       `json:"domain,omitempty" parquet:"domain,optional" ch:"domain"`
+	Fingerprint  *Fingerprint  `json:"fingerprint,omitempty" parquet:"fingerprint,optional" ch:"fingerprint"`
+	HasMFA       *bool         `json:"has_mfa,omitempty" parquet:"has_mfa,optional" ch:"has_mfa"`
+	Issuer       *string       `json:"issuer,omitempty" parquet:"issuer,optional" ch:"issuer"`
+	Name         *string       `json:"name,omitempty" parquet:"name,optional" ch:"name"`
+	ProtocolName *string       `json:"protocol_name,omitempty" parquet:"protocol_name,optional" ch:"protocol_name"`
+	SCIM         *SCIM         `json:"scim,omitempty" parquet:"scim,optional" ch:"scim"`
+	SSO          *SSO          `json:"sso,omitempty" parquet:"sso,optional" ch:"sso"`
+	State        *string       `json:"state,omitempty" parquet:"state,optional" ch:"state"`
+	StateID      *int          `json:"state_id,omitempty" parquet:"state_id,optional" ch:"state_id"`
+	TenantUID    *string       `json:"tenant_uid,omitempty" parquet:"tenant_uid,optional" ch:"tenant_uid"`
+	UID          *string       `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
+	URLString    *string       `json:"url_string,omitempty" parquet:"url_string,optional" ch:"url_string"`
 }

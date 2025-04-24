@@ -18,10 +18,10 @@ var APIStruct = arrow.StructOf(APIFields...)
 var APIClassname = "api"
 
 type API struct {
-	Group     *Group    `json:"group,omitempty" parquet:"group,optional" ch:"group,omitempty"`
+	Group     *Group    `json:"group,omitempty" parquet:"group,optional" ch:"group"`
 	Operation string    `json:"operation" parquet:"operation" ch:"operation"`
-	Request   *Request  `json:"request,omitempty" parquet:"request,optional" ch:"request,omitempty"`
-	Response  *Response `json:"response,omitempty" parquet:"response,optional" ch:"response,omitempty"`
-	Service   *Service  `json:"service,omitempty" parquet:"service,optional" ch:"service,omitempty"`
-	Version   *string   `json:"version,omitempty" parquet:"version,optional" ch:"version,omitempty"`
+	Request   *Request  `json:"request,omitempty" parquet:"request,optional" ch:"request"`
+	Response  *Response `json:"response,omitempty" parquet:"response,optional" ch:"response"`
+	Service   *Service  `json:"service,omitempty" parquet:"service,optional" ch:"service"`
+	Version   *string   `json:"version,omitempty" parquet:"version,optional" ch:"version"`
 }
