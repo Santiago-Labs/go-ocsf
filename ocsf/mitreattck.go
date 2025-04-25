@@ -18,9 +18,9 @@ var MITREATTCKClassname = "attack"
 
 // MITREATTCK represents MITRE ATT&CK® details.
 type MITREATTCK struct {
-	SubTechnique *SubTechnique `json:"sub_technique,omitempty" parquet:"sub_technique,optional"`
-	Tactic       *Tactic       `json:"tactic,omitempty" parquet:"tactic,optional"`
-	Tactics      []*Tactic     `json:"tactics,omitempty" parquet:"tactics,list,optional"`
-	Technique    *Technique    `json:"technique,omitempty" parquet:"technique,optional"`
-	Version      string        `json:"version" parquet:"version"`
+	SubTechnique *SubTechnique `json:"sub_technique" parquet:"sub_technique,optional" ch:"sub_technique"`
+	Tactic       *Tactic       `json:"tactic" parquet:"tactic,optional" ch:"tactic"`
+	Tactics      []*Tactic     `json:"tactics" parquet:"tactics,list,optional" ch:"tactics"`
+	Technique    *Technique    `json:"technique" parquet:"technique,optional" ch:"technique"`
+	Version      string        `json:"version" parquet:"version" ch:"version"`
 }

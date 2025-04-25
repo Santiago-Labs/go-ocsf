@@ -14,7 +14,7 @@ var SchemaExtensionStruct = arrow.StructOf(SchemaExtensionFields...)
 var SchemaExtensionClassname = "extension"
 
 type SchemaExtension struct {
-	Name    string `json:"name" parquet:"name"`
-	UID     string `json:"uid" parquet:"uid"`
-	Version string `json:"version" parquet:"version"`
+	Name    string `json:"name" parquet:"name" ch:"name"`
+	UID     string `json:"uid" parquet:"uid" ch:"uid"`
+	Version string `json:"version" parquet:"version" ch:"version"`
 }

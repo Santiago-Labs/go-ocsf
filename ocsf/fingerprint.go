@@ -15,7 +15,7 @@ var FingerprintStruct = arrow.StructOf(FingerprintFields...)
 var FingerprintClassname = "fingerprint"
 
 type Fingerprint struct {
-	Algorithm   *string `json:"algorithm,omitempty" parquet:"algorithm,optional"`
-	AlgorithmID int32   `json:"algorithm_id" parquet:"algorithm_id"`
-	Value       string  `json:"value" parquet:"value"`
+	Algorithm   *string `json:"algorithm" parquet:"algorithm,optional" ch:"algorithm"`
+	AlgorithmID int32   `json:"algorithm_id" parquet:"algorithm_id" ch:"algorithm_id"`
+	Value       string  `json:"value" parquet:"value" ch:"value"`
 }

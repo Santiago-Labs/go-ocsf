@@ -16,9 +16,9 @@ var EPSSStruct = arrow.StructOf(EPSSFields...)
 var EPSSClassname = "epss"
 
 type EPSS struct {
-	CreatedTime   *int     `json:"created_time,omitempty" parquet:"created_time,optional"`
-	CreatedTimeDt *string  `json:"created_time_dt,omitempty" parquet:"created_time_dt,optional"`
-	Percentile    *float64 `json:"percentile,omitempty" parquet:"percentile,optional"`
-	Score         string   `json:"score" parquet:"score"`
-	Version       *string  `json:"version,omitempty" parquet:"version,optional"`
+	CreatedTime   *int64   `json:"created_time" parquet:"created_time,optional" ch:"created_time"`
+	CreatedTimeDt *string  `json:"created_time_dt" parquet:"created_time_dt,optional" ch:"created_time_dt"`
+	Percentile    *float64 `json:"percentile" parquet:"percentile,optional" ch:"percentile"`
+	Score         string   `json:"score" parquet:"score" ch:"score"`
+	Version       *string  `json:"version" parquet:"version,optional" ch:"version"`
 }

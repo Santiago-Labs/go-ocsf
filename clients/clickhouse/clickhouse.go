@@ -142,10 +142,11 @@ func (c *Client) InsertAPIActivities(ctx context.Context, apiActivities []ocsf.A
 		ActivityID   int
 		ActivityName *string
 	}
-	it := 0
 	// Add each API activity to the batch as a whole struct
 	for _, activity := range apiActivities {
-		fmt.Println("ACTIVITY ID IS SET", it, "ACTIVITY ID", activity.ActivityID)
+		// If anything within the struct is nil, we need to populate it with an empty struct
+		populateEmptyActivityStructs(&activity)
+
 		err = batch.AppendStruct(&activity)
 		if err != nil {
 			return fmt.Errorf("failed to append API activity to batch: %w", err)
@@ -158,6 +159,63 @@ func (c *Client) InsertAPIActivities(ctx context.Context, apiActivities []ocsf.A
 	}
 
 	return nil
+}
+
+func populateEmptyActivityStructs(activity *ocsf.APIActivity) {
+	// Use reflection to automatically populate all nil pointer fields
+	populateNilPointers(reflect.ValueOf(activity).Elem())
+}
+
+// populateNilPointers recursively initializes all nil pointer fields in a struct
+func populateNilPointers(v reflect.Value) {
+	// // Only process struct types
+	// if v.Kind() != reflect.Struct {
+	// 	return
+	// }
+
+	// Iterate through all fields in the struct
+	if v.Kind() == reflect.Struct {
+		for i := 0; i < v.NumField(); i++ {
+			field := v.Field(i)
+
+			// Check if the field is a pointer
+			if field.Kind() == reflect.Ptr {
+				// If it's nil, initialize it with a new instance of its type
+				if field.IsNil() {
+					field.Set(reflect.New(field.Type().Elem()))
+
+					// If the newly created pointer points to a struct, process it recursively
+					if field.Elem().Kind() == reflect.Struct {
+						populateNilPointers(field.Elem())
+					}
+				} else if field.Elem().Kind() == reflect.Struct {
+					// If the pointer is not nil and points to a struct, process it recursively
+					populateNilPointers(field.Elem())
+				}
+				// } else if field.Kind() == reflect.Struct {
+				// 	// Recursively process nested structs
+				// 	populateNilPointers(field)
+				// }
+			} else {
+				// Recursively process nested structs
+				populateNilPointers(field)
+			}
+		}
+	} else {
+		// If the value is not a struct then just put the equivalent zero value
+		// v.Set(reflect.Zero(v.Type()))
+
+		// Does setting to nil work?
+		if v.Kind() == reflect.Ptr {
+			// If its a pointer and its nil
+
+			// Setting the value in here:
+			fmt.Println("Setting value to nil", v.Type())
+
+			v.Set(reflect.ValueOf(nil))
+		}
+	}
+
 }
 
 // CreateTableFromStruct creates a ClickHouse table based on the structure of a Go struct
@@ -204,7 +262,7 @@ func (c *Client) CreateTableFromStruct(ctx context.Context, tableName, primaryKe
 		) ENGINE = MergeTree() %s %s
 	`, c.dbName, tableName, schema, orderByClause, primaryKeyClause)
 
-	fmt.Println("Creating table...\n", query)
+	// fmt.Println("Creating table...\n", query)
 
 	if err := os.WriteFile(fmt.Sprintf("%s.sql", "tmpquery"), []byte(query), 0644); err != nil {
 		return fmt.Errorf("failed to write table to file: %w", err)
@@ -301,7 +359,7 @@ func generateColumns(t reflect.Type, prefix string) ([]string, error) {
 				if err != nil {
 					return nil, err
 				}
-				columns = append(columns, fmt.Sprintf("`%s` Array(Nullable(%s))", columnName, clickhouseType))
+				columns = append(columns, fmt.Sprintf("`%s` Array(%s)", columnName, clickhouseType))
 			}
 		case reflect.Ptr:
 			// For pointer types, make them Nullable
@@ -321,16 +379,33 @@ func generateColumns(t reflect.Type, prefix string) ([]string, error) {
 				if err != nil {
 					return nil, err
 				}
-				columns = append(columns, fmt.Sprintf("`%s` Nullable(%s)", columnName, clickhouseType))
+
+				// Map can't be inside a Nullable
+				if elemType.Kind() == reflect.Map {
+					fmt.Println("MAP", columnName)
+					columns = append(columns, fmt.Sprintf("`%s` Map(String, String)", columnName))
+				} else {
+					if strings.Contains(clickhouseType, "Map") {
+						fmt.Println("MAP4", columnName)
+					}
+					columns = append(columns, fmt.Sprintf("`%s` Nullable(%s)", columnName, clickhouseType))
+				}
 			}
 		case reflect.Map:
+			fmt.Println("MAP3", columnName)
+
+			// Lets only support Map[string
 			// Maps are serialized as JSON strings
-			columns = append(columns, fmt.Sprintf("`%s` String", columnName))
+			columns = append(columns, fmt.Sprintf("`%s` Map(String, String)", columnName))
 		default:
 			clickhouseType, err := goTypeToClickHouseType(field.Type)
 			if err != nil {
 				return nil, err
 			}
+			if strings.Contains(clickhouseType, "Map") {
+				fmt.Println("MAP5", columnName)
+			}
+
 			columns = append(columns, fmt.Sprintf("`%s` %s", columnName, clickhouseType))
 		}
 	}
@@ -367,7 +442,7 @@ func generateNestedTuple(t reflect.Type) (string, error) {
 			tagName = strings.TrimSuffix(tagName, ",omitempty")
 			fieldName = tagName
 		} else {
-			fmt.Println("NO TAG FOUND FOR FIELD", fieldName)
+			// Do we want to fail if there is no ch tag?
 		}
 
 		switch field.Type.Kind() {
@@ -400,7 +475,7 @@ func generateNestedTuple(t reflect.Type) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				fields = append(fields, fmt.Sprintf("`%s` Array(Nullable(%s))", fieldName, clickhouseType))
+				fields = append(fields, fmt.Sprintf("`%s` Array(%s)", fieldName, clickhouseType))
 			}
 		case reflect.Ptr:
 			elemType := field.Type.Elem()
@@ -420,14 +495,25 @@ func generateNestedTuple(t reflect.Type) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				fields = append(fields, fmt.Sprintf("`%s` Nullable(%s)", fieldName, clickhouseType))
+				if elemType.Kind() == reflect.Map {
+					fmt.Println("MAP1", fieldName)
+					fields = append(fields, fmt.Sprintf("`%s` Map(String, String)", fieldName))
+				} else {
+					fields = append(fields, fmt.Sprintf("`%s` Nullable(%s)", fieldName, clickhouseType))
+				}
 			}
 		default:
 			clickhouseType, err := goTypeToClickHouseType(field.Type)
 			if err != nil {
 				return "", err
 			}
-			fields = append(fields, fmt.Sprintf("`%s` Nullable(%s)", fieldName, clickhouseType))
+			if field.Type.Kind() == reflect.Map {
+				// Map can't be inside a Nullable
+				fields = append(fields, fmt.Sprintf("`%s` Map(String, String)", fieldName))
+			} else {
+				// fields = append(fields, fmt.Sprintf("`%s` Nullable(%s)", fieldName, clickhouseType))
+				fields = append(fields, fmt.Sprintf("`%s` %s", fieldName, clickhouseType))
+			}
 		}
 	}
 
@@ -462,7 +548,9 @@ func goTypeToClickHouseType(t reflect.Type) (string, error) {
 		}
 		return "String", nil // Fallback for other structs
 	case reflect.Map:
-		return "String", nil // Maps as JSON strings
+		fmt.Println("MAP2", t.String())
+		// This is where we can handle Map[string, string]
+		return "Map(String, String)", nil
 	case reflect.Ptr:
 		return goTypeToClickHouseType(t.Elem())
 	default:

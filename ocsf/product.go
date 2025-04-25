@@ -21,13 +21,13 @@ var ProductStruct = arrow.StructOf(ProductFields...)
 var ProductClassname = "product"
 
 type Product struct {
-	CPEName    *string  `json:"cpe_name,omitempty" parquet:"cpe_name,optional" ch:"cpe_name" ch:"cpe_name"`
-	Feature    *Feature `json:"feature,omitempty" parquet:"feature,optional" ch:"feature"`
-	Lang       *string  `json:"lang,omitempty" parquet:"lang,optional" ch:"lang"`
-	Name       *string  `json:"name,omitempty" parquet:"name,optional" ch:"name"`
-	Path       *string  `json:"path,omitempty" parquet:"path,optional" ch:"path"`
-	UID        *string  `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
-	URLString  *string  `json:"url_string,omitempty" parquet:"url_string,optional" ch:"url_string"`
+	CPEName    *string  `json:"cpe_name" parquet:"cpe_name,optional" ch:"cpe_name" ch:"cpe_name"`
+	Feature    *Feature `json:"feature" parquet:"feature,optional" ch:"feature"`
+	Lang       *string  `json:"lang" parquet:"lang,optional" ch:"lang"`
+	Name       *string  `json:"name" parquet:"name,optional" ch:"name"`
+	Path       *string  `json:"path" parquet:"path,optional" ch:"path"`
+	UID        *string  `json:"uid" parquet:"uid,optional" ch:"uid"`
+	URLString  *string  `json:"url_string" parquet:"url_string,optional" ch:"url_string"`
 	VendorName string   `json:"vendor_name" parquet:"vendor_name" ch:"vendor_name"` // required field
-	Version    *string  `json:"version,omitempty" parquet:"version,optional" ch:"version"`
+	Version    *string  `json:"version" parquet:"version,optional" ch:"version"`
 }

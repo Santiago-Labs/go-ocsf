@@ -20,12 +20,12 @@ var AgentStruct = arrow.StructOf(AgentFields...)
 var AgentClassname = "agent"
 
 type Agent struct {
-	Name       *string   `json:"name,omitempty" parquet:"name,optional" ch:"name"`
-	Type       *string   `json:"type,omitempty" parquet:"type,optional" ch:"type"`
-	TypeID     *int      `json:"type_id,omitempty" parquet:"type_id,optional" ch:"type_id"`
-	UID        *string   `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
-	UIDAlt     *string   `json:"uid_alt,omitempty" parquet:"uid_alt,optional" ch:"uid_alt"`
-	VendorName *string   `json:"vendor_name,omitempty" parquet:"vendor_name,optional" ch:"vendor_name"`
-	Version    *string   `json:"version,omitempty" parquet:"version,optional" ch:"version"`
-	Policies   []*Policy `json:"policies,omitempty" parquet:"policies,list,optional" ch:"policies"`
+	Name       *string   `json:"name" parquet:"name,optional" ch:"name"`
+	Type       *string   `json:"type" parquet:"type,optional" ch:"type"`
+	TypeID     *int64    `json:"type_id" parquet:"type_id,optional" ch:"type_id"`
+	UID        *string   `json:"uid" parquet:"uid,optional" ch:"uid"`
+	UIDAlt     *string   `json:"uid_alt" parquet:"uid_alt,optional" ch:"uid_alt"`
+	VendorName *string   `json:"vendor_name" parquet:"vendor_name,optional" ch:"vendor_name"`
+	Version    *string   `json:"version" parquet:"version,optional" ch:"version"`
+	Policies   []*Policy `json:"policies" parquet:"policies,list,optional" ch:"policies"`
 }

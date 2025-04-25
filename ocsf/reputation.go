@@ -16,8 +16,8 @@ var ReputationStruct = arrow.StructOf(ReputationFields...)
 var ReputationClassname = "reputation"
 
 type Reputation struct {
-	BaseScore float64 `json:"base_score" parquet:"base_score"`
-	Provider  *string `json:"provider,omitempty" parquet:"provider,optional"`
-	Score     *string `json:"score,omitempty" parquet:"score,optional"`
-	ScoreID   int     `json:"score_id" parquet:"score_id"`
+	BaseScore float64 `json:"base_score" parquet:"base_score" ch:"base_score"`
+	Provider  *string `json:"provider" parquet:"provider,optional" ch:"provider"`
+	Score     *string `json:"score" parquet:"score,optional" ch:"score"`
+	ScoreID   int     `json:"score_id" parquet:"score_id" ch:"score_id"`
 }

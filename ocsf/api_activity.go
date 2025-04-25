@@ -49,73 +49,73 @@ var APIActivitySchema = arrow.NewSchema(APIActivityFields, nil)
 type APIActivity struct {
 	EventDay       int32              `json:"event_day" parquet:"event_day,date" ch:"event_day"`
 	ActivityID     int                `json:"activity_id" parquet:"activity_id" ch:"activity_id"`
-	ActivityName   *string            `json:"activity_name,omitempty" parquet:"activity_name,optional" ch:"activity_name"`
-	Actor          Actor              `json:"actor,omitempty" parquet:"actor" ch:"actor"`
+	ActivityName   *string            `json:"activity_name" parquet:"activity_name,optional" ch:"activity_name"`
+	Actor          Actor              `json:"actor" parquet:"actor" ch:"actor"`
 	API            API                `json:"api" parquet:"api" ch:"api"`
-	CategoryName   *string            `json:"category_name,omitempty" parquet:"category_name,optional" ch:"category_name"`
+	CategoryName   *string            `json:"category_name" parquet:"category_name,optional" ch:"category_name"`
 	CategoryUID    int                `json:"category_uid" parquet:"category_uid" ch:"category_uid"`
-	ClassName      *string            `json:"class_name,omitempty" parquet:"class_name,optional" ch:"class_name"`
+	ClassName      *string            `json:"class_name" parquet:"class_name,optional" ch:"class_name"`
 	ClassUID       int                `json:"class_uid" parquet:"class_uid" ch:"class_uid"`
-	Count          *int               `json:"count,omitempty" parquet:"count,optional" ch:"count"`
-	Duration       *int64             `json:"duration,omitempty" parquet:"duration,optional" ch:"duration"`
-	EndTime        *int64             `json:"end_time,omitempty" parquet:"end_time,optional" ch:"end_time"`
-	Message        *string            `json:"message,omitempty" parquet:"message,optional" ch:"message"`
-	RawData        *string            `json:"raw_data,omitempty" parquet:"raw_data,optional" ch:"raw_data"`
-	Severity       *string            `json:"severity,omitempty" parquet:"severity,optional" ch:"severity"`
+	Count          *int64             `json:"count" parquet:"count,optional" ch:"count"`
+	Duration       *int64             `json:"duration" parquet:"duration,optional" ch:"duration"`
+	EndTime        *int64             `json:"end_time" parquet:"end_time,optional" ch:"end_time"`
+	Message        *string            `json:"message" parquet:"message,optional" ch:"message"`
+	RawData        *string            `json:"raw_data" parquet:"raw_data,optional" ch:"raw_data"`
+	Severity       *string            `json:"severity" parquet:"severity,optional" ch:"severity"`
 	SeverityID     int                `json:"severity_id" parquet:"severity_id" ch:"severity_id"`
-	StartTime      *int64             `json:"start_time,omitempty" parquet:"start_time,optional" ch:"start_time"`
-	Status         *string            `json:"status,omitempty" parquet:"status,optional" ch:"status"`
-	StatusCode     *string            `json:"status_code,omitempty" parquet:"status_code,optional" ch:"status_code"`
-	StatusDetail   *string            `json:"status_detail,omitempty" parquet:"status_detail,optional" ch:"status_detail"`
+	StartTime      *int64             `json:"start_time" parquet:"start_time,optional" ch:"start_time"`
+	Status         *string            `json:"status" parquet:"status,optional" ch:"status"`
+	StatusCode     *string            `json:"status_code" parquet:"status_code,optional" ch:"status_code"`
+	StatusDetail   *string            `json:"status_detail" parquet:"status_detail,optional" ch:"status_detail"`
 	StatusID       int                `json:"status_id" parquet:"status_id" ch:"status_id"`
 	Time           int64              `json:"time" parquet:"time,timestamp" ch:"time"`
 	TimezoneOffset int                `json:"timezone_offset" parquet:"timezone_offset" ch:"timezone_offset"`
-	TypeName       *string            `json:"type_name,omitempty" parquet:"type_name,optional" ch:"type_name"`
+	TypeName       *string            `json:"type_name" parquet:"type_name,optional" ch:"type_name"`
 	TypeUID        int                `json:"type_uid" parquet:"type_uid" ch:"type_uid"`
-	DstEndpoint    *NetworkEndpoint   `json:"dst_endpoint,omitempty" parquet:"dst_endpoint,optional" ch:"dst_endpoint"`
-	Enrichments    []*Enrichment      `json:"enrichments,omitempty" parquet:"enrichments,list,optional" ch:"enrichments"`
-	HTTPRequest    *HTTPRequest       `json:"http_request,omitempty" parquet:"http_request,optional" ch:"http_request"`
-	HTTPResponse   *HTTPResponse      `json:"http_response,omitempty" parquet:"http_response,optional" ch:"http_response"`
+	DstEndpoint    *NetworkEndpoint   `json:"dst_endpoint" parquet:"dst_endpoint,optional" ch:"dst_endpoint"`
+	Enrichments    []*Enrichment      `json:"enrichments" parquet:"enrichments,list,optional" ch:"enrichments"`
+	HTTPRequest    *HTTPRequest       `json:"http_request" parquet:"http_request,optional" ch:"http_request"`
+	HTTPResponse   *HTTPResponse      `json:"http_response" parquet:"http_response,optional" ch:"http_response"`
 	Metadata       Metadata           `json:"metadata" parquet:"metadata" ch:"metadata"`
-	Observables    []*Observable      `json:"observables,omitempty" parquet:"observables,list,optional" ch:"observables"`
-	Resources      []*ResourceDetails `json:"resources,omitempty" parquet:"resources,list,optional" ch:"resources"`
+	Observables    []*Observable      `json:"observables" parquet:"observables,list,optional" ch:"observables"`
+	Resources      []*ResourceDetails `json:"resources" parquet:"resources,list,optional" ch:"resources"`
 	SrcEndpoint    NetworkEndpoint    `json:"src_endpoint" parquet:"src_endpoint" ch:"src_endpoint"`
-	Unmapped       *string            `json:"unmapped,omitempty" parquet:"unmapped,optional" ch:"unmapped"`
+	Unmapped       *string            `json:"unmapped" parquet:"unmapped,optional" ch:"unmapped"`
 }
 
 type APIActivityDTO struct {
 	EventDay       int32   `json:"event_day" parquet:"event_day,date" ch:"event_day"`
 	ActivityID     int     `json:"activity_id" parquet:"activity_id" ch:"activity_id"`
-	ActivityName   *string `json:"activity_name,omitempty" parquet:"activity_name,optional" ch:"activity_name"`
-	Actor          JSONB   `json:"actor,omitempty" parquet:"actor" ch:"actor"`
+	ActivityName   *string `json:"activity_name" parquet:"activity_name,optional" ch:"activity_name"`
+	Actor          JSONB   `json:"actor" parquet:"actor" ch:"actor"`
 	API            JSONB   `json:"api" parquet:"api" ch:"api"`
-	CategoryName   *string `json:"category_name,omitempty" parquet:"category_name,optional" ch:"category_name"`
+	CategoryName   *string `json:"category_name" parquet:"category_name,optional" ch:"category_name"`
 	CategoryUID    int     `json:"category_uid" parquet:"category_uid" ch:"category_uid"`
-	ClassName      *string `json:"class_name,omitempty" parquet:"class_name,optional" ch:"class_name"`
+	ClassName      *string `json:"class_name" parquet:"class_name,optional" ch:"class_name"`
 	ClassUID       int     `json:"class_uid" parquet:"class_uid" ch:"class_uid"`
-	Count          *int    `json:"count,omitempty" parquet:"count,optional" ch:"count"`
-	Duration       *int64  `json:"duration,omitempty" parquet:"duration,optional" ch:"duration"`
-	EndTime        *int64  `json:"end_time,omitempty" parquet:"end_time,optional" ch:"end_time"`
-	Message        *string `json:"message,omitempty" parquet:"message,optional" ch:"message"`
-	RawData        *string `json:"raw_data,omitempty" parquet:"raw_data,optional" ch:"raw_data"`
-	Severity       *string `json:"severity,omitempty" parquet:"severity,optional" ch:"severity"`
+	Count          *int64  `json:"count" parquet:"count,optional" ch:"count"`
+	Duration       *int64  `json:"duration" parquet:"duration,optional" ch:"duration"`
+	EndTime        *int64  `json:"end_time" parquet:"end_time,optional" ch:"end_time"`
+	Message        *string `json:"message" parquet:"message,optional" ch:"message"`
+	RawData        *string `json:"raw_data" parquet:"raw_data,optional" ch:"raw_data"`
+	Severity       *string `json:"severity" parquet:"severity,optional" ch:"severity"`
 	SeverityID     int     `json:"severity_id" parquet:"severity_id" ch:"severity_id"`
-	StartTime      *int64  `json:"start_time,omitempty" parquet:"start_time,optional" ch:"start_time"`
-	Status         *string `json:"status,omitempty" parquet:"status,optional" ch:"status"`
-	StatusCode     *string `json:"status_code,omitempty" parquet:"status_code,optional" ch:"status_code"`
-	StatusDetail   *string `json:"status_detail,omitempty" parquet:"status_detail,optional" ch:"status_detail"`
+	StartTime      *int64  `json:"start_time" parquet:"start_time,optional" ch:"start_time"`
+	Status         *string `json:"status" parquet:"status,optional" ch:"status"`
+	StatusCode     *string `json:"status_code" parquet:"status_code,optional" ch:"status_code"`
+	StatusDetail   *string `json:"status_detail" parquet:"status_detail,optional" ch:"status_detail"`
 	StatusID       int     `json:"status_id" parquet:"status_id" ch:"status_id"`
 	Time           int64   `json:"time" parquet:"time" ch:"time"`
 	TimezoneOffset int     `json:"timezone_offset" parquet:"timezone_offset" ch:"timezone_offset"`
-	TypeName       *string `json:"type_name,omitempty" parquet:"type_name,optional" ch:"type_name"`
+	TypeName       *string `json:"type_name" parquet:"type_name,optional" ch:"type_name"`
 	TypeUID        int     `json:"type_uid" parquet:"type_uid" ch:"type_uid"`
-	DstEndpoint    JSONB   `json:"dst_endpoint,omitempty" parquet:"dst_endpoint,optional" ch:"dst_endpoint"`
-	Enrichments    JSONB   `json:"enrichments,omitempty" parquet:"enrichments,list,optional" ch:"enrichments"`
-	HTTPRequest    JSONB   `json:"http_request,omitempty" parquet:"http_request,optional" ch:"http_request"`
-	HTTPResponse   JSONB   `json:"http_response,omitempty" parquet:"http_response,optional" ch:"http_response"`
+	DstEndpoint    JSONB   `json:"dst_endpoint" parquet:"dst_endpoint,optional" ch:"dst_endpoint"`
+	Enrichments    JSONB   `json:"enrichments" parquet:"enrichments,list,optional" ch:"enrichments"`
+	HTTPRequest    JSONB   `json:"http_request" parquet:"http_request,optional" ch:"http_request"`
+	HTTPResponse   JSONB   `json:"http_response" parquet:"http_response,optional" ch:"http_response"`
 	Metadata       JSONB   `json:"metadata" parquet:"metadata" ch:"metadata"`
-	Observables    JSONB   `json:"observables,omitempty" parquet:"observables,list,optional" ch:"observables"`
-	Resources      JSONB   `json:"resources,omitempty" parquet:"resources,list,optional" ch:"resources"`
+	Observables    JSONB   `json:"observables" parquet:"observables,list,optional" ch:"observables"`
+	Resources      JSONB   `json:"resources" parquet:"resources,list,optional" ch:"resources"`
 	SrcEndpoint    JSONB   `json:"src_endpoint" parquet:"src_endpoint" ch:"src_endpoint"`
-	Unmapped       *string `json:"unmapped,omitempty" parquet:"unmapped,optional" ch:"unmapped"`
+	Unmapped       *string `json:"unmapped" parquet:"unmapped,optional" ch:"unmapped"`
 }

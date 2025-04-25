@@ -41,7 +41,7 @@ func (s *GCPAuditLogSyncer) Sync(ctx context.Context) error {
 	slog.Info("syncing GCP audit logs")
 
 	// TODO: Make the time range of logs configurable. Default to 1 week for now.
-	lastWeek := time.Now().Add(-24 * 14 * time.Hour).Format(time.RFC3339)
+	lastWeek := time.Now().Add(-24 * 24 * time.Hour).Format(time.RFC3339)
 
 	filter := fmt.Sprintf(`protoPayload.@type = "type.googleapis.com/google.cloud.audit.AuditLog" AND
 	timestamp >= "%s"
@@ -251,7 +251,7 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func intPtr(i int) *int {
+func intPtr(i int64) *int64 {
 	return &i
 }
 

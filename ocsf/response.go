@@ -19,11 +19,11 @@ var ResponseStruct = arrow.StructOf(ResponseFields...)
 var ResponseClassname = "response"
 
 type Response struct {
-	Code         *int32       `json:"code,omitempty" parquet:"code,optional"`
-	Containers   []*Container `json:"containers,omitempty" parquet:"containers,list,optional"`
-	Data         *string      `json:"data,omitempty" parquet:"data,optional"`
-	Error        *string      `json:"error,omitempty" parquet:"error,optional"`
-	ErrorMessage *string      `json:"error_message,omitempty" parquet:"error_message,optional"`
-	Flags        []string     `json:"flags,omitempty" parquet:"flags,list,optional"`
-	Message      *string      `json:"message,omitempty" parquet:"message,optional"`
+	Code         *int32       `json:"code" parquet:"code,optional" ch:"code"`
+	Containers   []*Container `json:"containers" parquet:"containers,list,optional" ch:"containers"`
+	Data         *string      `json:"data" parquet:"data,optional" ch:"data"`
+	Error        *string      `json:"error" parquet:"error,optional" ch:"error"`
+	ErrorMessage *string      `json:"error_message" parquet:"error_message,optional" ch:"error_message"`
+	Flags        []string     `json:"flags" parquet:"flags,list,optional" ch:"flags"`
+	Message      *string      `json:"message" parquet:"message,optional" ch:"message"`
 }

@@ -13,6 +13,6 @@ var FileStruct = arrow.StructOf(FileFields...)
 var FileClassname = "file"
 
 type File struct {
-	Path  string `json:"path" parquet:"path"`
-	Owner string `json:"owner" parquet:"owner"`
+	Path  string `json:"path" parquet:"path" ch:"path"`
+	Owner string `json:"owner" parquet:"owner" ch:"owner"`
 }

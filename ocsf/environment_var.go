@@ -14,6 +14,6 @@ var EnvironmentVarStruct = arrow.StructOf(EnvironmentVarFields...)
 var EnvironmentVarClassname = "environment_variable"
 
 type EnvironmentVar struct {
-	Name  string `json:"name" parquet:"name"`
-	Value string `json:"value" parquet:"value"`
+	Name  string `json:"name" parquet:"name" ch:"name"`
+	Value string `json:"value" parquet:"value" ch:"value"`
 }

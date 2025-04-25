@@ -14,6 +14,6 @@ var AutonomousSystemStruct = arrow.StructOf(AutonomousSystemFields...)
 var AutonomousSystemClassname = "autonomous_system"
 
 type AutonomousSystem struct {
-	Name   *string `json:"name,omitempty" parquet:"name,optional" ch:"name"`
-	Number *int    `json:"number,omitempty" parquet:"number,optional" ch:"number"`
+	Name   *string `json:"name" parquet:"name,optional" ch:"name"`
+	Number *int64  `json:"number" parquet:"number,optional" ch:"number"`
 }

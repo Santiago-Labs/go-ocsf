@@ -25,17 +25,17 @@ var DeviceHWInfoClassname = "device_hw_info"
 
 // DeviceHWInfo contains hardware information.
 type DeviceHWInfo struct {
-	BiosDate         *string       `json:"bios_date,omitempty" parquet:"bios_date,optional" ch:"bios_date" ch:"bios_date"`
-	BiosManufacturer *string       `json:"bios_manufacturer,omitempty" parquet:"bios_manufacturer,optional" ch:"bios_manufacturer"`
-	BiosVer          *string       `json:"bios_ver,omitempty" parquet:"bios_ver,optional" ch:"bios_ver"`
-	Chassis          *string       `json:"chassis,omitempty" parquet:"chassis,optional" ch:"chassis"`
-	CPUBits          *int          `json:"cpu_bits,omitempty" parquet:"cpu_bits,optional" ch:"cpu_bits"`
-	CPUCores         *int          `json:"cpu_cores,omitempty" parquet:"cpu_cores,optional" ch:"cpu_cores"`
-	CPUCount         *int          `json:"cpu_count,omitempty" parquet:"cpu_count,optional" ch:"cpu_count"`
-	CPUSpeed         *int          `json:"cpu_speed,omitempty" parquet:"cpu_speed,optional" ch:"cpu_speed"`
-	CPUType          *string       `json:"cpu_type,omitempty" parquet:"cpu_type,optional" ch:"cpu_type"`
-	DesktopDisplay   *Display      `json:"desktop_display,omitempty" parquet:"desktop_display,optional" ch:"desktop_display"`
-	KeyboardInfo     *KeyboardInfo `json:"keyboard_info,omitempty" parquet:"keyboard_info,optional" ch:"keyboard_info"`
-	RamSize          *int          `json:"ram_size,omitempty" parquet:"ram_size,optional" ch:"ram_size"`
-	SerialNumber     *string       `json:"serial_number,omitempty" parquet:"serial_number,optional" ch:"serial_number"`
+	BiosDate         *string       `json:"bios_date" parquet:"bios_date,optional" ch:"bios_date" ch:"bios_date"`
+	BiosManufacturer *string       `json:"bios_manufacturer" parquet:"bios_manufacturer,optional" ch:"bios_manufacturer"`
+	BiosVer          *string       `json:"bios_ver" parquet:"bios_ver,optional" ch:"bios_ver"`
+	Chassis          *string       `json:"chassis" parquet:"chassis,optional" ch:"chassis"`
+	CPUBits          *int64        `json:"cpu_bits" parquet:"cpu_bits,optional" ch:"cpu_bits"`
+	CPUCores         *int64        `json:"cpu_cores" parquet:"cpu_cores,optional" ch:"cpu_cores"`
+	CPUCount         *int64        `json:"cpu_count" parquet:"cpu_count,optional" ch:"cpu_count"`
+	CPUSpeed         *int64        `json:"cpu_speed" parquet:"cpu_speed,optional" ch:"cpu_speed"`
+	CPUType          *string       `json:"cpu_type" parquet:"cpu_type,optional" ch:"cpu_type"`
+	DesktopDisplay   *Display      `json:"desktop_display" parquet:"desktop_display,optional" ch:"desktop_display"`
+	KeyboardInfo     *KeyboardInfo `json:"keyboard_info" parquet:"keyboard_info,optional" ch:"keyboard_info"`
+	RamSize          *int64        `json:"ram_size" parquet:"ram_size,optional" ch:"ram_size"`
+	SerialNumber     *string       `json:"serial_number" parquet:"serial_number,optional" ch:"serial_number"`
 }

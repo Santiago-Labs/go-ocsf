@@ -36,22 +36,22 @@ var AnalyticStruct = arrow.StructOf(AnalyticFields...)
 var AnalyticClassname = "analytic"
 
 type Analytic struct {
-	Category         *string            `json:"category,omitempty" parquet:"category,optional" ch:"category"`
-	Desc             *string            `json:"desc,omitempty" parquet:"desc,optional" ch:"desc"`
-	Name             *string            `json:"name,omitempty" parquet:"name,optional" ch:"name"`
-	RelatedAnalytics []*RelatedAnalytic `json:"related_analytics,omitempty" parquet:"related_analytics,list,optional" ch:"related_analytics"`
-	Type             *string            `json:"type,omitempty" parquet:"type,optional" ch:"type"`
+	Category         *string            `json:"category" parquet:"category,optional" ch:"category"`
+	Desc             *string            `json:"desc" parquet:"desc,optional" ch:"desc"`
+	Name             *string            `json:"name" parquet:"name,optional" ch:"name"`
+	RelatedAnalytics []*RelatedAnalytic `json:"related_analytics" parquet:"related_analytics,list,optional" ch:"related_analytics"`
+	Type             *string            `json:"type" parquet:"type,optional" ch:"type"`
 	TypeID           string             `json:"type_id" parquet:"type_id" ch:"type_id"`
-	UID              *string            `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
-	Version          *string            `json:"version,omitempty" parquet:"version,optional" ch:"version"`
+	UID              *string            `json:"uid" parquet:"uid,optional" ch:"uid"`
+	Version          *string            `json:"version" parquet:"version,optional" ch:"version"`
 }
 
 type RelatedAnalytic struct {
-	Category *string `json:"category,omitempty" parquet:"category,optional" ch:"category"`
-	Desc     *string `json:"desc,omitempty" parquet:"desc,optional" ch:"desc"`
-	Name     *string `json:"name,omitempty" parquet:"name,optional" ch:"name"`
-	Type     *string `json:"type,omitempty" parquet:"type,optional" ch:"type"`
+	Category *string `json:"category" parquet:"category,optional" ch:"category"`
+	Desc     *string `json:"desc" parquet:"desc,optional" ch:"desc"`
+	Name     *string `json:"name" parquet:"name,optional" ch:"name"`
+	Type     *string `json:"type" parquet:"type,optional" ch:"type"`
 	TypeID   string  `json:"type_id" parquet:"type_id" ch:"type_id"`
-	UID      *string `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
-	Version  *string `json:"version,omitempty" parquet:"version,optional" ch:"version"`
+	UID      *string `json:"uid" parquet:"uid,optional" ch:"uid"`
+	Version  *string `json:"version" parquet:"version,optional" ch:"version"`
 }

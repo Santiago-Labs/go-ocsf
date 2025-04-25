@@ -20,12 +20,12 @@ var ActorStruct = arrow.StructOf(ActorFields...)
 var ActorClassname = "actor"
 
 type Actor struct {
-	AppName        *string           `json:"app_name,omitempty" parquet:"app_name,optional" ch:"app_name"`
-	AppUID         *string           `json:"app_uid,omitempty" parquet:"app_uid,optional" ch:"app_uid"`
-	Authorizations []*Authorization  `json:"authorizations,omitempty" parquet:"authorizations,list,optional" ch:"authorizations"`
-	IDP            *IdentityProvider `json:"idp,omitempty" parquet:"idp,optional" ch:"idp"`
-	InvokedBy      *string           `json:"invoked_by,omitempty" parquet:"invoked_by,optional" ch:"invoked_by"`
-	Process        *Process          `json:"process,omitempty" parquet:"process,optional" ch:"process"`
-	Session        *Session          `json:"session,omitempty" parquet:"session,optional" ch:"session"`
-	User           *User             `json:"user,omitempty" parquet:"user,optional" ch:"user"`
+	AppName        *string           `json:"app_name" parquet:"app_name,optional" ch:"app_name"`
+	AppUID         *string           `json:"app_uid" parquet:"app_uid,optional" ch:"app_uid"`
+	Authorizations []*Authorization  `json:"authorizations" parquet:"authorizations,list,optional" ch:"authorizations"`
+	IDP            *IdentityProvider `json:"idp" parquet:"idp,optional" ch:"idp"`
+	InvokedBy      *string           `json:"invoked_by" parquet:"invoked_by,optional" ch:"invoked_by"`
+	Process        *Process          `json:"process" parquet:"process,optional" ch:"process"`
+	Session        *Session          `json:"session" parquet:"session,optional" ch:"session"`
+	User           *User             `json:"user" parquet:"user,optional" ch:"user"`
 }

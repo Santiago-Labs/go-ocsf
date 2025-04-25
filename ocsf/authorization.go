@@ -14,6 +14,6 @@ var AuthorizationStruct = arrow.StructOf(AuthorizationFields...)
 var AuthorizationClassname = "authorization"
 
 type Authorization struct {
-	Decision *string `json:"decision,omitempty" parquet:"decision,optional" ch:"decision"`
-	Policy   *Policy `json:"policy,omitempty" parquet:"policy,optional" ch:"policy"`
+	Decision *string `json:"decision" parquet:"decision,optional" ch:"decision"`
+	Policy   *Policy `json:"policy" parquet:"policy,optional" ch:"policy"`
 }

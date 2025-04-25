@@ -19,11 +19,11 @@ var RelatedEventStruct = arrow.StructOf(RelatedEventFields...)
 var RelatedEventClassname = "related_event"
 
 type RelatedEvent struct {
-	Attacks     []*MITREATTCK     `json:"attacks,omitempty" parquet:"attacks,list,optional"`
-	KillChain   []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
-	Observables []*Observable     `json:"observables,omitempty" parquet:"observables,list,optional"`
-	ProductUID  *string           `json:"product_uid,omitempty" parquet:"product_uid,optional"`
-	Type        *string           `json:"type,omitempty" parquet:"type,optional"`
-	TypeUID     *int64            `json:"type_uid,omitempty" parquet:"type_uid,optional"`
-	UID         string            `json:"uid" parquet:"uid"` // required field
+	Attacks     []*MITREATTCK     `json:"attacks" parquet:"attacks,list,optional" ch:"attacks"`
+	KillChain   []*KillChainPhase `json:"kill_chain" parquet:"kill_chain,list,optional" ch:"kill_chain"`
+	Observables []*Observable     `json:"observables" parquet:"observables,list,optional" ch:"observables"`
+	ProductUID  *string           `json:"product_uid" parquet:"product_uid,optional" ch:"product_uid"`
+	Type        *string           `json:"type" parquet:"type,optional" ch:"type"`
+	TypeUID     *int64            `json:"type_uid" parquet:"type_uid,optional" ch:"type_uid"`
+	UID         string            `json:"uid" parquet:"uid" ch:"uid"` // required field
 }

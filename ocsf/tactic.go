@@ -15,7 +15,7 @@ var TacticStruct = arrow.StructOf(TacticFields...)
 var TacticClassname = "tactic"
 
 type Tactic struct {
-	Name   string `json:"name" parquet:"name"`
-	SrcURL string `json:"src_url" parquet:"src_url"`
-	UID    string `json:"uid" parquet:"uid"`
+	Name   string `json:"name" parquet:"name" ch:"name"`
+	SrcURL string `json:"src_url" parquet:"src_url" ch:"src_url"`
+	UID    string `json:"uid" parquet:"uid" ch:"uid"`
 }

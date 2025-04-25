@@ -14,6 +14,6 @@ var MetricStruct = arrow.StructOf(MetricFields...)
 var MetricClassname = "metric"
 
 type Metric struct {
-	Name  string  `json:"name" parquet:"name"`
-	Value *string `json:"value" parquet:"value,optional"`
+	Name  string  `json:"name" parquet:"name" ch:"name"`
+	Value *string `json:"value" parquet:"value,optional" ch:"value"`
 }

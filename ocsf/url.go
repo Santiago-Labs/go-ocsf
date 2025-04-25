@@ -23,15 +23,15 @@ var URLStruct = arrow.StructOf(URLFields...)
 var URLClassname = "url"
 
 type URL struct {
-	Domain       *string  `json:"domain,omitempty" parquet:"domain,optional"`
-	Hostname     *string  `json:"hostname,omitempty" parquet:"hostname,optional"`
-	Path         *string  `json:"path,omitempty" parquet:"path,optional"`
-	Port         *int     `json:"port,omitempty" parquet:"port,optional"`
-	QueryString  *string  `json:"query_string,omitempty" parquet:"query_string,optional"`
-	ResourceType *string  `json:"resource_type,omitempty" parquet:"resource_type,optional"`
-	Scheme       *string  `json:"scheme,omitempty" parquet:"scheme,optional"`
-	Subdomain    *string  `json:"subdomain,omitempty" parquet:"subdomain,optional"`
-	URLString    *string  `json:"url_string,omitempty" parquet:"url_string,optional"`
-	Categories   []string `json:"categories,omitempty" parquet:"categories,list,optional"`
-	CategoryIDs  []*int   `json:"category_ids,omitempty" parquet:"category_ids,list,optional"`
+	Domain       *string  `json:"domain" parquet:"domain,optional" ch:"domain"	`
+	Hostname     *string  `json:"hostname" parquet:"hostname,optional" ch:"hostname"`
+	Path         *string  `json:"path" parquet:"path,optional" ch:"path"`
+	Port         *int64   `json:"port" parquet:"port,optional" ch:"port"`
+	QueryString  *string  `json:"query_string" parquet:"query_string,optional" ch:"query_string"`
+	ResourceType *string  `json:"resource_type" parquet:"resource_type,optional" ch:"resource_type"`
+	Scheme       *string  `json:"scheme" parquet:"scheme,optional" ch:"scheme"`
+	Subdomain    *string  `json:"subdomain" parquet:"subdomain,optional" ch:"subdomain"`
+	URLString    *string  `json:"url_string" parquet:"url_string,optional" ch:"url_string"`
+	Categories   []string `json:"categories" parquet:"categories,list,optional" ch:"categories"`
+	CategoryIDs  []int    `json:"category_ids" parquet:"category_ids,list,optional" ch:"category_ids"`
 }

@@ -14,7 +14,7 @@ var CWEStruct = arrow.StructOf(CWEFields...)
 var CWEClassname = "cwe"
 
 type CWE struct {
-	Caption   *string `json:"caption" parquet:"caption,optional"`
-	SourceURL *string `json:"src_url" parquet:"src_url,optional"`
-	UID       string  `json:"uid" parquet:"uid"`
+	Caption   *string `json:"caption" parquet:"caption,optional" ch:"caption"`
+	SourceURL *string `json:"src_url" parquet:"src_url,optional" ch:"src_url"`
+	UID       string  `json:"uid" parquet:"uid" ch:"uid"`
 }

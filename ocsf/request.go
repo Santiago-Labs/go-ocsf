@@ -16,8 +16,8 @@ var RequestStruct = arrow.StructOf(RequestFields...)
 var RequestClassname = "request"
 
 type Request struct {
-	Containers []*Container `json:"containers,omitempty" parquet:"containers,list,optional"`
-	Data       *string      `json:"data,omitempty" parquet:"data,optional"`
-	Flags      []string     `json:"flags,omitempty" parquet:"flags,list,optional"`
-	UID        string       `json:"uid" parquet:"uid"`
+	Containers []*Container `json:"containers" parquet:"containers,list,optional" ch:"containers"`
+	Data       *string      `json:"data" parquet:"data,optional" ch:"data"`
+	Flags      []string     `json:"flags" parquet:"flags,list,optional" ch:"flags"`
+	UID        string       `json:"uid" parquet:"uid" ch:"uid"`
 }

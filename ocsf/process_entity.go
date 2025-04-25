@@ -18,10 +18,10 @@ var ProcessEntityStruct = arrow.StructOf(ProcessEntityFields...)
 var ProcessEntityClassname = "process_entity"
 
 type ProcessEntity struct {
-	CmdLine     *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
-	CreatedTime *int64  `json:"created_time,omitempty" parquet:"created_time,optional"`
-	Name        *string `json:"name,omitempty" parquet:"name,optional"`
-	Path        *string `json:"path,omitempty" parquet:"path,optional"`
-	PID         *int64  `json:"pid,omitempty" parquet:"pid,optional"`
-	UID         *string `json:"uid,omitempty" parquet:"uid,optional"`
+	CmdLine     *string `json:"cmd_line" parquet:"cmd_line,optional" ch:"cmd_line"`
+	CreatedTime *int64  `json:"created_time" parquet:"created_time,optional" ch:"created_time"`
+	Name        *string `json:"name" parquet:"name,optional" ch:"name"`
+	Path        *string `json:"path" parquet:"path,optional" ch:"path"`
+	PID         *int64  `json:"pid" parquet:"pid,optional" ch:"pid"`
+	UID         *string `json:"uid" parquet:"uid,optional" ch:"uid"`
 }

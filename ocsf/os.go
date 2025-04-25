@@ -25,17 +25,17 @@ var OSStruct = arrow.StructOf(OSFields...)
 var OSClassname = "os"
 
 type OS struct {
-	Build         *string `json:"build,omitempty" parquet:"build,optional" ch:"build" ch:"build"`
-	Country       *string `json:"country,omitempty" parquet:"country,optional" ch:"country"`
-	CPEName       *string `json:"cpe_name,omitempty" parquet:"cpe_name,optional" ch:"cpe_name"`
-	CPUBits       *int    `json:"cpu_bits,omitempty" parquet:"cpu_bits,optional" ch:"cpu_bits"`
-	Edition       *string `json:"edition,omitempty" parquet:"edition,optional" ch:"edition"`
-	KernelRelease *string `json:"kernel_release,omitempty" parquet:"kernel_release,optional" ch:"kernel_release"`
-	Lang          *string `json:"lang,omitempty" parquet:"lang,optional" ch:"lang"`
+	Build         *string `json:"build" parquet:"build,optional" ch:"build" ch:"build"`
+	Country       *string `json:"country" parquet:"country,optional" ch:"country"`
+	CPEName       *string `json:"cpe_name" parquet:"cpe_name,optional" ch:"cpe_name"`
+	CPUBits       *int64  `json:"cpu_bits" parquet:"cpu_bits,optional" ch:"cpu_bits"`
+	Edition       *string `json:"edition" parquet:"edition,optional" ch:"edition"`
+	KernelRelease *string `json:"kernel_release" parquet:"kernel_release,optional" ch:"kernel_release"`
+	Lang          *string `json:"lang" parquet:"lang,optional" ch:"lang"`
 	Name          string  `json:"name" parquet:"name" ch:"name"`
-	SPName        *string `json:"sp_name,omitempty" parquet:"sp_name,optional" ch:"sp_name"`
-	SPVer         *int    `json:"sp_ver,omitempty" parquet:"sp_ver,optional" ch:"sp_ver"`
-	Type          *string `json:"type,omitempty" parquet:"type,optional" ch:"type"`
+	SPName        *string `json:"sp_name" parquet:"sp_name,optional" ch:"sp_name"`
+	SPVer         *int64  `json:"sp_ver" parquet:"sp_ver,optional" ch:"sp_ver"`
+	Type          *string `json:"type" parquet:"type,optional" ch:"type"`
 	TypeID        int     `json:"type_id" parquet:"type_id" ch:"type_id"`
-	Version       *string `json:"version,omitempty" parquet:"version,optional" ch:"version"`
+	Version       *string `json:"version" parquet:"version,optional" ch:"version"`
 }

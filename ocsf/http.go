@@ -23,17 +23,17 @@ var HTTPRequestStruct = arrow.StructOf(HTTPRequestFields...)
 var HTTPRequestClassname = "http_request"
 
 type HTTPRequest struct {
-	Args          *string       `json:"args,omitempty" parquet:"args" ch:"args"`
-	BodyLength    *int          `json:"body_length,omitempty" parquet:"body_length" ch:"body_length"`
-	HTTPMethod    *string       `json:"http_method,omitempty" parquet:"http_method" ch:"http_method"`
-	Length        *int          `json:"length,omitempty" parquet:"length" ch:"length"`
-	Referrer      *string       `json:"referrer,omitempty" parquet:"referrer" ch:"referrer"`
-	UID           *string       `json:"uid,omitempty" parquet:"uid" ch:"uid"`
-	UserAgent     *string       `json:"user_agent,omitempty" parquet:"user_agent" ch:"user_agent"`
-	Version       *string       `json:"version,omitempty" parquet:"version,optional" ch:"version"`
-	HTTPHeaders   []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional" ch:"http_headers"`
-	URL           *URL          `json:"url,omitempty" parquet:"url" ch:"url"`
-	XForwardedFor []string      `json:"x_forwarded_for,omitempty" parquet:"x_forwarded_for,list,optional" ch:"x_forwarded_for"`
+	Args          *string       `json:"args" parquet:"args" ch:"args"`
+	BodyLength    *int64        `json:"body_length" parquet:"body_length" ch:"body_length"`
+	HTTPMethod    *string       `json:"http_method" parquet:"http_method" ch:"http_method"`
+	Length        *int64        `json:"length" parquet:"length" ch:"length"`
+	Referrer      *string       `json:"referrer" parquet:"referrer" ch:"referrer"`
+	UID           *string       `json:"uid" parquet:"uid" ch:"uid"`
+	UserAgent     *string       `json:"user_agent" parquet:"user_agent" ch:"user_agent"`
+	Version       *string       `json:"version" parquet:"version,optional" ch:"version"`
+	HTTPHeaders   []*HTTPHeader `json:"http_headers" parquet:"http_headers,list,optional" ch:"http_headers"`
+	URL           *URL          `json:"url" parquet:"url" ch:"url"`
+	XForwardedFor []string      `json:"x_forwarded_for" parquet:"x_forwarded_for,list,optional" ch:"x_forwarded_for"`
 }
 
 // HTTPResponseFields defines the Arrow fields for HTTPResponse.
@@ -52,14 +52,14 @@ var HTTPResponseStruct = arrow.StructOf(HTTPResponseFields...)
 var HTTPResponseClassname = "http_response"
 
 type HTTPResponse struct {
-	BodyLength  *int          `json:"body_length,omitempty" parquet:"body_length,optional" ch:"body_length"`
+	BodyLength  *int64        `json:"body_length" parquet:"body_length,optional" ch:"body_length"`
 	Code        int           `json:"code" parquet:"code" ch:"code"`
-	ContentType *string       `json:"content_type,omitempty" parquet:"content_type,optional" ch:"content_type"`
-	Latency     *int          `json:"latency,omitempty" parquet:"latency,optional" ch:"latency"`
-	Length      *int          `json:"length,omitempty" parquet:"length,optional" ch:"length"`
-	Message     *string       `json:"message,omitempty" parquet:"message,optional" ch:"message"`
-	Status      *string       `json:"status,omitempty" parquet:"status,optional" ch:"status"`
-	HTTPHeaders []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional" ch:"http_headers"`
+	ContentType *string       `json:"content_type" parquet:"content_type,optional" ch:"content_type"`
+	Latency     *int64        `json:"latency" parquet:"latency,optional" ch:"latency"`
+	Length      *int64        `json:"length" parquet:"length,optional" ch:"length"`
+	Message     *string       `json:"message" parquet:"message,optional" ch:"message"`
+	Status      *string       `json:"status" parquet:"status,optional" ch:"status"`
+	HTTPHeaders []*HTTPHeader `json:"http_headers" parquet:"http_headers,list,optional" ch:"http_headers"`
 }
 
 // HTTPHeaderFields defines the Arrow fields for HTTPHeader.

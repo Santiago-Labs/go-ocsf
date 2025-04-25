@@ -21,13 +21,13 @@ var NetworkInterfaceStruct = arrow.StructOf(NetworkInterfaceFields...)
 var NetworkInterfaceClassname = "network_interface"
 
 type NetworkInterface struct {
-	Hostname     *string `json:"hostname,omitempty" parquet:"hostname,optional"`
-	IP           *string `json:"ip,omitempty" parquet:"ip,optional"`
-	MAC          *string `json:"mac,omitempty" parquet:"mac,optional"`
-	Name         *string `json:"name,omitempty" parquet:"name,optional"`
-	Namespace    *string `json:"namespace,omitempty" parquet:"namespace,optional"`
-	SubnetPrefix *int    `json:"subnet_prefix,omitempty" parquet:"subnet_prefix,optional"`
-	Type         *string `json:"type,omitempty" parquet:"type,optional"`
-	TypeID       int     `json:"type_id" parquet:"type_id"`
-	UID          *string `json:"uid,omitempty" parquet:"uid,optional"`
+	Hostname     *string `json:"hostname" parquet:"hostname,optional" ch:"hostname"`
+	IP           *string `json:"ip" parquet:"ip,optional" ch:"ip"`
+	MAC          *string `json:"mac" parquet:"mac,optional" ch:"mac"`
+	Name         *string `json:"name" parquet:"name,optional" ch:"name"`
+	Namespace    *string `json:"namespace" parquet:"namespace,optional" ch:"namespace"`
+	SubnetPrefix *int64  `json:"subnet_prefix" parquet:"subnet_prefix,optional" ch:"subnet_prefix"`
+	Type         *string `json:"type" parquet:"type,optional" ch:"type"`
+	TypeID       int     `json:"type_id" parquet:"type_id" ch:"type_id"`
+	UID          *string `json:"uid" parquet:"uid,optional" ch:"uid"`
 }

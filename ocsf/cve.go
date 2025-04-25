@@ -24,17 +24,17 @@ var CVEStruct = arrow.StructOf(CVEFields...)
 var CVEClassname = "cve"
 
 type CVE struct {
-	CreatedTime  *int64   `json:"created_time,omitempty" parquet:"created_time,optional" ch:"created_time"`
-	CVSS         []*CVSS  `json:"cvss,omitempty" parquet:"cvss,list,optional" ch:"cvss"`
-	CWE          *CWE     `json:"cwe,omitempty" parquet:"cwe,optional" ch:"cwe"`
-	CWEUID       *string  `json:"cwe_uid,omitempty" parquet:"cwe_uid,optional" ch:"cwe_uid"`
-	CWEURL       *string  `json:"cwe_url,omitempty" parquet:"cwe_url,optional" ch:"cwe_url"`
-	Desc         *string  `json:"desc,omitempty" parquet:"desc,optional" ch:"desc"`
-	EPSS         *EPSS    `json:"epss,omitempty" parquet:"epss,optional" ch:"epss"`
-	ModifiedTime *int64   `json:"modified_time,omitempty" parquet:"modified_time,optional" ch:"modified_time"`
-	Product      *Product `json:"product,omitempty" parquet:"product,optional" ch:"product"`
-	References   []string `json:"references,omitempty" parquet:"references,list,optional" ch:"references"`
-	Title        *string  `json:"title,omitempty" parquet:"title,optional" ch:"title"`
-	Type         *string  `json:"type,omitempty" parquet:"type,optional" ch:"type"`
+	CreatedTime  *int64   `json:"created_time" parquet:"created_time,optional" ch:"created_time"`
+	CVSS         []*CVSS  `json:"cvss" parquet:"cvss,list,optional" ch:"cvss"`
+	CWE          *CWE     `json:"cwe" parquet:"cwe,optional" ch:"cwe"`
+	CWEUID       *string  `json:"cwe_uid" parquet:"cwe_uid,optional" ch:"cwe_uid"`
+	CWEURL       *string  `json:"cwe_url" parquet:"cwe_url,optional" ch:"cwe_url"`
+	Desc         *string  `json:"desc" parquet:"desc,optional" ch:"desc"`
+	EPSS         *EPSS    `json:"epss" parquet:"epss,optional" ch:"epss"`
+	ModifiedTime *int64   `json:"modified_time" parquet:"modified_time,optional" ch:"modified_time"`
+	Product      *Product `json:"product" parquet:"product,optional" ch:"product"`
+	References   []string `json:"references" parquet:"references,list,optional" ch:"references"`
+	Title        *string  `json:"title" parquet:"title,optional" ch:"title"`
+	Type         *string  `json:"type" parquet:"type,optional" ch:"type"`
 	UID          string   `json:"uid" parquet:"uid" ch:"uid"`
 }

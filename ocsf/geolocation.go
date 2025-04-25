@@ -21,14 +21,14 @@ var GeoLocationStruct = arrow.StructOf(GeoLocationFields...)
 var GeoLocationClassname = "location"
 
 type GeoLocation struct {
-	City         *string    `json:"city,omitempty" parquet:"city,optional" ch:"city" ch:"city"`
-	Continent    *string    `json:"continent,omitempty" parquet:"continent,optional" ch:"continent"`
-	Coordinates  []*float64 `json:"coordinates,omitempty" parquet:"coordinates,list,optional" ch:"coordinates"`
-	Country      *string    `json:"country,omitempty" parquet:"country,optional" ch:"country"`
-	Desc         *string    `json:"desc,omitempty" parquet:"desc,optional" ch:"desc"`
-	IsOnPremises *bool      `json:"is_on_premises,omitempty" parquet:"is_on_premises,optional" ch:"is_on_premises"`
-	ISP          *string    `json:"isp,omitempty" parquet:"isp,optional" ch:"isp"`
-	PostalCode   *string    `json:"postal_code,omitempty" parquet:"postal_code,optional" ch:"postal_code"`
-	Provider     *string    `json:"provider,omitempty" parquet:"provider,optional" ch:"provider"`
-	Region       *string    `json:"region,omitempty" parquet:"region,optional" ch:"region"`
+	City         *string    `json:"city" parquet:"city,optional" ch:"city" ch:"city"`
+	Continent    *string    `json:"continent" parquet:"continent,optional" ch:"continent"`
+	Coordinates  []*float64 `json:"coordinates" parquet:"coordinates,list,optional" ch:"coordinates"`
+	Country      *string    `json:"country" parquet:"country,optional" ch:"country"`
+	Desc         *string    `json:"desc" parquet:"desc,optional" ch:"desc"`
+	IsOnPremises *bool      `json:"is_on_premises" parquet:"is_on_premises,optional" ch:"is_on_premises"`
+	ISP          *string    `json:"isp" parquet:"isp,optional" ch:"isp"`
+	PostalCode   *string    `json:"postal_code" parquet:"postal_code,optional" ch:"postal_code"`
+	Provider     *string    `json:"provider" parquet:"provider,optional" ch:"provider"`
+	Region       *string    `json:"region" parquet:"region,optional" ch:"region"`
 }

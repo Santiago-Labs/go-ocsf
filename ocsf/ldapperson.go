@@ -5,29 +5,29 @@ import (
 )
 
 type LdapPerson struct {
-	CostCenter      *string      `json:"cost_center,omitempty" parquet:"cost_center,optional" ch:"cost_center" ch:"cost_center"`
-	CreatedTime     *int         `json:"created_time,omitempty" parquet:"created_time,optional" ch:"created_time"`
-	CreatedTimeDt   *string      `json:"created_time_dt,omitempty" parquet:"created_time_dt,optional" ch:"created_time_dt"`
-	DeletedTime     *int         `json:"deleted_time,omitempty" parquet:"deleted_time,optional" ch:"deleted_time"`
-	DeletedTimeDt   *string      `json:"deleted_time_dt,omitempty" parquet:"deleted_time_dt,optional" ch:"deleted_time_dt"`
-	EmailAddrs      []string     `json:"email_addrs,omitempty" parquet:"email_addrs,list,optional" ch:"email_addrs"`
-	EmployeeUID     *string      `json:"employee_uid,omitempty" parquet:"employee_uid,optional" ch:"employee_uid"`
-	GivenName       *string      `json:"given_name,omitempty" parquet:"given_name,optional" ch:"given_name"`
-	HireTime        *int         `json:"hire_time,omitempty" parquet:"hire_time,optional" ch:"hire_time"`
-	HireTimeDt      *string      `json:"hire_time_dt,omitempty" parquet:"hire_time_dt,optional" ch:"hire_time_dt"`
-	JobTitle        *string      `json:"job_title,omitempty" parquet:"job_title,optional" ch:"job_title"`
-	Labels          []string     `json:"labels,omitempty" parquet:"labels,list,optional" ch:"labels"`
-	LastLoginTime   *int         `json:"last_login_time,omitempty" parquet:"last_login_time,optional" ch:"last_login_time"`
-	LastLoginTimeDt *string      `json:"last_login_time_dt,omitempty" parquet:"last_login_time_dt,optional" ch:"last_login_time_dt"`
-	LDAPCn          *string      `json:"ldap_cn,omitempty" parquet:"ldap_cn,optional" ch:"ldap_cn"`
-	LDAPDn          *string      `json:"ldap_dn,omitempty" parquet:"ldap_dn,optional" ch:"ldap_dn"`
-	LeaveTime       *int         `json:"leave_time,omitempty" parquet:"leave_time,optional" ch:"leave_time"`
-	LeaveTimeDt     *string      `json:"leave_time_dt,omitempty" parquet:"leave_time_dt,optional" ch:"leave_time_dt"`
-	Location        *GeoLocation `json:"location,omitempty" parquet:"location,optional" ch:"location"`
-	ModifiedTime    *int         `json:"modified_time,omitempty" parquet:"modified_time,optional" ch:"modified_time"`
-	ModifiedTimeDt  *string      `json:"modified_time_dt,omitempty" parquet:"modified_time_dt,optional" ch:"modified_time_dt"`
-	OfficeLocation  *string      `json:"office_location,omitempty" parquet:"office_location,optional" ch:"office_location"`
-	Surname         *string      `json:"surname,omitempty" parquet:"surname,optional" ch:"surname"`
+	CostCenter      *string      `json:"cost_center" parquet:"cost_center,optional" ch:"cost_center" ch:"cost_center"`
+	CreatedTime     *int64       `json:"created_time" parquet:"created_time,optional" ch:"created_time"`
+	CreatedTimeDt   *string      `json:"created_time_dt" parquet:"created_time_dt,optional" ch:"created_time_dt"`
+	DeletedTime     *int64       `json:"deleted_time" parquet:"deleted_time,optional" ch:"deleted_time"`
+	DeletedTimeDt   *string      `json:"deleted_time_dt" parquet:"deleted_time_dt,optional" ch:"deleted_time_dt"`
+	EmailAddrs      []string     `json:"email_addrs" parquet:"email_addrs,list,optional" ch:"email_addrs"`
+	EmployeeUID     *string      `json:"employee_uid" parquet:"employee_uid,optional" ch:"employee_uid"`
+	GivenName       *string      `json:"given_name" parquet:"given_name,optional" ch:"given_name"`
+	HireTime        *int64       `json:"hire_time" parquet:"hire_time,optional" ch:"hire_time"`
+	HireTimeDt      *string      `json:"hire_time_dt" parquet:"hire_time_dt,optional" ch:"hire_time_dt"`
+	JobTitle        *string      `json:"job_title" parquet:"job_title,optional" ch:"job_title"`
+	Labels          []string     `json:"labels" parquet:"labels,list,optional" ch:"labels"`
+	LastLoginTime   *int64       `json:"last_login_time" parquet:"last_login_time,optional" ch:"last_login_time"`
+	LastLoginTimeDt *string      `json:"last_login_time_dt" parquet:"last_login_time_dt,optional" ch:"last_login_time_dt"`
+	LDAPCn          *string      `json:"ldap_cn" parquet:"ldap_cn,optional" ch:"ldap_cn"`
+	LDAPDn          *string      `json:"ldap_dn" parquet:"ldap_dn,optional" ch:"ldap_dn"`
+	LeaveTime       *int64       `json:"leave_time" parquet:"leave_time,optional" ch:"leave_time"`
+	LeaveTimeDt     *string      `json:"leave_time_dt" parquet:"leave_time_dt,optional" ch:"leave_time_dt"`
+	Location        *GeoLocation `json:"location" parquet:"location,optional" ch:"location"`
+	ModifiedTime    *int64       `json:"modified_time" parquet:"modified_time,optional" ch:"modified_time"`
+	ModifiedTimeDt  *string      `json:"modified_time_dt" parquet:"modified_time_dt,optional" ch:"modified_time_dt"`
+	OfficeLocation  *string      `json:"office_location" parquet:"office_location,optional" ch:"office_location"`
+	Surname         *string      `json:"surname" parquet:"surname,optional" ch:"surname"`
 }
 
 // LdapPersonFields defines the Arrow fields for LdapPerson.

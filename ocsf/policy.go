@@ -18,10 +18,10 @@ var PolicyStruct = arrow.StructOf(PolicyFields...)
 var PolicyClassname = "policy"
 
 type Policy struct {
-	Desc      *string `json:"desc,omitempty" parquet:"desc,optional"`
-	Group     *Group  `json:"group,omitempty" parquet:"group,optional"`
-	IsApplied *bool   `json:"is_applied,omitempty" parquet:"is_applied,optional"`
-	Name      *string `json:"name,omitempty" parquet:"name,optional"`
-	UID       *string `json:"uid,omitempty" parquet:"uid,optional"`
-	Version   *string `json:"version,omitempty" parquet:"version,optional"`
+	Desc      *string `json:"desc" parquet:"desc,optional" ch:"desc"`
+	Group     *Group  `json:"group" parquet:"group,optional" ch:"group"`
+	IsApplied *bool   `json:"is_applied" parquet:"is_applied,optional" ch:"is_applied"`
+	Name      *string `json:"name" parquet:"name,optional" ch:"name"`
+	UID       *string `json:"uid" parquet:"uid,optional" ch:"uid"`
+	Version   *string `json:"version" parquet:"version,optional" ch:"version"`
 }

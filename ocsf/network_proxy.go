@@ -36,28 +36,28 @@ var NetworkProxyEndpointStruct = arrow.StructOf(NetworkProxyEndpointFields...)
 var NetworkProxyEndpointClassname = "network_proxy"
 
 type NetworkProxyEndpoint struct {
-	Domain           *string           `json:"domain,omitempty" parquet:"domain,optional" ch:"domain"`
-	Hostname         *string           `json:"hostname,omitempty" parquet:"hostname,optional" ch:"hostname"`
-	InstanceUID      *string           `json:"instance_uid,omitempty" parquet:"instance_uid,optional" ch:"instance_uid"`
-	InterfaceName    *string           `json:"interface_name,omitempty" parquet:"interface_name,optional" ch:"interface_name"`
-	InterfaceUID     *string           `json:"interface_uid,omitempty" parquet:"interface_uid,optional" ch:"interface_uid"`
-	IP               *string           `json:"ip,omitempty" parquet:"ip,optional" ch:"ip"`
-	MAC              *string           `json:"mac,omitempty" parquet:"mac,optional" ch:"mac"`
-	Name             *string           `json:"name,omitempty" parquet:"name,optional" ch:"name"`
-	Port             *int              `json:"port,omitempty" parquet:"port,optional" ch:"port"`
-	SubnetUID        *string           `json:"subnet_uid,omitempty" parquet:"subnet_uid,optional" ch:"subnet_uid"`
-	SvcName          *string           `json:"svc_name,omitempty" parquet:"svc_name,optional" ch:"svc_name"`
-	Type             *string           `json:"type,omitempty" parquet:"type,optional" ch:"type"`
-	TypeID           *int              `json:"type_id,omitempty" parquet:"type_id,optional" ch:"type_id"`
-	UID              *string           `json:"uid,omitempty" parquet:"uid,optional" ch:"uid"`
-	VLANUID          *string           `json:"vlan_uid,omitempty" parquet:"vlan_uid,optional" ch:"vlan_uid"`
-	VPCUID           *string           `json:"vpc_uid,omitempty" parquet:"vpc_uid,optional" ch:"vpc_uid"`
-	Zone             *string           `json:"zone,omitempty" parquet:"zone,optional" ch:"zone"`
-	AgentList        []*Agent          `json:"agent_list,omitempty" parquet:"agent_list,list,optional" ch:"agent_list"`
-	AutonomousSystem *AutonomousSystem `json:"autonomous_system,omitempty" parquet:"autonomous_system,optional" ch:"autonomous_system"`
-	HWInfo           *DeviceHWInfo     `json:"hw_info,omitempty" parquet:"hw_info,optional" ch:"hw_info"`
-	IntermediateIPs  []string          `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,list,optional" ch:"intermediate_ips"`
-	Location         *GeoLocation      `json:"location,omitempty" parquet:"location,optional" ch:"location"`
-	OS               *OS               `json:"os,omitempty" parquet:"os,optional" ch:"os"`
-	Owner            *User             `json:"owner,omitempty" parquet:"owner,optional" ch:"owner"`
+	Domain           *string           `json:"domain" parquet:"domain,optional" ch:"domain"`
+	Hostname         *string           `json:"hostname" parquet:"hostname,optional" ch:"hostname"`
+	InstanceUID      *string           `json:"instance_uid" parquet:"instance_uid,optional" ch:"instance_uid"`
+	InterfaceName    *string           `json:"interface_name" parquet:"interface_name,optional" ch:"interface_name"`
+	InterfaceUID     *string           `json:"interface_uid" parquet:"interface_uid,optional" ch:"interface_uid"`
+	IP               *string           `json:"ip" parquet:"ip,optional" ch:"ip"`
+	MAC              *string           `json:"mac" parquet:"mac,optional" ch:"mac"`
+	Name             *string           `json:"name" parquet:"name,optional" ch:"name"`
+	Port             *int64            `json:"port" parquet:"port,optional" ch:"port"`
+	SubnetUID        *string           `json:"subnet_uid" parquet:"subnet_uid,optional" ch:"subnet_uid"`
+	SvcName          *string           `json:"svc_name" parquet:"svc_name,optional" ch:"svc_name"`
+	Type             *string           `json:"type" parquet:"type,optional" ch:"type"`
+	TypeID           *int64            `json:"type_id" parquet:"type_id,optional" ch:"type_id"`
+	UID              *string           `json:"uid" parquet:"uid,optional" ch:"uid"`
+	VLANUID          *string           `json:"vlan_uid" parquet:"vlan_uid,optional" ch:"vlan_uid"`
+	VPCUID           *string           `json:"vpc_uid" parquet:"vpc_uid,optional" ch:"vpc_uid"`
+	Zone             *string           `json:"zone" parquet:"zone,optional" ch:"zone"`
+	AgentList        []*Agent          `json:"agent_list" parquet:"agent_list,list,optional" ch:"agent_list"`
+	AutonomousSystem *AutonomousSystem `json:"autonomous_system" parquet:"autonomous_system,optional" ch:"autonomous_system"`
+	HWInfo           *DeviceHWInfo     `json:"hw_info" parquet:"hw_info,optional" ch:"hw_info"`
+	IntermediateIPs  []string          `json:"intermediate_ips" parquet:"intermediate_ips,list,optional" ch:"intermediate_ips"`
+	Location         *GeoLocation      `json:"location" parquet:"location,optional" ch:"location"`
+	OS               *OS               `json:"os" parquet:"os,optional" ch:"os"`
+	Owner            *User             `json:"owner" parquet:"owner,optional" ch:"owner"`
 }
