@@ -36,7 +36,7 @@ type User struct {
 	Org           *Organization `json:"org,omitempty" parquet:"org,optional"`
 	Type          *string       `json:"type,omitempty" parquet:"type,optional"`
 	// TypeID enum: [3,99,0,1,2]
-	TypeID *int    `json:"type_id,omitempty" parquet:"type_id,optional"`
+	TypeID *int32  `json:"type_id,omitempty" parquet:"type_id,optional"`
 	UID    *string `json:"uid,omitempty" parquet:"uid,optional"`
 	UIDAlt *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
 }

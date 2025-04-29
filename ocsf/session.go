@@ -25,7 +25,7 @@ var SessionStruct = arrow.StructOf(SessionFields...)
 var SessionClassname = "session"
 
 type Session struct {
-	Count            *int    `json:"count,omitempty" parquet:"count,optional"`
+	Count            *int32  `json:"count,omitempty" parquet:"count,optional"`
 	CreatedTime      *int64  `json:"created_time,omitempty" parquet:"created_time,optional"`
 	CredentialUID    *string `json:"credential_uid,omitempty" parquet:"credential_uid,optional"`
 	ExpirationReason *string `json:"expiration_reason,omitempty" parquet:"expiration_reason,optional"`

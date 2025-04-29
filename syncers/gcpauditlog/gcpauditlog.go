@@ -153,7 +153,7 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 		actor = ocsf.Actor{
 			User: &ocsf.User{
 				Account: &ocsf.Account{
-					TypeID: intPtr(11),
+					TypeID: int32Ptr(11),
 					Type:   stringPtr("GCP Project"),
 					// It's possible in the config that we could get the actual project name.
 					UID: stringPtr(projectIDFromLogName(log.Log.LogName)),
@@ -217,20 +217,20 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 
 	// Create the API Activity
 	activity := ocsf.APIActivity{
-		ActivityID:   activityID,
+		ActivityID:   int32(activityID),
 		ActivityName: &activityName,
 		Actor:        actor,
 		API:          api,
 		CategoryName: &categoryName,
-		CategoryUID:  categoryUID,
+		CategoryUID:  int32(categoryUID),
 		ClassName:    &className,
-		ClassUID:     classUID,
+		ClassUID:     int32(classUID),
 		Status:       &status,
-		StatusID:     int(statusID),
+		StatusID:     int32(statusID),
 
 		Resources:  resources,
 		Severity:   &severity,
-		SeverityID: severityID,
+		SeverityID: int32(severityID),
 
 		Metadata: ocsf.Metadata{
 			CorrelationUID: stringPtr(log.ID),
@@ -240,7 +240,7 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 		Time:           ts.UnixMilli(),
 		EventDay:       int32(ts.UnixMilli() / 86400000),
 		TypeName:       &typeName,
-		TypeUID:        typeUID,
+		TypeUID:        int32(typeUID),
 		TimezoneOffset: 0,
 	}
 
@@ -251,7 +251,7 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func intPtr(i int) *int {
+func int32Ptr(i int32) *int32 {
 	return &i
 }
 

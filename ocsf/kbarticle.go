@@ -26,13 +26,13 @@ var KBArticleClassname = "kb_article"
 type KBArticle struct {
 	Bulletin       *string  `json:"bulletin,omitempty" parquet:"bulletin,optional"`
 	Classification *string  `json:"classification,omitempty" parquet:"classification,optional"`
-	CreatedTime    *int     `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime    *int32   `json:"created_time,omitempty" parquet:"created_time,optional"`
 	CreatedTimeDt  *string  `json:"created_time_dt,omitempty" parquet:"created_time_dt,optional"`
 	IsSuperseded   *bool    `json:"is_superseded,omitempty" parquet:"is_superseded,optional"`
 	OS             *OS      `json:"os,omitempty" parquet:"os,optional"`
 	Product        *Product `json:"product,omitempty" parquet:"product,optional"`
 	Severity       *string  `json:"severity,omitempty" parquet:"severity,optional"`
-	Size           *int     `json:"size,omitempty" parquet:"size,optional"`
+	Size           *int32   `json:"size,omitempty" parquet:"size,optional"`
 	SrcURL         *string  `json:"src_url,omitempty" parquet:"src_url,optional"`
 	Title          *string  `json:"title,omitempty" parquet:"title,optional"`
 	UID            string   `json:"uid" parquet:"uid"` // required field

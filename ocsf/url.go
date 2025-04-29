@@ -26,7 +26,7 @@ type URL struct {
 	Domain       *string  `json:"domain,omitempty" parquet:"domain,optional"`
 	Hostname     *string  `json:"hostname,omitempty" parquet:"hostname,optional"`
 	Path         *string  `json:"path,omitempty" parquet:"path,optional"`
-	Port         *int     `json:"port,omitempty" parquet:"port,optional"`
+	Port         *int32   `json:"port,omitempty" parquet:"port,optional"`
 	QueryString  *string  `json:"query_string,omitempty" parquet:"query_string,optional"`
 	ResourceType *string  `json:"resource_type,omitempty" parquet:"resource_type,optional"`
 	Scheme       *string  `json:"scheme,omitempty" parquet:"scheme,optional"`

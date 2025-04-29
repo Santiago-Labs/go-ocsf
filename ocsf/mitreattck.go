@@ -8,7 +8,6 @@ import (
 var MITREATTCKFields = []arrow.Field{
 	{Name: "sub_technique", Type: SubTechniqueStruct, Nullable: true},
 	{Name: "tactic", Type: TacticStruct, Nullable: true},
-	{Name: "tactics", Type: arrow.ListOf(TacticStruct), Nullable: true},
 	{Name: "technique", Type: TechniqueStruct, Nullable: true},
 	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: false},
 }
@@ -20,7 +19,6 @@ var MITREATTCKClassname = "attack"
 type MITREATTCK struct {
 	SubTechnique *SubTechnique `json:"sub_technique,omitempty" parquet:"sub_technique,optional"`
 	Tactic       *Tactic       `json:"tactic,omitempty" parquet:"tactic,optional"`
-	Tactics      []*Tactic     `json:"tactics,omitempty" parquet:"tactics,list,optional"`
 	Technique    *Technique    `json:"technique,omitempty" parquet:"technique,optional"`
 	Version      string        `json:"version" parquet:"version"`
 }
