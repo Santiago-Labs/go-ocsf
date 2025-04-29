@@ -22,7 +22,7 @@ var AgentClassname = "agent"
 type Agent struct {
 	Name       *string   `json:"name,omitempty" parquet:"name,optional"`
 	Type       *string   `json:"type,omitempty" parquet:"type,optional"`
-	TypeID     *int      `json:"type_id,omitempty" parquet:"type_id,optional"`
+	TypeID     *int32    `json:"type_id,omitempty" parquet:"type_id,optional"`
 	UID        *string   `json:"uid,omitempty" parquet:"uid,optional"`
 	UIDAlt     *string   `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
 	VendorName *string   `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`

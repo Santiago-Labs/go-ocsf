@@ -26,8 +26,8 @@ type NetworkInterface struct {
 	MAC          *string `json:"mac,omitempty" parquet:"mac,optional"`
 	Name         *string `json:"name,omitempty" parquet:"name,optional"`
 	Namespace    *string `json:"namespace,omitempty" parquet:"namespace,optional"`
-	SubnetPrefix *int    `json:"subnet_prefix,omitempty" parquet:"subnet_prefix,optional"`
+	SubnetPrefix *int32  `json:"subnet_prefix,omitempty" parquet:"subnet_prefix,optional"`
 	Type         *string `json:"type,omitempty" parquet:"type,optional"`
-	TypeID       int     `json:"type_id" parquet:"type_id"`
+	TypeID       int32   `json:"type_id" parquet:"type_id"`
 	UID          *string `json:"uid,omitempty" parquet:"uid,optional"`
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3tables"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub"
 )
 
@@ -103,9 +104,9 @@ func setupStorage(ctx context.Context, isParquet, isJSON bool, bucketName, table
 			if err != nil {
 				return nil, oops.Wrapf(err, "failed to load config")
 			}
-			s3Client := s3.NewFromConfig(cfg)
+			s3tablesClient := s3tables.NewFromConfig(cfg)
 
-			storage, err = datastore.NewS3TablesDatastore(ctx, tableBucketName, s3Client)
+			storage, err = datastore.NewS3TablesDatastore(ctx, tableBucketName, s3tablesClient)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create S3 tables datastore: %v", err)
 			}

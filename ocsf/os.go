@@ -28,14 +28,14 @@ type OS struct {
 	Build         *string `json:"build,omitempty" parquet:"build,optional"`
 	Country       *string `json:"country,omitempty" parquet:"country,optional"`
 	CPEName       *string `json:"cpe_name,omitempty" parquet:"cpe_name,optional"`
-	CPUBits       *int    `json:"cpu_bits,omitempty" parquet:"cpu_bits,optional"`
+	CPUBits       *int32  `json:"cpu_bits,omitempty" parquet:"cpu_bits,optional"`
 	Edition       *string `json:"edition,omitempty" parquet:"edition,optional"`
 	KernelRelease *string `json:"kernel_release,omitempty" parquet:"kernel_release,optional"`
 	Lang          *string `json:"lang,omitempty" parquet:"lang,optional"`
 	Name          string  `json:"name" parquet:"name"`
 	SPName        *string `json:"sp_name,omitempty" parquet:"sp_name,optional"`
-	SPVer         *int    `json:"sp_ver,omitempty" parquet:"sp_ver,optional"`
+	SPVer         *int32  `json:"sp_ver,omitempty" parquet:"sp_ver,optional"`
 	Type          *string `json:"type,omitempty" parquet:"type,optional"`
-	TypeID        int     `json:"type_id" parquet:"type_id"`
+	TypeID        *int32  `json:"type_id" parquet:"type_id"`
 	Version       *string `json:"version,omitempty" parquet:"version,optional"`
 }

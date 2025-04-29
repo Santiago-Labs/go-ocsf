@@ -48,30 +48,30 @@ var APIActivitySchema = arrow.NewSchema(APIActivityFields, nil)
 
 type APIActivity struct {
 	EventDay       int32              `json:"event_day" parquet:"event_day,date"` // Used for partitioning
-	ActivityID     int                `json:"activity_id" parquet:"activity_id"`
+	ActivityID     int32              `json:"activity_id" parquet:"activity_id"`
 	ActivityName   *string            `json:"activity_name,omitempty" parquet:"activity_name,optional"`
 	Actor          Actor              `json:"actor,omitempty" parquet:"actor"`
 	API            API                `json:"api" parquet:"api"`
 	CategoryName   *string            `json:"category_name,omitempty" parquet:"category_name,optional"`
-	CategoryUID    int                `json:"category_uid" parquet:"category_uid"`
+	CategoryUID    int32              `json:"category_uid" parquet:"category_uid"`
 	ClassName      *string            `json:"class_name,omitempty" parquet:"class_name,optional"`
-	ClassUID       int                `json:"class_uid" parquet:"class_uid"`
-	Count          *int               `json:"count,omitempty" parquet:"count,optional"`
+	ClassUID       int32              `json:"class_uid" parquet:"class_uid"`
+	Count          *int32             `json:"count,omitempty" parquet:"count,optional"`
 	Duration       *int64             `json:"duration,omitempty" parquet:"duration,optional"`
 	EndTime        *int64             `json:"end_time,omitempty" parquet:"end_time,optional"`
 	Message        *string            `json:"message,omitempty" parquet:"message,optional"`
 	RawData        *string            `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 	Severity       *string            `json:"severity,omitempty" parquet:"severity,optional"`
-	SeverityID     int                `json:"severity_id" parquet:"severity_id"`
+	SeverityID     int32              `json:"severity_id" parquet:"severity_id"`
 	StartTime      *int64             `json:"start_time,omitempty" parquet:"start_time,optional"`
 	Status         *string            `json:"status,omitempty" parquet:"status,optional"`
 	StatusCode     *string            `json:"status_code,omitempty" parquet:"status_code,optional"`
 	StatusDetail   *string            `json:"status_detail,omitempty" parquet:"status_detail,optional"`
-	StatusID       int                `json:"status_id" parquet:"status_id"`
+	StatusID       int32              `json:"status_id" parquet:"status_id"`
 	Time           int64              `json:"time" parquet:"time,timestamp"`
-	TimezoneOffset int                `json:"timezone_offset" parquet:"timezone_offset"`
+	TimezoneOffset int32              `json:"timezone_offset" parquet:"timezone_offset"`
 	TypeName       *string            `json:"type_name,omitempty" parquet:"type_name,optional"`
-	TypeUID        int                `json:"type_uid" parquet:"type_uid"`
+	TypeUID        int32              `json:"type_uid" parquet:"type_uid"`
 	DstEndpoint    *NetworkEndpoint   `json:"dst_endpoint,omitempty" parquet:"dst_endpoint,optional"`
 	Enrichments    []*Enrichment      `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 	HTTPRequest    *HTTPRequest       `json:"http_request,omitempty" parquet:"http_request,optional"`
@@ -85,30 +85,30 @@ type APIActivity struct {
 
 type APIActivityDTO struct {
 	EventDay       int32   `json:"event_day" parquet:"event_day,date"` // Used for partitioning
-	ActivityID     int     `json:"activity_id" parquet:"activity_id"`
+	ActivityID     int32   `json:"activity_id" parquet:"activity_id"`
 	ActivityName   *string `json:"activity_name,omitempty" parquet:"activity_name,optional"`
 	Actor          JSONB   `json:"actor,omitempty" parquet:"actor"`
 	API            JSONB   `json:"api" parquet:"api"`
 	CategoryName   *string `json:"category_name,omitempty" parquet:"category_name,optional"`
-	CategoryUID    int     `json:"category_uid" parquet:"category_uid"`
+	CategoryUID    int32   `json:"category_uid" parquet:"category_uid"`
 	ClassName      *string `json:"class_name,omitempty" parquet:"class_name,optional"`
-	ClassUID       int     `json:"class_uid" parquet:"class_uid"`
-	Count          *int    `json:"count,omitempty" parquet:"count,optional"`
+	ClassUID       int32   `json:"class_uid" parquet:"class_uid"`
+	Count          int32   `json:"count,omitempty" parquet:"count,optional"`
 	Duration       *int64  `json:"duration,omitempty" parquet:"duration,optional"`
 	EndTime        *int64  `json:"end_time,omitempty" parquet:"end_time,optional"`
 	Message        *string `json:"message,omitempty" parquet:"message,optional"`
 	RawData        *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 	Severity       *string `json:"severity,omitempty" parquet:"severity,optional"`
-	SeverityID     int     `json:"severity_id" parquet:"severity_id"`
+	SeverityID     int32   `json:"severity_id" parquet:"severity_id"`
 	StartTime      *int64  `json:"start_time,omitempty" parquet:"start_time,optional"`
 	Status         *string `json:"status,omitempty" parquet:"status,optional"`
 	StatusCode     *string `json:"status_code,omitempty" parquet:"status_code,optional"`
 	StatusDetail   *string `json:"status_detail,omitempty" parquet:"status_detail,optional"`
-	StatusID       int     `json:"status_id" parquet:"status_id"`
+	StatusID       int32   `json:"status_id" parquet:"status_id"`
 	Time           int64   `json:"time" parquet:"time"`
-	TimezoneOffset int     `json:"timezone_offset" parquet:"timezone_offset"`
+	TimezoneOffset int32   `json:"timezone_offset" parquet:"timezone_offset"`
 	TypeName       *string `json:"type_name,omitempty" parquet:"type_name,optional"`
-	TypeUID        int     `json:"type_uid" parquet:"type_uid"`
+	TypeUID        int32   `json:"type_uid" parquet:"type_uid"`
 	DstEndpoint    JSONB   `json:"dst_endpoint,omitempty" parquet:"dst_endpoint,optional"`
 	Enrichments    JSONB   `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 	HTTPRequest    JSONB   `json:"http_request,omitempty" parquet:"http_request,optional"`
