@@ -1,0 +1,527 @@
+{
+    "category_name": "Findings",
+    "confidence": "Medium",
+    "activity_name": "raise",
+    "message": "senators interim boundaries",
+    "authorizations": [
+      {
+        "decision": "complimentary stupid dsc"
+      }
+    ],
+    "category_uid": 2,
+    "status_code": "revelation",
+    "timezone_offset": 29,
+    "malware": [
+      {
+        "name": "unlikely recommended framing",
+        "path": "issue",
+        "uid": "3b90bdb4-274e-11f0-82e7-5a360a548bf3",
+        "files": [
+          {
+            "name": "button.gadget",
+            "type": "Named Pipe",
+            "path": "trustee/button.gadget",
+            "uid": "3b910c38-274e-11f0-948b-5a360a548bf3",
+            "url": {
+              "port": 35098,
+              "path": "himself motorola optimal",
+              "hostname": "digital.web",
+              "query_string": "acquired battle indoor",
+              "category_ids": [54, 66],
+              "subdomain": "janet qld brochure",
+              "url_string": "regulation"
+            },
+            "ext": "ralph fate blues",
+            "type_id": 6,
+            "accessor": {
+              "name": "Quiet",
+              "type": "System",
+              "uid": "3b90ea00-274e-11f0-bdf0-5a360a548bf3",
+              "groups": [
+                {
+                  "name": "casual bidder failures",
+                  "domain": "puppy mambo skin",
+                  "uid": "3b90f5b8-274e-11f0-966b-5a360a548bf3"
+                }
+              ],
+              "type_id": 3,
+              "account": {
+                "name": "allocation gains threshold",
+                "type": "Email Account",
+                "uid": "3b9100ee-274e-11f0-944b-5a360a548bf3",
+                "type_id": 18
+              },
+              "forward_addr": "Brain@cursor.org",
+              "has_mfa": true,
+              "risk_score": 65
+            },
+            "company_name": "Merna Lynda",
+            "parent_folder": "trustee",
+            "accessed_time": 1746187740877,
+            "hashes": [
+              {
+                "value": "CEADFF882CAF473E532B424FD55D2519",
+                "algorithm": "MD5",
+                "algorithm_id": 1
+              }
+            ],
+            "xattributes": {
+  
+            }
+          },
+          {
+            "name": "catholic.odt",
+            "type": "Character Device",
+            "path": "module/catholic.odt",
+            "ext": "springs charger puts",
+            "type_id": 3,
+            "creator": {
+              "name": "Adsl",
+              "credential_uid": "3b9146bc-274e-11f0-bfa0-5a360a548bf3",
+              "has_mfa": false,
+              "phone_number": "companies halifax hero",
+              "risk_level": "anticipated philosophy tennessee"
+            },
+            "parent_folder": "module",
+            "created_time": 1746187740879,
+            "encryption_details": {
+              "type": "louis cb threaded",
+              "key_uid": "3b915166-274e-11f0-9c7e-5a360a548bf3"
+            },
+            "hashes": [
+              {
+                "value": "54DAB9EB6D3204A0B42800148196ED4785D258F980432579B62EF0D9DB0207B8",
+                "algorithm": "SHA-256",
+                "algorithm_id": 3
+              },
+              {
+                "value": "109949628E268E7F6DDD04977FB66B4B5ED3AAD304CA5662485C17CD35D5378C994F4FF0FAD22A20E985477BD0E9E48260E830C8582EDCAF6FFA8E78A94C2AEE",
+                "algorithm": "CTPH",
+                "algorithm_id": 5
+              }
+            ],
+            "is_deleted": true,
+            "security_descriptor": "bios testimonials du",
+            "xattributes": {
+  
+            }
+          }
+        ],
+        "classification_ids": [22, 4],
+        "num_infected": 92,
+        "provider": "sure cumulative presenting"
+      },
+      {
+        "name": "arrange couples vendor",
+        "path": "peripherals",
+        "uid": "3b915b52-274e-11f0-8427-5a360a548bf3",
+        "severity": "Informational",
+        "classification_ids": [20, 18],
+        "cves": [
+          {
+            "type": "production formerly russian",
+            "uid": "3b9167be-274e-11f0-9c6f-5a360a548bf3",
+            "references": [
+              "parameter benz designs"
+            ],
+            "created_time": 1746187740880,
+            "epss": {
+              "version": "1.5.0",
+              "created_time": 1746187740880,
+              "score": "entity carnival voip"
+            }
+          },
+          {
+            "type": "smilies kentucky portal",
+            "title": "atm hc slots",
+            "product": {
+              "name": "operated walls most",
+              "version": "1.5.0",
+              "uid": "3b9182bc-274e-11f0-ba79-5a360a548bf3",
+              "vendor_name": "treated import com"
+            },
+            "uid": "3b918a6e-274e-11f0-8359-5a360a548bf3",
+            "references": [
+              "ordered advantages apple"
+            ],
+            "created_time": 1746187740881,
+            "cvss": [
+              {
+                "version": "1.5.0",
+                "depth": "Environmental",
+                "base_score": 79.5642,
+                "overall_score": 94.9411,
+                "vector_string": "factor oxford restaurants",
+                "vendor_name": "spokesman jim holder"
+              },
+              {
+                "version": "1.5.0",
+                "depth": "Base",
+                "base_score": 79.1474,
+                "overall_score": 81.174,
+                "vendor_name": "pure trials picnic"
+              }
+            ],
+            "cwe_uid": "3b9199aa-274e-11f0-9e82-5a360a548bf3",
+            "epss": {
+              "version": "1.5.0",
+              "created_time": 1746187740881,
+              "score": "violations seek separately"
+            },
+            "related_cwes": [
+              {
+                "uid": "3b91a882-274e-11f0-9293-5a360a548bf3"
+              },
+              {
+                "uid": "3b91b02a-274e-11f0-bd78-5a360a548bf3"
+              }
+            ]
+          }
+        ],
+        "severity_id": 1
+      }
+    ],
+    "finding_info": {
+      "title": "populations warned ham",
+      "uid": "3b907958-274e-11f0-801c-5a360a548bf3",
+      "types": [
+        "katrina diagnostic leo",
+        "rt silent fg"
+      ],
+      "attacks": [
+        {
+          "version": "12.1",
+          "tactics": [
+            {
+              "name": "Credential Access The adversary is trying to steal account names and passwords.",
+              "uid": "TA0006"
+            }
+          ],
+          "technique": {
+            "name": "VNC",
+            "uid": "T1021.005"
+          }
+        },
+        {
+          "version": "12.1",
+          "tactics": [
+            {
+              "name": "Exfiltration | The adversary is trying to steal data.",
+              "uid": "TA0010"
+            },
+            {
+              "name": "Resource Development | The adversary is trying to establish resources they can use to support operations.",
+              "uid": "TA0042"
+            },
+            {
+              "name": "Execution The adversary is trying to run malicious code.",
+              "uid": "TA0002"
+            }
+          ],
+          "technique": {
+            "name": "Network Share Discovery",
+            "uid": "T1135"
+          }
+        }
+      ],
+      "analytic": {
+        "name": "ou photographic mpeg",
+        "type": "Unknown",
+        "version": "1.5.0",
+        "desc": "statutes genealogy renewable",
+        "uid": "3b908894-274e-11f0-8dd5-5a360a548bf3",
+        "algorithm": "pine gl pgp",
+        "type_id": 0,
+        "related_analytics": [
+          {
+            "name": "assembled northeast nations",
+            "type": "Indexed Data Match",
+            "uid": "3b9095fa-274e-11f0-af01-5a360a548bf3",
+            "category": "font snowboard adams",
+            "type_id": 11
+          },
+          {
+            "name": "moldova compete opinions",
+            "type": "Rule",
+            "uid": "3b909ece-274e-11f0-a8e5-5a360a548bf3",
+            "algorithm": "accessible toddler adrian",
+            "type_id": 1
+          }
+        ]
+      },
+      "first_seen_time": 1746187740875,
+      "related_events_count": 97,
+      "traits": [
+        {
+          "name": "transform times star",
+          "values": [
+            "loss bmw mf"
+          ],
+          "uid": "3b90ad56-274e-11f0-8e11-5a360a548bf3",
+          "category": "mention prepared assignment"
+        }
+      ]
+    },
+    "status_detail": "contrary balloon rare",
+    "is_alert": false,
+    "action_id": 0,
+    "activity_id": 99,
+    "resources": [
+      {
+        "name": "cheese contract district",
+        "owner": {
+          "name": "Servers",
+          "type": "earth",
+          "uid": "3b901d5a-274e-11f0-802b-5a360a548bf3",
+          "org": {
+            "name": "james beats gospel",
+            "uid": "3b9029d0-274e-11f0-b9ae-5a360a548bf3",
+            "ou_name": "fifteen algorithm aol"
+          },
+          "type_id": 99,
+          "has_mfa": false,
+          "ldap_person": {
+            "job_title": "expensive ai powerful"
+          }
+        },
+        "ip": "52.211.125.217",
+        "hostname": "albert.web",
+        "uid": "3b903876-274e-11f0-b47d-5a360a548bf3",
+        "labels": [
+          "lightweight",
+          "aimed"
+        ],
+        "namespace": "serving hampton celebrity",
+        "tags": [
+          {
+            "name": "cubic worldwide failures",
+            "value": "advocacy missed lafayette",
+            "values": [
+              "coleman listing visitors",
+              "lb wizard treaty"
+            ]
+          },
+          {
+            "name": "jerry whereas riding",
+            "value": "helmet jm millions",
+            "values": [
+              "putting carlo bring",
+              "controversial handmade documentation"
+            ]
+          }
+        ],
+        "modified_time": 1746187740872,
+        "resource_relationship": {
+          "name": "electricity cingular freeware",
+          "nodes": [
+            {
+              "name": "solid lens minneapolis",
+              "desc": "terrorists genres pdf",
+              "uid": "3b9058ce-274e-11f0-93cd-5a360a548bf3"
+            },
+            {
+              "data": "exhibit",
+              "uid": "3b906030-274e-11f0-a653-5a360a548bf3"
+            }
+          ],
+          "uid": "3b9066de-274e-11f0-a306-5a360a548bf3",
+          "query_language": "GraphQL",
+          "query_language_id": 2
+        },
+        "uid_alt": "aggregate"
+      }
+    ],
+    "metadata": {
+      "version": "1.5.0",
+      "product": {
+        "name": "custom phase half",
+        "uid": "3b8f92e0-274e-11f0-9a9f-5a360a548bf3",
+        "vendor_name": "moss pictures resulting"
+      },
+      "uid": "3b8f9aa6-274e-11f0-9a3e-5a360a548bf3",
+      "extensions": [
+        {
+          "name": "beginners hz stating",
+          "version": "1.5.0",
+          "uid": "3b8fa654-274e-11f0-94a4-5a360a548bf3"
+        },
+        {
+          "name": "nokia ensemble triumph",
+          "version": "1.5.0",
+          "uid": "3b8fae6a-274e-11f0-b901-5a360a548bf3"
+        }
+      ],
+      "profiles": [
+        "security_control"
+      ],
+      "event_code": "controls",
+      "log_name": "processor july as",
+      "log_provider": "governance figure hello",
+      "log_version": "occupied devoted athens",
+      "logged_time": 1746187740869,
+      "modified_time": 1746187740869,
+      "original_time": "fa painted nightlife",
+      "tenant_uid": "3b8ff424-274e-11f0-8309-5a360a548bf3"
+    },
+    "status": "Unknown",
+    "time": 1746187740867,
+    "remediation": {
+      "desc": "extends anaheim computation",
+      "kb_article_list": [
+        {
+          "size": 2337995719,
+          "os": {
+            "name": "tripadvisor star cohen",
+            "type": "macOS",
+            "version": "1.5.0",
+            "type_id": 300,
+            "cpu_bits": 75,
+            "kernel_release": "baptist pm reserved"
+          },
+          "title": "manufacturing antiques understanding",
+          "uid": "3b8f532a-274e-11f0-a8eb-5a360a548bf3",
+          "severity": "revised groups board",
+          "avg_timespan": {
+            "type": "Weeks",
+            "duration": 683497665,
+            "type_id": 6,
+            "end_time": 1746187740867,
+            "duration_days": 49,
+            "duration_hours": 75,
+            "duration_mins": 13,
+            "duration_months": 80,
+            "duration_secs": 72,
+            "duration_weeks": 28,
+            "duration_years": 69
+          },
+          "created_time": 1746187740867,
+          "install_state": "Not Installed",
+          "install_state_id": 2,
+          "src_url": "operator"
+        },
+        {
+          "os": {
+            "name": "accordance sacrifice anything",
+            "type": "Android",
+            "type_id": 201
+          },
+          "uid": "3b8f78a0-274e-11f0-a2d3-5a360a548bf3",
+          "severity": "marsh certain thesis",
+          "install_state": "input",
+          "install_state_id": 99,
+          "is_superseded": false
+        }
+      ]
+    },
+    "disposition": "Custom Action",
+    "resource": {
+      "owner": {
+        "name": "Destinations",
+        "type": "Admin",
+        "uid": "3b8f1d7e-274e-11f0-b7f3-5a360a548bf3",
+        "type_id": 2,
+        "has_mfa": false
+      },
+      "ip": "124.144.8.64",
+      "group": {
+        "name": "termination lp corporate",
+        "type": "november spoken cultural",
+        "uid": "3b8f2d32-274e-11f0-976d-5a360a548bf3"
+      },
+      "hostname": "erik.museum",
+      "namespace": "ports offered training",
+      "tags": [
+        {
+          "name": "beneficial enjoyed instrumentation",
+          "value": "ra fell priest",
+          "values": [
+            "thirty oxford put",
+            "bureau penguin seq"
+          ]
+        },
+        {
+          "name": "releases pleasure losing",
+          "value": "argentina philippines access",
+          "values": [
+            "substances covering hunting",
+            "metric schools hawaiian"
+          ]
+        }
+      ],
+      "created_time": 1746187740865,
+      "is_backed_up": false
+    },
+    "vendor_attributes": {
+  
+    },
+    "severity_id": 5,
+    "class_uid": 2003,
+    "status_id": 0,
+    "compliance": {
+      "control": "kevin your villas",
+      "status": "Pass",
+      "standards": [
+        "qualities valuable perth",
+        "credits ver humidity"
+      ],
+      "status_code": "lol",
+      "status_detail": "hairy aug satin",
+      "status_id": 1
+    },
+    "type_name": "Compliance Finding: Other",
+    "attacks": [
+      {
+        "version": "12.1",
+        "tactics": [
+          {
+            "name": "Persistence The adversary is trying to maintain their foothold.",
+            "uid": "TA0003"
+          },
+          {
+            "name": "Collection | The adversary is trying to gather data of interest to their goal.",
+            "uid": "TA0009"
+          }
+        ],
+        "technique": {
+          "name": "Trusted Relationship",
+          "uid": "T1199"
+        }
+      },
+      {
+        "version": "12.1",
+        "tactics": [
+          {
+            "name": "Discovery The adversary is trying to figure out your environment.",
+            "uid": "TA0007"
+          },
+          {
+            "name": "Lateral Movement | The adversary is trying to move through your environment.",
+            "uid": "TA0008"
+          }
+        ],
+        "technique": {
+          "name": "Indirect Command Execution",
+          "uid": "T1202"
+        }
+      }
+    ],
+    "severity": "Critical",
+    "disposition_id": 7,
+    "class_name": "Compliance Finding",
+    "duration": 2886252178,
+    "observables": [
+      {
+        "name": "sparc paragraph vertical",
+        "type": "Process ID",
+        "type_id": 15
+      },
+      {
+        "name": "accident roller scared",
+        "type": "File Name",
+        "type_id": 7
+      }
+    ],
+    "type_uid": 200399,
+    "confidence_id": 2,
+    "action": "Unknown"
+  }

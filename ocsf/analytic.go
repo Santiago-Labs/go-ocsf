@@ -41,7 +41,7 @@ type Analytic struct {
 	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
 	RelatedAnalytics []*RelatedAnalytic `json:"related_analytics,omitempty" parquet:"related_analytics,list,optional"`
 	Type             *string            `json:"type,omitempty" parquet:"type,optional"`
-	TypeID           string             `json:"type_id" parquet:"type_id"`
+	TypeID           int32              `json:"type_id" parquet:"type_id"`
 	UID              *string            `json:"uid,omitempty" parquet:"uid,optional"`
 	Version          *string            `json:"version,omitempty" parquet:"version,optional"`
 }
@@ -51,7 +51,7 @@ type RelatedAnalytic struct {
 	Desc     *string `json:"desc,omitempty" parquet:"desc,optional"`
 	Name     *string `json:"name,omitempty" parquet:"name,optional"`
 	Type     *string `json:"type,omitempty" parquet:"type,optional"`
-	TypeID   string  `json:"type_id" parquet:"type_id"`
+	TypeID   int32   `json:"type_id" parquet:"type_id"`
 	UID      *string `json:"uid,omitempty" parquet:"uid,optional"`
 	Version  *string `json:"version,omitempty" parquet:"version,optional"`
 }

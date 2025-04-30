@@ -25,6 +25,9 @@ go.work.sum
 .env
 
 *.json
+!ocsf/test_data/*.json
 *.parquet
 
 data/
+
+.cursor

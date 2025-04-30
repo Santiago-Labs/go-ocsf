@@ -21,7 +21,7 @@ var MetadataFields = []arrow.Field{
 	{Name: "logged_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "loggers", Type: arrow.ListOf(LoggerStruct), Nullable: true},
 	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "original_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "original_time", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "processed_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: false},
 	{Name: "profiles", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
@@ -47,7 +47,7 @@ type Metadata struct {
 	LoggedTime     *int64             `json:"logged_time,omitempty" parquet:"logged_time,optional"`
 	Loggers        []*Logger          `json:"loggers,omitempty" parquet:"loggers,list,optional"`
 	ModifiedTime   *int64             `json:"modified_time,omitempty" parquet:"modified_time,optional"`
-	OriginalTime   *int64             `json:"original_time,omitempty" parquet:"original_time,optional"`
+	OriginalTime   *string            `json:"original_time,omitempty" parquet:"original_time,optional"`
 	ProcessedTime  *int64             `json:"processed_time,omitempty" parquet:"processed_time,optional"`
 	Product        Product            `json:"product" parquet:"product"`
 	Profiles       []string           `json:"profiles,omitempty" parquet:"profiles,list,optional"`

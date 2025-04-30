@@ -8,6 +8,7 @@ import (
 var ProcessEntityFields = []arrow.Field{
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "cpid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "pid", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
@@ -20,6 +21,7 @@ var ProcessEntityClassname = "process_entity"
 type ProcessEntity struct {
 	CmdLine     *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 	CreatedTime *int64  `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CPID        *string `json:"cpid,omitempty" parquet:"cpid,optional"`
 	Name        *string `json:"name,omitempty" parquet:"name,optional"`
 	Path        *string `json:"path,omitempty" parquet:"path,optional"`
 	PID         *int64  `json:"pid,omitempty" parquet:"pid,optional"`

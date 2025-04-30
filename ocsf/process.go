@@ -5,7 +5,7 @@ import (
 )
 
 var ParentProcessFields = []arrow.Field{
-	{Name: "ancestry", Type: ProcessEntityStruct, Nullable: true},
+	{Name: "ancestry", Type: arrow.ListOf(ProcessEntityStruct), Nullable: true},
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "environment_variables", Type: arrow.ListOf(EnvironmentVarStruct), Nullable: true},
@@ -29,7 +29,7 @@ var ParentProcessFields = []arrow.Field{
 
 // ProcessFields defines the Arrow fields for Process.
 var ProcessFields = []arrow.Field{
-	{Name: "ancestry", Type: ProcessEntityStruct, Nullable: true},
+	{Name: "ancestry", Type: arrow.ListOf(ProcessEntityStruct), Nullable: true},
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "environment_variables", Type: arrow.ListOf(EnvironmentVarStruct), Nullable: true},
@@ -59,7 +59,7 @@ var ProcessStruct = arrow.StructOf(ProcessFields...)
 var ProcessClassname = "process"
 
 type Process struct {
-	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry,optional"`
+	Ancestry         []*ProcessEntity   `json:"ancestry,omitempty" parquet:"ancestry,list,optional"`
 	CmdLine          *string            `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 	CreatedTime      *int64             `json:"created_time,omitempty" parquet:"created_time,optional"`
 	EnvironmentVars  []*EnvironmentVar  `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
@@ -83,7 +83,7 @@ type Process struct {
 }
 
 type ParentProcess struct {
-	Ancestry         *ProcessEntity     `json:"ancestry,omitempty" parquet:"ancestry,optional"`
+	Ancestry         []*ProcessEntity   `json:"ancestry,omitempty" parquet:"ancestry,list,optional"`
 	CmdLine          *string            `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 	CreatedTime      *int64             `json:"created_time,omitempty" parquet:"created_time,optional"`
 	EnvironmentVars  []*EnvironmentVar  `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
