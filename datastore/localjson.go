@@ -7,128 +7,81 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"reflect"
 	"time"
 
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/samsarahq/go/oops"
 )
 
-type localJsonDatastore struct {
-	BaseDatastore
+type localJsonDatastore[T any] struct {
+	BaseDatastore[T]
 
-	currentFindingsPath   string
-	currentActivitiesPath string
+	currentPath string
+	basepath    string
 }
 
 // localJsonDatastore implements the Datastore interface using local JSON files for storage.
-// It provides methods to retrieve, save, and manage vulnerability findings in JSON format.
-func NewLocalJsonDatastore(ctx context.Context) (Datastore, error) {
-	if err := os.MkdirAll(BasepathFindings, 0755); err != nil {
+// It provides methods to retrieve, save, and manage ocsf data in JSON format.
+func NewLocalJsonDatastore[T any](ctx context.Context) (Datastore[T], error) {
+
+	typeName := reflect.TypeOf((*T)(nil)).Elem().Name()
+	if err := os.MkdirAll(basepaths[typeName], 0755); err != nil {
 		return nil, oops.Wrapf(err, "failed to create directory")
 	}
 
-	if err := os.MkdirAll(BasepathActivities, 0755); err != nil {
-		return nil, oops.Wrapf(err, "failed to create directory")
+	s := &localJsonDatastore[T]{
+		basepath: basepaths[typeName],
 	}
 
-	s := &localJsonDatastore{}
-
-	s.BaseDatastore = BaseDatastore{
+	s.BaseDatastore = BaseDatastore[T]{
 		store: s,
 	}
 
 	return s, nil
 }
 
-// GetFindingsFromFile retrieves all vulnerability findings from a specific file path.
-// It reads the gzipped JSON file and parses it into a slice of vulnerability findings.
-func (s *localJsonDatastore) GetFindingsFromFile(ctx context.Context, path string) ([]ocsf.VulnerabilityFinding, error) {
+// GetItemsFromFile retrieves all ocsf data from a specific file path.
+// It reads the gzipped JSON file and parses it into a slice of ocsf data.
+func (s *localJsonDatastore[T]) GetItemsFile(ctx context.Context, path string) ([]T, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to read JSON file from disk")
 	}
 
-	var findings []ocsf.VulnerabilityFinding
-	if err := json.Unmarshal(data, &findings); err != nil {
+	var items []T
+	if err := json.Unmarshal(data, &items); err != nil {
 		return nil, oops.Wrapf(err, "failed to parse JSON file")
 	}
 
-	return findings, nil
+	return items, nil
 }
 
-// WriteBatch creates a new JSON file for storing vulnerability findings.
-// It marshals the findings into a JSON object and writes it to the specified file path.
-func (s *localJsonDatastore) WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error {
-	allFindings := findings
+// WriteBatch creates a new JSON file for storing ocsf data.
+// It marshals the data into a JSON object and writes it to the specified file path.
+func (s *localJsonDatastore[T]) WriteBatch(ctx context.Context, items []T) error {
+	allItems := items
 
-	if s.currentFindingsPath == "" {
-		s.currentFindingsPath = filepath.Join(BasepathFindings, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
+	if s.currentPath == "" {
+		s.currentPath = filepath.Join(s.basepath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 	} else {
-		fileFindings, err := s.GetFindingsFromFile(ctx, s.currentFindingsPath)
+		fileItems, err := s.GetItemsFile(ctx, s.currentPath)
 		if err != nil {
-			return oops.Wrapf(err, "failed to get existing findings from disk")
+			return oops.Wrapf(err, "failed to get existing items from disk")
 		}
 
-		allFindings = append(allFindings, fileFindings...)
+		allItems = append(allItems, fileItems...)
 	}
 
-	jsonData, err := json.Marshal(allFindings)
+	jsonData, err := json.Marshal(allItems)
 	if err != nil {
-		return oops.Wrapf(err, "failed to marshal findings to JSON")
+		return oops.Wrapf(err, "failed to marshal to JSON")
 	}
 
-	if err := os.WriteFile(s.currentFindingsPath, jsonData, 0644); err != nil {
+	if err := os.WriteFile(s.currentPath, jsonData, 0644); err != nil {
 		return oops.Wrapf(err, "failed to write JSON to disk")
 	}
 
-	slog.Info("Wrote JSON file to disk", "path", s.currentFindingsPath, "findings", len(allFindings))
+	slog.Info("Wrote JSON file to disk", "path", s.currentPath, "items", len(allItems))
 
 	return nil
-}
-
-func (s *localJsonDatastore) WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error {
-	allActivities := activities
-
-	if s.currentActivitiesPath == "" {
-		s.currentActivitiesPath = filepath.Join(BasepathActivities, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
-	} else {
-		fileActivities, err := s.GetAPIActivitiesFromFile(ctx, s.currentActivitiesPath)
-		if err != nil {
-			return oops.Wrapf(err, "failed to get existing activities from disk")
-		}
-
-		allActivities = append(allActivities, fileActivities...)
-	}
-
-	jsonData, err := json.Marshal(allActivities)
-	if err != nil {
-		return oops.Wrapf(err, "failed to marshal findings to JSON")
-	}
-
-	if err := os.WriteFile(s.currentActivitiesPath, jsonData, 0644); err != nil {
-		return oops.Wrapf(err, "failed to write JSON to disk")
-	}
-	slog.Info("Wrote JSON file to disk",
-		"path", s.currentActivitiesPath,
-		"activities", len(allActivities),
-	)
-
-	return nil
-
-}
-
-// GetAPIActivitiesFromFile retrieves all API activities from a specific file path.
-// It reads the gzipped JSON file and parses it into a slice of API activities.
-func (s *localJsonDatastore) GetAPIActivitiesFromFile(ctx context.Context, path string) ([]ocsf.APIActivity, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, oops.Wrapf(err, "failed to read JSON file from disk")
-	}
-
-	var activities []ocsf.APIActivity
-	if err := json.Unmarshal(data, &activities); err != nil {
-		return nil, oops.Wrapf(err, "failed to parse JSON file")
-	}
-
-	return activities, nil
 }

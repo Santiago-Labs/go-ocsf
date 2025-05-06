@@ -8,7 +8,7 @@ type Observable struct {
 	Name       string      `json:"name" parquet:"name"`
 	Reputation *Reputation `json:"reputation,omitempty" parquet:"reputation,optional"`
 	Type       *string     `json:"type,omitempty" parquet:"type,optional"`
-	TypeID     int32       `json:"type_id" parquet:"type_id"`
+	TypeID     int         `json:"type_id" parquet:"type_id"`
 	Value      *string     `json:"value,omitempty" parquet:"value,optional"`
 }
 

@@ -23,7 +23,6 @@ var LoggerClassname = "logger"
 
 type Logger struct {
 	Device       *Device  `json:"device,omitempty" parquet:"device,optional"`
-	EventUID     *string  `json:"event_uid,omitempty" parquet:"event_uid,optional"`
 	LogLevel     *string  `json:"log_level,omitempty" parquet:"log_level,optional"`
 	LogName      *string  `json:"log_name,omitempty" parquet:"log_name,optional"`
 	LogProvider  *string  `json:"log_provider,omitempty" parquet:"log_provider,optional"`

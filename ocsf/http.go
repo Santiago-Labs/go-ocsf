@@ -24,9 +24,9 @@ var HTTPRequestClassname = "http_request"
 
 type HTTPRequest struct {
 	Args          *string       `json:"args,omitempty" parquet:"args"`
-	BodyLength    int32         `json:"body_length,omitempty" parquet:"body_length"`
+	BodyLength    *int          `json:"body_length,omitempty" parquet:"body_length"`
 	HTTPMethod    *string       `json:"http_method,omitempty" parquet:"http_method"`
-	Length        int32         `json:"length,omitempty" parquet:"length"`
+	Length        *int          `json:"length,omitempty" parquet:"length"`
 	Referrer      *string       `json:"referrer,omitempty" parquet:"referrer"`
 	UID           *string       `json:"uid,omitempty" parquet:"uid"`
 	UserAgent     *string       `json:"user_agent,omitempty" parquet:"user_agent"`
@@ -52,11 +52,11 @@ var HTTPResponseStruct = arrow.StructOf(HTTPResponseFields...)
 var HTTPResponseClassname = "http_response"
 
 type HTTPResponse struct {
-	BodyLength  *int32        `json:"body_length,omitempty" parquet:"body_length,optional"`
-	Code        int32         `json:"code" parquet:"code"`
+	BodyLength  *int          `json:"body_length,omitempty" parquet:"body_length,optional"`
+	Code        int           `json:"code" parquet:"code"`
 	ContentType *string       `json:"content_type,omitempty" parquet:"content_type,optional"`
-	Latency     *int32        `json:"latency,omitempty" parquet:"latency,optional"`
-	Length      *int32        `json:"length,omitempty" parquet:"length,optional"`
+	Latency     *int          `json:"latency,omitempty" parquet:"latency,optional"`
+	Length      *int          `json:"length,omitempty" parquet:"length,optional"`
 	Message     *string       `json:"message,omitempty" parquet:"message,optional"`
 	Status      *string       `json:"status,omitempty" parquet:"status,optional"`
 	HTTPHeaders []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional"`

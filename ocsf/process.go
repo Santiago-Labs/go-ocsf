@@ -65,17 +65,17 @@ type Process struct {
 	EnvironmentVars  []*EnvironmentVar  `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
 	File             *File              `json:"file,omitempty" parquet:"file,optional"`
 	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity,optional"`
-	IntegrityID      int32              `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
+	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
 	Lineage          []string           `json:"lineage,omitempty" parquet:"lineage,list,optional"`
 	LoadedModules    []string           `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
 	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
 	ParentProcess    *ParentProcess     `json:"parent_process,omitempty" parquet:"parent_process,optional"`
 	Path             *string            `json:"path,omitempty" parquet:"path,optional"`
-	PID              int32              `json:"pid,omitempty" parquet:"pid,optional"`
+	PID              *int               `json:"pid,omitempty" parquet:"pid,optional"`
 	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox,optional"`
 	Session          *Session           `json:"session,omitempty" parquet:"session,optional"`
 	TerminatedTime   *int64             `json:"terminated_time,omitempty" parquet:"terminated_time,optional"`
-	TID              int32              `json:"tid,omitempty" parquet:"tid,optional"`
+	TID              *int               `json:"tid,omitempty" parquet:"tid,optional"`
 	UID              *string            `json:"uid,omitempty" parquet:"uid,optional"`
 	User             *User              `json:"user,omitempty" parquet:"user,optional"`
 	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory,optional"`
@@ -89,16 +89,16 @@ type ParentProcess struct {
 	EnvironmentVars  []*EnvironmentVar  `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
 	File             *File              `json:"file,omitempty" parquet:"file,optional"`
 	Integrity        *string            `json:"integrity,omitempty" parquet:"integrity,optional"`
-	IntegrityID      *int32             `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
+	IntegrityID      *int               `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
 	Lineage          []string           `json:"lineage,omitempty" parquet:"lineage,list,optional"`
 	LoadedModules    []string           `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
 	Name             *string            `json:"name,omitempty" parquet:"name,optional"`
 	Path             *string            `json:"path,omitempty" parquet:"path,optional"`
-	PID              int32              `json:"pid,omitempty" parquet:"pid,optional"`
+	PID              *int               `json:"pid,omitempty" parquet:"pid,optional"`
 	Sandbox          *string            `json:"sandbox,omitempty" parquet:"sandbox,optional"`
 	Session          *Session           `json:"session,omitempty" parquet:"session,optional"`
 	TerminatedTime   *int64             `json:"terminated_time,omitempty" parquet:"terminated_time,optional"`
-	TID              *int32             `json:"tid,omitempty" parquet:"tid,optional"`
+	TID              *int               `json:"tid,omitempty" parquet:"tid,optional"`
 	UID              *string            `json:"uid,omitempty" parquet:"uid,optional"`
 	User             *User              `json:"user,omitempty" parquet:"user,optional"`
 	WorkingDirectory *string            `json:"working_directory,omitempty" parquet:"working_directory,optional"`

@@ -19,5 +19,5 @@ type Reputation struct {
 	BaseScore float64 `json:"base_score" parquet:"base_score"`
 	Provider  *string `json:"provider,omitempty" parquet:"provider,optional"`
 	Score     *string `json:"score,omitempty" parquet:"score,optional"`
-	ScoreID   int32   `json:"score_id" parquet:"score_id"`
+	ScoreID   int     `json:"score_id" parquet:"score_id"`
 }

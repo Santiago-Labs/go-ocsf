@@ -36,7 +36,7 @@ type IdentityProvider struct {
 	SCIM         *SCIM         `json:"scim,omitempty" parquet:"scim,optional"`
 	SSO          *SSO          `json:"sso,omitempty" parquet:"sso,optional"`
 	State        *string       `json:"state,omitempty" parquet:"state,optional"`
-	StateID      *int32        `json:"state_id,omitempty" parquet:"state_id,optional"`
+	StateID      *int          `json:"state_id,omitempty" parquet:"state_id,optional"`
 	TenantUID    *string       `json:"tenant_uid,omitempty" parquet:"tenant_uid,optional"`
 	UID          *string       `json:"uid,omitempty" parquet:"uid,optional"`
 	URLString    *string       `json:"url_string,omitempty" parquet:"url_string,optional"`

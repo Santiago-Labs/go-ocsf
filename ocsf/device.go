@@ -52,13 +52,11 @@ var DeviceStruct = arrow.StructOf(DeviceFields...)
 var DeviceClassname = "device"
 
 type Device struct {
-	BootTime          *int64              `json:"boot_time,omitempty" parquet:"boot_time,optional"`
 	Region            *string             `json:"region,omitempty" parquet:"region,optional"`
 	InterfaceName     *string             `json:"interface_name,omitempty" parquet:"interface_name,optional"`
 	UID               *string             `json:"uid,omitempty" parquet:"uid,optional"`
 	InterfaceUID      *string             `json:"interface_uid,omitempty" parquet:"interface_uid,optional"`
 	ModifiedTime      *int64              `json:"modified_time,omitempty" parquet:"modified_time,optional"`
-	IMEIList          []string            `json:"imei_list,omitempty" parquet:"imei_list,list,optional"`
 	OS                *OS                 `json:"os,omitempty" parquet:"os,optional"`
 	Desc              *string             `json:"desc,omitempty" parquet:"desc,optional"`
 	Hypervisor        *string             `json:"hypervisor,omitempty" parquet:"hypervisor,optional"`
@@ -74,15 +72,15 @@ type Device struct {
 	SubnetUID         *string             `json:"subnet_uid,omitempty" parquet:"subnet_uid,optional"`
 	Zone              *string             `json:"zone,omitempty" parquet:"zone,optional"`
 	Groups            []*Group            `json:"groups,omitempty" parquet:"groups,list,optional"`
-	RiskScore         *int32              `json:"risk_score,omitempty" parquet:"risk_score,optional"`
+	RiskScore         *int                `json:"risk_score,omitempty" parquet:"risk_score,optional"`
 	IsPersonal        *bool               `json:"is_personal,omitempty" parquet:"is_personal,optional"`
 	Name              *string             `json:"name,omitempty" parquet:"name,optional"`
 	HWInfo            *DeviceHWInfo       `json:"hw_info,omitempty" parquet:"hw_info,optional"`
 	UIDAlt            *string             `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
-	TypeID            int32               `json:"type_id" parquet:"type_id"`
+	TypeID            int                 `json:"type_id" parquet:"type_id"`
 	LastSeenTime      *int64              `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
 	IsManaged         *bool               `json:"is_managed,omitempty" parquet:"is_managed,optional"`
-	RiskLevelID       *int32              `json:"risk_level_id,omitempty" parquet:"risk_level_id,optional"`
+	RiskLevelID       *int                `json:"risk_level_id,omitempty" parquet:"risk_level_id,optional"`
 	IsTrusted         *bool               `json:"is_trusted,omitempty" parquet:"is_trusted,optional"`
 	NetworkInterfaces []*NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,list,optional"`
 	AutoscaleUID      *string             `json:"autoscale_uid,omitempty" parquet:"autoscale_uid,optional"`

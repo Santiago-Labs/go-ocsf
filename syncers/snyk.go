@@ -7,7 +7,7 @@ import (
 
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	ocsf "github.com/Santiago-Labs/go-ocsf/ocsf/v1_4_0"
 	"github.com/samsarahq/go/oops"
 )
 
@@ -17,13 +17,18 @@ type DataSync interface {
 
 type SnykOCSFSyncer struct {
 	snykClient *snyk.Client
-	datastore  datastore.Datastore
+	datastore  datastore.Datastore[ocsf.VulnerabilityFinding]
 	org        *snyk.Org
 }
 
 // NewSnykOCSFSyncer creates a new SnykOCSFSyncer
 // It initializes the Snyk client and datastore, and fetches the organization details.
-func NewSnykOCSFSyncer(ctx context.Context, snykClient *snyk.Client, datastore datastore.Datastore) (DataSync, error) {
+func NewSnykOCSFSyncer(ctx context.Context, snykClient *snyk.Client, storageOpts datastore.StorageOpts) (DataSync, error) {
+	dataStoreInst, err := datastore.SetupStorage[ocsf.VulnerabilityFinding](ctx, storageOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup datastore: %w", err)
+	}
+
 	org, err := snykClient.GetOrg(ctx)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to fetch org")
@@ -31,7 +36,7 @@ func NewSnykOCSFSyncer(ctx context.Context, snykClient *snyk.Client, datastore d
 
 	return &SnykOCSFSyncer{
 		snykClient: snykClient,
-		datastore:  datastore,
+		datastore:  dataStoreInst,
 		org:        org,
 	}, nil
 }
@@ -68,7 +73,7 @@ func (s *SnykOCSFSyncer) Sync(ctx context.Context) error {
 		findingsToSave = append(findingsToSave, finding)
 	}
 
-	err = s.datastore.SaveFindings(ctx, findingsToSave)
+	err = s.datastore.Save(ctx, findingsToSave)
 	if err != nil {
 		return oops.Wrapf(err, "failed to save findings")
 	}
@@ -101,7 +106,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	projectName := project.Attributes.Name
 	vendorName := "Snyk"
 
-	var vulnerabilities []*ocsf.VulnerabilityDetails
+	var vulnerabilities []ocsf.VulnerabilityDetails
 	exploitAvailable := issue.Attributes.ExploitDetails != nil
 
 	var fixAvailable bool
@@ -113,11 +118,11 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		for _, remedy := range coordinate.Remedies {
 			if remediation == nil {
 				remediation = &ocsf.Remediation{
-					Description: remedy.Description,
+					Desc: remedy.Description,
 				}
 			} else {
 				// Snyk may have multiple remediations for a single issue.
-				remediation.Description = fmt.Sprintf("%s\n\nor\n\n%s", remediation.Description, remedy.Description)
+				remediation.Desc = fmt.Sprintf("%s\n\nor\n\n%s", remediation.Desc, remedy.Description)
 			}
 		}
 	}
@@ -125,9 +130,8 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	issueURL := fmt.Sprintf("https://app.snyk.io/org/%s/project/%s#issue-%s", s.org.Attributes.Slug, project.ID, issue.Attributes.Key)
 	cwe := snykIssueCWE(issue)
 	if len(issue.Attributes.Problems) == 0 {
-		vulnerabilities = append(vulnerabilities, &ocsf.VulnerabilityDetails{
-			UID:                &issue.ID,
-			CWE:                cwe,
+		vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
+			Cwe:                cwe,
 			Desc:               &issue.Attributes.Description,
 			Title:              &issue.Attributes.Title,
 			Severity:           &severity,
@@ -148,10 +152,9 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				reference = *problem.URL
 			}
 
-			vulnerabilities = append(vulnerabilities, &ocsf.VulnerabilityDetails{
-				UID:                &problem.ID,
-				CVE:                snykProblemToCVE(problem),
-				CWE:                cwe,
+			vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
+				Cve:                snykProblemToCVE(problem),
+				Cwe:                cwe,
 				AffectedCode:       snykAffectedCode(issue, project),
 				AffectedPackages:   snykAffectedPackages(issue),
 				Desc:               &issue.Attributes.Description,
@@ -170,7 +173,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 
 	resourceType := project.Attributes.Type
 	resource := ocsf.ResourceDetails{
-		UID:  &issue.ID,
+		Uid:  &issue.ID,
 		Name: &projectName,
 		Type: &resourceType,
 	}
@@ -210,14 +213,14 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	metadata := ocsf.Metadata{
 		Product: ocsf.Product{
 			Name:       &productName,
-			VendorName: productName,
+			VendorName: &vendorName,
 		},
 		Version: "1.4.0",
 	}
 
-	findingInfo := ocsf.FindingInfo{
-		UID:           issue.ID,
-		Title:         issue.Attributes.Title,
+	findingInfo := ocsf.FindingInformation{
+		Uid:           issue.ID,
+		Title:         &issue.Attributes.Title,
 		Desc:          &issue.Attributes.Description,
 		CreatedTime:   &createdAt,
 		FirstSeenTime: &createdAt,
@@ -232,22 +235,22 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		EventDay:        int32(eventTime / 86400000),
 		StartTime:       &createdAt,
 		EndTime:         endTime,
-		ActivityID:      activityID,
+		ActivityId:      activityID,
 		ActivityName:    &activityName,
-		CategoryUID:     categoryUID,
+		CategoryUid:     categoryUID,
 		CategoryName:    &categoryName,
-		ClassUID:        classUID,
+		ClassUid:        classUID,
 		ClassName:       &className,
 		Message:         &issue.Attributes.Description,
 		Metadata:        metadata,
 		Resources:       []*ocsf.ResourceDetails{&resource},
 		Status:          &status,
-		StatusID:        &statusID,
-		TypeUID:         typeUID,
+		StatusId:        &statusID,
+		TypeUid:         typeUID,
 		TypeName:        &typeName,
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
-		SeverityID:      int32(severityID),
+		SeverityId:      int32(severityID),
 	}
 
 	return finding, nil
@@ -290,7 +293,7 @@ func snykProblemToCVE(problem snyk.Problem) *ocsf.CVE {
 			problemURL = *problem.URL
 		}
 		return &ocsf.CVE{
-			UID: problem.ID,
+			Uid: problem.ID,
 			References: []string{
 				problemURL,
 			},
@@ -303,8 +306,8 @@ func snykIssueCWE(issue snyk.Issue) *ocsf.CWE {
 	for _, class := range issue.Attributes.Classes {
 		if class.Source == "CWE" {
 			return &ocsf.CWE{
-				UID:       class.ID,
-				SourceURL: class.URL,
+				Uid:    class.ID,
+				SrcUrl: class.URL,
 			}
 		}
 	}
@@ -331,13 +334,13 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedC
 			}
 
 			fileObj := ocsf.File{
-				Path: fileName,
+				Path: &fileName,
 			}
 
 			affectedCode = append(affectedCode, &ocsf.AffectedCode{
 				File:      fileObj,
-				StartLine: lineNumber,
-				EndLine:   endLine,
+				StartLine: &lineNumber,
+				EndLine:   &endLine,
 			})
 		}
 	}

@@ -4,14 +4,16 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
-
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
 )
 
 var Basepath = "data"
 
-var BasepathFindings = filepath.Join(Basepath, "vulnerability_finding")
-var BasepathActivities = filepath.Join(Basepath, "api_activity")
+var (
+	basepaths = map[string]string{
+		"VulnerabilityFinding": filepath.Join(Basepath, "vulnerability_finding"),
+		"APIActivity":          filepath.Join(Basepath, "api_activity"),
+	}
+)
 
 var ErrNotFound = errors.New("not found")
 
@@ -21,16 +23,10 @@ const avgFindingSize = 5 * 1024       // 5 KB, rough estimate
 // Datastore defines the interface for vulnerability finding storage.
 // It provides methods to retrieve, save, and manage vulnerability findings.
 // Each implementation of Datastore is responsible for reading and writing to a file, and building the in-memory index of finding IDs to file paths.
-type Datastore interface {
-	// SaveFindings saves a list of vulnerability findings to the datastore.
-	SaveFindings(ctx context.Context, findings []ocsf.VulnerabilityFinding) error
+type Datastore[T any] interface {
+	// Save saves a list to the datastore.
+	Save(ctx context.Context, items []T) error
 
-	// SaveAPIActivities saves a list of API activities to the datastore.
-	SaveAPIActivities(ctx context.Context, activities []ocsf.APIActivity) error
-
-	// WriteBatch writes a batch of vulnerability findings to a specific file in a specific format.
-	WriteBatch(ctx context.Context, findings []ocsf.VulnerabilityFinding) error
-
-	// WriteAPIActivityBatch writes a batch of API activities to a specific file in a specific format.
-	WriteAPIActivityBatch(ctx context.Context, activities []ocsf.APIActivity) error
+	// WriteBatch writes a batch of items to a specific file in a specific format.
+	WriteBatch(ctx context.Context, items []T) error
 }
