@@ -17,9 +17,9 @@ var DisplayClassname = "display"
 
 // Display represents display specifications.
 type Display struct {
-	ColorDepth          *int32 `json:"color_depth,omitempty" parquet:"color_depth,optional"`
-	PhysicalHeight      *int32 `json:"physical_height,omitempty" parquet:"physical_height,optional"`
-	PhysicalOrientation *int32 `json:"physical_orientation,omitempty" parquet:"physical_orientation,optional"`
-	PhysicalWidth       *int32 `json:"physical_width,omitempty" parquet:"physical_width,optional"`
-	ScaleFactor         *int32 `json:"scale_factor,omitempty" parquet:"scale_factor,optional"`
+	ColorDepth          *int `json:"color_depth,omitempty" parquet:"color_depth,optional"`
+	PhysicalHeight      *int `json:"physical_height,omitempty" parquet:"physical_height,optional"`
+	PhysicalOrientation *int `json:"physical_orientation,omitempty" parquet:"physical_orientation,optional"`
+	PhysicalWidth       *int `json:"physical_width,omitempty" parquet:"physical_width,optional"`
+	ScaleFactor         *int `json:"scale_factor,omitempty" parquet:"scale_factor,optional"`
 }

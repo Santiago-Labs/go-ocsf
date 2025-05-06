@@ -15,5 +15,5 @@ var AutonomousSystemClassname = "autonomous_system"
 
 type AutonomousSystem struct {
 	Name   *string `json:"name,omitempty" parquet:"name,optional"`
-	Number *int32  `json:"number,omitempty" parquet:"number,optional"`
+	Number *int    `json:"number,omitempty" parquet:"number,optional"`
 }

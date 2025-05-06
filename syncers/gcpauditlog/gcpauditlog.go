@@ -10,17 +10,17 @@ import (
 
 	"github.com/Santiago-Labs/go-ocsf/clients/gcp"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	ocsf "github.com/Santiago-Labs/go-ocsf/ocsf/v1_4_0"
 	"google.golang.org/api/iterator"
 )
 
 type GCPAuditLogSyncer struct {
-	datastore datastore.Datastore
+	datastore datastore.Datastore[ocsf.APIActivity]
 	projectID string
 	client    *gcp.Client
 }
 
-func NewGCPAuditLogSyncer(ctx context.Context, datastore datastore.Datastore, projectID string) (*GCPAuditLogSyncer, error) {
+func NewGCPAuditLogSyncer(ctx context.Context, projectID string, storageOpts datastore.StorageOpts) (*GCPAuditLogSyncer, error) {
 	if projectID == "" {
 		return nil, errors.New("projectID is required it can be set via the GCP_PROJECT_ID environment variable")
 	}
@@ -30,8 +30,13 @@ func NewGCPAuditLogSyncer(ctx context.Context, datastore datastore.Datastore, pr
 		return nil, fmt.Errorf("failed to create GCP client: %w", err)
 	}
 
+	dataStoreInst, err := datastore.SetupStorage[ocsf.APIActivity](ctx, storageOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup datastore: %w", err)
+	}
+
 	return &GCPAuditLogSyncer{
-		datastore: datastore,
+		datastore: dataStoreInst,
 		projectID: projectID,
 		client:    client,
 	}, nil
@@ -72,7 +77,7 @@ func (s *GCPAuditLogSyncer) Sync(ctx context.Context) error {
 
 		// Save in batches of batchSize
 		if len(activitiesToSave) >= batchSize {
-			err = s.datastore.SaveAPIActivities(ctx, activitiesToSave)
+			err = s.datastore.Save(ctx, activitiesToSave)
 			if err != nil {
 				return fmt.Errorf("failed to save API activities batch: %w", err)
 			}
@@ -83,7 +88,7 @@ func (s *GCPAuditLogSyncer) Sync(ctx context.Context) error {
 
 	// Save any remaining activities
 	if len(activitiesToSave) > 0 {
-		err := s.datastore.SaveAPIActivities(ctx, activitiesToSave)
+		err := s.datastore.Save(ctx, activitiesToSave)
 		if err != nil {
 			return fmt.Errorf("failed to save remaining API activities: %w", err)
 		}
@@ -153,21 +158,21 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 		actor = ocsf.Actor{
 			User: &ocsf.User{
 				Account: &ocsf.Account{
-					TypeID: int32Ptr(11),
+					TypeId: int32Ptr(11),
 					Type:   stringPtr("GCP Project"),
 					// It's possible in the config that we could get the actual project name.
-					UID: stringPtr(projectIDFromLogName(log.Log.LogName)),
+					Uid: stringPtr(projectIDFromLogName(log.Log.LogName)),
 				},
 			},
 			Process: &ocsf.Process{
 				Name: stringPtr(log.AuditLog.GetAuthenticationInfo().GetPrincipalEmail()),
-				UID:  stringPtr(log.AuditLog.GetAuthenticationInfo().GetPrincipalEmail()),
+				Uid:  stringPtr(log.AuditLog.GetAuthenticationInfo().GetPrincipalEmail()),
 			},
 		}
 	} else {
 		actor = ocsf.Actor{
 			// The service will have invoked the process.
-			InvokedBy: stringPtr(log.AuditLog.ServiceName),
+			AppName: stringPtr(log.AuditLog.ServiceName),
 		}
 	}
 
@@ -207,7 +212,7 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 	// If there is a caller IP, we can use that.
 	if log.AuditLog.RequestMetadata.CallerIp != "" {
 		srcEndpoint = ocsf.NetworkEndpoint{
-			IP: stringPtr(log.AuditLog.RequestMetadata.CallerIp),
+			Ip: stringPtr(log.AuditLog.RequestMetadata.CallerIp),
 		}
 	} else if log.AuditLog.ServiceName != "" {
 		srcEndpoint = ocsf.NetworkEndpoint{
@@ -217,31 +222,31 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 
 	// Create the API Activity
 	activity := ocsf.APIActivity{
-		ActivityID:   int32(activityID),
+		ActivityId:   int32(activityID),
 		ActivityName: &activityName,
 		Actor:        actor,
-		API:          api,
+		Api:          api,
 		CategoryName: &categoryName,
-		CategoryUID:  int32(categoryUID),
+		CategoryUid:  int32(categoryUID),
 		ClassName:    &className,
-		ClassUID:     int32(classUID),
+		ClassUid:     int32(classUID),
 		Status:       &status,
-		StatusID:     int32(statusID),
+		StatusId:     int32Ptr(int32(statusID)),
 
 		Resources:  resources,
 		Severity:   &severity,
-		SeverityID: int32(severityID),
+		SeverityId: int32(severityID),
 
 		Metadata: ocsf.Metadata{
-			CorrelationUID: stringPtr(log.ID),
+			CorrelationUid: stringPtr(log.ID),
 		},
 
 		SrcEndpoint:    srcEndpoint,
 		Time:           ts.UnixMilli(),
 		EventDay:       int32(ts.UnixMilli() / 86400000),
 		TypeName:       &typeName,
-		TypeUID:        int32(typeUID),
-		TimezoneOffset: 0,
+		TypeUid:        int64(typeUID),
+		TimezoneOffset: int32Ptr(0),
 	}
 
 	return activity, nil

@@ -2,11 +2,12 @@ package syncers
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/datastore"
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	ocsf "github.com/Santiago-Labs/go-ocsf/ocsf/v1_4_0"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub/types"
@@ -15,16 +16,21 @@ import (
 
 type SecurityHubOCSFSyncer struct {
 	securityHubClient *securityhub.Client
-	datastore         datastore.Datastore
+	datastore         datastore.Datastore[ocsf.VulnerabilityFinding]
 }
 
 // NewSecurityHubOCSFSyncer creates a new SecurityHubOCSFSyncer
 // It initializes the SecurityHub client and datastore.
-func NewSecurityHubOCSFSyncer(ctx context.Context, securityHubClient *securityhub.Client, datastore datastore.Datastore) DataSync {
+func NewSecurityHubOCSFSyncer(ctx context.Context, securityHubClient *securityhub.Client, storageOpts datastore.StorageOpts) (DataSync, error) {
+	dataStoreInst, err := datastore.SetupStorage[ocsf.VulnerabilityFinding](ctx, storageOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup datastore: %w", err)
+	}
+
 	return &SecurityHubOCSFSyncer{
 		securityHubClient: securityHubClient,
-		datastore:         datastore,
-	}
+		datastore:         dataStoreInst,
+	}, nil
 }
 
 // Sync synchronizes SecurityHub data with the OCSF datastore
@@ -63,7 +69,7 @@ func (s *SecurityHubOCSFSyncer) Sync(ctx context.Context) error {
 			findingsToSave = append(findingsToSave, finding)
 		}
 
-		err = s.datastore.SaveFindings(ctx, findingsToSave)
+		err = s.datastore.Save(ctx, findingsToSave)
 		if err != nil {
 			return oops.Wrapf(err, "failed to save findings")
 		}
@@ -127,8 +133,8 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		}
 
 		remediation = &ocsf.Remediation{
-			Description: description,
-			References:  references,
+			Desc:       description,
+			References: references,
 		}
 	}
 
@@ -147,11 +153,10 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		}
 	}
 
-	vulnerabilities := []*ocsf.VulnerabilityDetails{
+	vulnerabilities := []ocsf.VulnerabilityDetails{
 		{
-			UID:                securityHubFinding.Id,
-			CWE:                mapSecurityHubCWE(securityHubFinding),
-			CVE:                mapSecurityHubCVE(securityHubFinding),
+			Cwe:                mapSecurityHubCWE(securityHubFinding),
+			Cve:                mapSecurityHubCVE(securityHubFinding),
 			Desc:               securityHubFinding.Description,
 			Title:              &title,
 			Severity:           &severity,
@@ -203,7 +208,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	metadata := ocsf.Metadata{
 		Product: ocsf.Product{
 			Name:       &productName,
-			VendorName: productName,
+			VendorName: &vendorName,
 		},
 		Version: "1.4.0",
 	}
@@ -217,9 +222,9 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		}
 	}
 
-	findingInfo := ocsf.FindingInfo{
-		UID:           *securityHubFinding.Id,
-		Title:         *securityHubFinding.Title,
+	findingInfo := ocsf.FindingInformation{
+		Uid:           *securityHubFinding.Id,
+		Title:         securityHubFinding.Title,
 		Desc:          securityHubFinding.Description,
 		CreatedTime:   createdAt,
 		FirstSeenTime: createdAt,
@@ -232,24 +237,24 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	finding := ocsf.VulnerabilityFinding{
 		Time:            eventTime,
 		StartTime:       createdAt,
-		EventDay:        int32(eventTime / 86400000),
+		EventDay:        int32(eventTime),
 		EndTime:         endTime,
-		ActivityID:      activityID,
+		ActivityId:      activityID,
 		ActivityName:    &activityName,
-		CategoryUID:     categoryUID,
+		CategoryUid:     categoryUID,
 		CategoryName:    &categoryName,
-		ClassUID:        classUID,
+		ClassUid:        classUID,
 		ClassName:       &className,
 		Message:         securityHubFinding.Description,
 		Metadata:        metadata,
 		Resources:       mapSecurityHubResources(securityHubFinding),
 		Status:          &status,
-		StatusID:        &statusID,
-		TypeUID:         typeUID,
+		StatusId:        &statusID,
+		TypeUid:         typeUID,
 		TypeName:        &typeName,
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
-		SeverityID:      int32(severityID),
+		SeverityId:      int32(severityID),
 	}
 
 	return finding, nil
@@ -304,7 +309,7 @@ func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceD
 	for _, resource := range finding.Resources {
 		resourceType := *resource.Type
 		resources = append(resources, &ocsf.ResourceDetails{
-			UID:  resource.Id,
+			Uid:  resource.Id,
 			Type: &resourceType,
 		})
 	}
@@ -316,11 +321,11 @@ func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
 	if finding.Vulnerabilities != nil && len(finding.Vulnerabilities) > 0 {
 		for _, vuln := range finding.Vulnerabilities {
 			if vuln.Id != nil && vuln.Cvss != nil && len(vuln.Cvss) > 0 {
-				var cvss []*ocsf.CVSS
+				var cvss []*ocsf.CVSSScore
 				for _, c := range vuln.Cvss {
 					if c.BaseScore != nil && c.Version != nil {
 						// The field is VectorString, not Vector
-						cvss = append(cvss, &ocsf.CVSS{
+						cvss = append(cvss, &ocsf.CVSSScore{
 							BaseScore:    *c.BaseScore,
 							VectorString: c.BaseVector,
 							Version:      *c.Version,
@@ -334,9 +339,9 @@ func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
 				}
 
 				return &ocsf.CVE{
-					UID:        *vuln.Id,
+					Uid:        *vuln.Id,
 					References: references,
-					CVSS:       cvss,
+					Cvss:       cvss,
 				}
 			}
 		}
@@ -351,8 +356,8 @@ func mapSecurityHubCWE(finding types.AwsSecurityFinding) *ocsf.CWE {
 			if len(t) > 4 && t[:4] == "CWE-" {
 				url := "https://cwe.mitre.org/data/definitions/" + t[4:] + ".html"
 				return &ocsf.CWE{
-					UID:       t,
-					SourceURL: &url,
+					Uid:    t,
+					SrcUrl: &url,
 				}
 			}
 		}

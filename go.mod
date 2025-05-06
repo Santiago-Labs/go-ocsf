@@ -6,8 +6,8 @@ toolchain go1.24.2
 
 require (
 	cloud.google.com/go/logging v1.13.0
-	github.com/apache/arrow-go/v18 v18.2.1-0.20250325140533-276892c275de
-	github.com/apache/iceberg-go v0.2.1-0.20250420133620-1dbffabc82f2
+	github.com/apache/arrow-go/v18 v18.2.1-0.20250425153947-5ae8b27ab357
+	github.com/apache/iceberg-go v0.2.1-0.20250503182934-3398683761f0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/aws/aws-sdk-go-v2/service/inspector2 v1.36.0
@@ -15,7 +15,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/securityhub v1.57.0
 	github.com/parquet-go/parquet-go v0.25.0
 	github.com/samsarahq/go/oops v0.0.0-20220211150445-4b291d6feac4
-	google.golang.org/api v0.229.0
+	google.golang.org/api v0.230.0
 	google.golang.org/genproto v0.0.0-20250324211829-b45e905df463
 	google.golang.org/genproto/googleapis/api v0.0.0-20250324211829-b45e905df463
 )
@@ -34,9 +34,9 @@ require (
 	cloud.google.com/go/monitoring v1.24.1 // indirect
 	cloud.google.com/go/storage v1.51.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.0 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.2 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.9.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.1 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.1 // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest/to v0.4.1 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.4.2 // indirect
@@ -73,6 +73,7 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
@@ -109,12 +110,14 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/pterm/pterm v0.12.80 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/substrait-io/substrait v0.69.0 // indirect
 	github.com/substrait-io/substrait-go/v3 v3.9.1 // indirect
 	github.com/twmb/murmur3 v1.1.8 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	github.com/zeebo/errs v1.4.0 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
@@ -128,7 +131,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	gocloud.dev v0.41.0 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
-	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
+	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/oauth2 v0.29.0 // indirect
@@ -137,10 +140,10 @@ require (
 	golang.org/x/term v0.31.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
-	golang.org/x/tools v0.31.0 // indirect
+	golang.org/x/tools v0.32.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250414145226-207652e42e2e // indirect
-	google.golang.org/grpc v1.71.1 // indirect
+	google.golang.org/grpc v1.72.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

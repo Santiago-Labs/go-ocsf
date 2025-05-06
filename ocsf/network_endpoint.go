@@ -45,11 +45,11 @@ type NetworkEndpoint struct {
 	IP               *string               `json:"ip,omitempty" parquet:"ip,optional"`
 	MAC              *string               `json:"mac,omitempty" parquet:"mac,optional"`
 	Name             *string               `json:"name,omitempty" parquet:"name,optional"`
-	Port             *int32                `json:"port,omitempty" parquet:"port,optional"`
+	Port             *int                  `json:"port,omitempty" parquet:"port,optional"`
 	SubnetUID        *string               `json:"subnet_uid,omitempty" parquet:"subnet_uid,optional"`
 	SvcName          *string               `json:"svc_name,omitempty" parquet:"svc_name,optional"`
 	Type             *string               `json:"type,omitempty" parquet:"type,optional"`
-	TypeID           int32                 `json:"type_id,omitempty" parquet:"type_id,optional"`
+	TypeID           *int                  `json:"type_id,omitempty" parquet:"type_id,optional"`
 	UID              *string               `json:"uid,omitempty" parquet:"uid"`
 	VLANUID          *string               `json:"vlan_uid,omitempty" parquet:"vlan_uid"`
 	VPCUID           *string               `json:"vpc_uid,omitempty" parquet:"vpc_uid,optional"`

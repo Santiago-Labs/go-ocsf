@@ -16,5 +16,5 @@ var KillChainPhaseClassname = "kill_chain_phase"
 // KillChainPhase represents a kill chain phase.
 type KillChainPhase struct {
 	Phase   *string `json:"phase,omitempty" parquet:"phase,optional"`
-	PhaseID int32   `json:"phase_id" parquet:"phase_id"`
+	PhaseID int     `json:"phase_id" parquet:"phase_id"`
 }

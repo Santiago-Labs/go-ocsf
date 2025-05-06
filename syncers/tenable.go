@@ -8,21 +8,26 @@ import (
 
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	ocsf "github.com/Santiago-Labs/go-ocsf/ocsf/v1_4_0"
 	"github.com/samsarahq/go/oops"
 )
 
 // TenableOCSFSyncer is responsible for syncing Tenable vulnerability findings to OCSF format
 type TenableOCSFSyncer struct {
 	tenableClient *tenable.Client
-	datastore     datastore.Datastore
+	datastore     datastore.Datastore[ocsf.VulnerabilityFinding]
 }
 
 // NewTenableOCSFSyncer creates a new TenableOCSFSyncer
-func NewTenableOCSFSyncer(ctx context.Context, tenableClient *tenable.Client, datastore datastore.Datastore) (DataSync, error) {
+func NewTenableOCSFSyncer(ctx context.Context, tenableClient *tenable.Client, storageOpts datastore.StorageOpts) (DataSync, error) {
+	dataStoreInst, err := datastore.SetupStorage[ocsf.VulnerabilityFinding](ctx, storageOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup datastore: %w", err)
+	}
+
 	return &TenableOCSFSyncer{
 		tenableClient: tenableClient,
-		datastore:     datastore,
+		datastore:     dataStoreInst,
 	}, nil
 }
 
@@ -49,7 +54,7 @@ func (s *TenableOCSFSyncer) Sync(ctx context.Context) error {
 		findingsToSave = append(findingsToSave, ocsfFinding)
 	}
 
-	err = s.datastore.SaveFindings(ctx, findingsToSave)
+	err = s.datastore.Save(ctx, findingsToSave)
 	if err != nil {
 		return oops.Wrapf(err, "failed to save findings")
 	}
@@ -106,13 +111,13 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 	resourceType := "host"
 	vendorName := "Tenable"
 
-	var vulnerabilities []*ocsf.VulnerabilityDetails
+	var vulnerabilities []ocsf.VulnerabilityDetails
 	exploitAvailable := finding.Plugin.ExploitAvailable
 
 	var remediation *ocsf.Remediation
 	if finding.Plugin.Solution != "" {
 		remediation = &ocsf.Remediation{
-			Description: finding.Plugin.Solution,
+			Desc: finding.Plugin.Solution,
 		}
 	}
 
@@ -128,14 +133,13 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		// In a real implementation, you would need to extract CVEs from the plugin data
 		cveID := fmt.Sprintf("PLUGIN-%d", finding.Plugin.ID)
 		cve = &ocsf.CVE{
-			UID:        cveID,
+			Uid:        cveID,
 			References: references,
 		}
 	}
 
-	vulnerabilities = append(vulnerabilities, &ocsf.VulnerabilityDetails{
-		UID:                &findingID,
-		CVE:                cve,
+	vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
+		Cve:                cve,
 		Desc:               &finding.Plugin.Description,
 		Title:              &finding.Plugin.Name,
 		Severity:           &severity,
@@ -149,7 +153,7 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 	})
 
 	resource := ocsf.ResourceDetails{
-		UID:  &resourceID,
+		Uid:  &resourceID,
 		Name: &resourceName,
 		Type: &resourceType,
 	}
@@ -189,14 +193,14 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 	metadata := ocsf.Metadata{
 		Product: ocsf.Product{
 			Name:       &productName,
-			VendorName: productName,
+			VendorName: &vendorName,
 		},
 		Version: "1.1.0",
 	}
 
-	findingInfo := ocsf.FindingInfo{
-		UID:           findingID,
-		Title:         finding.Plugin.Name,
+	findingInfo := ocsf.FindingInformation{
+		Uid:           findingID,
+		Title:         &finding.Plugin.Name,
 		Desc:          &finding.Plugin.Description,
 		CreatedTime:   &firstSeenTime,
 		FirstSeenTime: &firstSeenTime,
@@ -211,22 +215,22 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		EventDay:        int32(eventTime / 86400000),
 		StartTime:       &firstSeenTime,
 		EndTime:         endTime,
-		ActivityID:      activityID,
+		ActivityId:      activityID,
 		ActivityName:    &activityName,
-		CategoryUID:     categoryUID,
+		CategoryUid:     categoryUID,
 		CategoryName:    &categoryName,
-		ClassUID:        classUID,
+		ClassUid:        classUID,
 		ClassName:       &className,
 		Message:         &finding.Plugin.Description,
 		Metadata:        metadata,
 		Resources:       []*ocsf.ResourceDetails{&resource},
 		Status:          &status,
-		StatusID:        &statusID,
-		TypeUID:         typeUID,
+		StatusId:        &statusID,
+		TypeUid:         typeUID,
 		TypeName:        &typeName,
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
-		SeverityID:      int32(severityID),
+		SeverityId:      int32(severityID),
 	}
 
 	return ocsfFinding, nil

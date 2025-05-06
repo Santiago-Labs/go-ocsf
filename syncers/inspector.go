@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/Santiago-Labs/go-ocsf/datastore"
-	"github.com/Santiago-Labs/go-ocsf/ocsf"
+	ocsf "github.com/Santiago-Labs/go-ocsf/ocsf/v1_4_0"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2/types"
@@ -16,16 +16,21 @@ import (
 
 type InspectorOCSFSyncer struct {
 	inspectorClient *inspector2.Client
-	datastore       datastore.Datastore
+	datastore       datastore.Datastore[ocsf.VulnerabilityFinding]
 }
 
 // NewInspectorOCSFSyncer creates a new InspectorOCSFSyncer
 // It initializes the Inspector client and datastore.
-func NewInspectorOCSFSyncer(ctx context.Context, inspectorClient *inspector2.Client, datastore datastore.Datastore) DataSync {
+func NewInspectorOCSFSyncer(ctx context.Context, inspectorClient *inspector2.Client, storageOpts datastore.StorageOpts) (DataSync, error) {
+	dataStoreInst, err := datastore.SetupStorage[ocsf.VulnerabilityFinding](ctx, storageOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup datastore: %w", err)
+	}
+
 	return &InspectorOCSFSyncer{
 		inspectorClient: inspectorClient,
-		datastore:       datastore,
-	}
+		datastore:       dataStoreInst,
+	}, nil
 }
 
 // Sync synchronizes Inspector data with the OCSF datastore
@@ -63,7 +68,7 @@ func (s *InspectorOCSFSyncer) Sync(ctx context.Context) error {
 			findingsToSave = append(findingsToSave, finding)
 		}
 
-		err = s.datastore.SaveFindings(ctx, findingsToSave)
+		err = s.datastore.Save(ctx, findingsToSave)
 		if err != nil {
 			return oops.Wrapf(err, "failed to save findings")
 		}
@@ -122,8 +127,8 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		}
 
 		remediation = &ocsf.Remediation{
-			Description: description,
-			References:  references,
+			Desc:       description,
+			References: references,
 		}
 	}
 
@@ -132,11 +137,10 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		title = *inspectorFinding.Title
 	}
 
-	vulnerabilities := []*ocsf.VulnerabilityDetails{
+	vulnerabilities := []ocsf.VulnerabilityDetails{
 		{
-			UID:                inspectorFinding.FindingArn,
-			CWE:                mapInspectorCWE(inspectorFinding),
-			CVE:                mapInspectorCVE(inspectorFinding),
+			Cwe:                mapInspectorCWE(inspectorFinding),
+			Cve:                mapInspectorCVE(inspectorFinding),
 			Desc:               inspectorFinding.Description,
 			Title:              &title,
 			Severity:           &severity,
@@ -190,14 +194,14 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 	metadata := ocsf.Metadata{
 		Product: ocsf.Product{
 			Name:       &productName,
-			VendorName: productName,
+			VendorName: &vendorName,
 		},
 		Version: "1.4.0",
 	}
 
-	findingInfo := ocsf.FindingInfo{
-		UID:           *inspectorFinding.FindingArn,
-		Title:         *inspectorFinding.Title,
+	findingInfo := ocsf.FindingInformation{
+		Uid:           *inspectorFinding.FindingArn,
+		Title:         &title,
 		Desc:          inspectorFinding.Description,
 		CreatedTime:   &createdAt,
 		FirstSeenTime: &firstSeenTime,
@@ -212,22 +216,22 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		EventDay:        int32(eventTime / 86400000),
 		StartTime:       &firstSeenTime,
 		EndTime:         endTime,
-		ActivityID:      activityID,
+		ActivityId:      activityID,
 		ActivityName:    &activityName,
-		CategoryUID:     categoryUID,
+		CategoryUid:     categoryUID,
 		CategoryName:    &categoryName,
-		ClassUID:        classUID,
+		ClassUid:        classUID,
 		ClassName:       &className,
 		Message:         inspectorFinding.Description,
 		Metadata:        metadata,
 		Resources:       mapInspectorResources(inspectorFinding),
 		Status:          &status,
-		StatusID:        &statusID,
-		TypeUID:         typeUID,
+		StatusId:        &statusID,
+		TypeUid:         typeUID,
 		TypeName:        &typeName,
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
-		SeverityID:      int32(severityID),
+		SeverityId:      int32(severityID),
 	}
 
 	return finding, nil
@@ -273,7 +277,7 @@ func mapInspectorResources(finding types.Finding) []*ocsf.ResourceDetails {
 
 		resourceType := string(resource.Type)
 		resources = append(resources, &ocsf.ResourceDetails{
-			UID:  resource.Id,
+			Uid:  resource.Id,
 			Type: &resourceType,
 		})
 	}
@@ -283,9 +287,9 @@ func mapInspectorResources(finding types.Finding) []*ocsf.ResourceDetails {
 
 func mapInspectorCVE(finding types.Finding) *ocsf.CVE {
 	if finding.PackageVulnerabilityDetails != nil && finding.PackageVulnerabilityDetails.VulnerabilityId != nil {
-		var cvss []*ocsf.CVSS
+		var cvss []*ocsf.CVSSScore
 		for _, c := range finding.PackageVulnerabilityDetails.Cvss {
-			cvss = append(cvss, &ocsf.CVSS{
+			cvss = append(cvss, &ocsf.CVSSScore{
 				BaseScore:    *c.BaseScore,
 				VectorString: c.ScoringVector,
 				Version:      *c.Version,
@@ -293,9 +297,9 @@ func mapInspectorCVE(finding types.Finding) *ocsf.CVE {
 		}
 
 		return &ocsf.CVE{
-			UID:        *finding.PackageVulnerabilityDetails.VulnerabilityId,
+			Uid:        *finding.PackageVulnerabilityDetails.VulnerabilityId,
 			References: finding.PackageVulnerabilityDetails.ReferenceUrls,
-			CVSS:       cvss,
+			Cvss:       cvss,
 		}
 	}
 	return nil
@@ -307,8 +311,8 @@ func mapInspectorCWE(finding types.Finding) *ocsf.CWE {
 
 			url := fmt.Sprintf("https://cwe.mitre.org/data/definitions/%s.html", strings.TrimPrefix(cwe, "CWE-"))
 			return &ocsf.CWE{
-				UID:       cwe,
-				SourceURL: &url,
+				Uid:    cwe,
+				SrcUrl: &url,
 			}
 		}
 	}
@@ -338,10 +342,10 @@ func mapInspectorAffectedCode(finding types.Finding) []*ocsf.AffectedCode {
 
 		affectedCode = append(affectedCode, &ocsf.AffectedCode{
 			File: ocsf.File{
-				Path: filePath,
+				Path: &filePath,
 			},
-			StartLine: startLine,
-			EndLine:   endLine,
+			StartLine: &startLine,
+			EndLine:   &endLine,
 		})
 	}
 
@@ -365,7 +369,7 @@ func mapInspectorAffectedPackages(finding types.Finding) []*ocsf.AffectedSoftwar
 					remediationDescription = *p.Remediation
 				}
 				remediation = &ocsf.Remediation{
-					Description: remediationDescription,
+					Desc: remediationDescription,
 				}
 			}
 
