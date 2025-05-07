@@ -23,7 +23,7 @@ type BaseDatastore[T any] struct {
 	store Datastore[T]
 }
 
-// SaveFindings saves a batch of findings to the datastore. Datastore implementations handle file formats.
+// Save saves a batch of events to the datastore. Datastore implementations handle file formats.
 func (d *BaseDatastore[T]) Save(ctx context.Context, items []T) error {
 	if err := d.store.WriteBatch(ctx, items); err != nil {
 		return err
