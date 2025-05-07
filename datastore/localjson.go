@@ -42,7 +42,7 @@ func NewLocalJsonDatastore[T any](ctx context.Context) (Datastore[T], error) {
 
 // GetItemsFromFile retrieves all ocsf data from a specific file path.
 // It reads the gzipped JSON file and parses it into a slice of ocsf data.
-func (s *localJsonDatastore[T]) GetItemsFile(ctx context.Context, path string) ([]T, error) {
+func (s *localJsonDatastore[T]) GetItemsFromFile(ctx context.Context, path string) ([]T, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, oops.Wrapf(err, "failed to read JSON file from disk")
