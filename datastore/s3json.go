@@ -46,7 +46,7 @@ func NewS3JsonDatastore[T any](ctx context.Context, bucketName string, s3Client 
 
 // GetItemsFromFile retrieves all ocsf data from a specific file path.
 // It reads the gzipped JSON file and parses it into a slice of ocsf data.
-func (s *s3JsonDatastore[T]) GetItemsFile(ctx context.Context, key string) ([]T, error) {
+func (s *s3JsonDatastore[T]) GetItemsFromFile(ctx context.Context, key string) ([]T, error) {
 	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(s.s3Bucket),
 		Key:    aws.String(key),
