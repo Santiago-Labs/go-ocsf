@@ -74,7 +74,7 @@ func (s *localJsonDatastore[T]) WriteBatch(ctx context.Context, items []T) error
 
 	jsonData, err := json.Marshal(allItems)
 	if err != nil {
-		return oops.Wrapf(err, "failed to marshal to JSON")
+		return oops.Wrapf(err, "failed to marshal items to JSON")
 	}
 
 	if err := os.WriteFile(s.currentPath, jsonData, 0644); err != nil {
