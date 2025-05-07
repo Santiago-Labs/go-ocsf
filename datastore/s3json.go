@@ -77,7 +77,7 @@ func (s *s3JsonDatastore[T]) WriteBatch(ctx context.Context, items []T) error {
 	if s.currentPath == "" {
 		s.currentPath = filepath.Join(s.basePath, fmt.Sprintf("%s.json", time.Now().Format("20060102T150405Z")))
 	} else {
-		fileItems, err := s.GetItemsFile(ctx, s.currentPath)
+		fileItems, err := s.GetItemsFromFile(ctx, s.currentPath)
 		if err != nil {
 			return oops.Wrapf(err, "failed to get existing items from s3")
 		}
