@@ -65,10 +65,6 @@ func NewSyncer(
 // Sync streams every historical object plus today's keys into the datastore.
 func (s *Syncer) Sync(ctx context.Context) error {
 	processID := fmt.Sprintf("PROC-%d", time.Now().UnixNano())
-	fmt.Printf("=== STARTING CloudTrail Sync Process %s ===\n", processID)
-
-	// Check for other running go-ocsf processes
-	fmt.Printf("=== PROCESS CHECK [%s] ===\n", processID)
 
 	slog.Info("CloudTrail sync – discovery", "bucket", s.bucket)
 	accRegs, err := s.discoverAccountsAndRegions(ctx)
@@ -101,18 +97,14 @@ func (s *Syncer) Sync(ctx context.Context) error {
 			batchLen := len(batch)
 			totalItems += batchLen
 
-			fmt.Printf("COMMITTER: Processing batch #%d with %d items (total: %d)\n", batchCount, batchLen, totalItems)
-
 			// Use original context so committer continues even if workers fail
 			if err := s.ds.Save(ctx, batch); err != nil {
 				errCh <- err
 				return
 			}
 		}
-		fmt.Printf("COMMITTER: Finished processing %d batches with %d total items\n", batchCount, totalItems)
 	}()
 
-	// ❂ workers use separate errgroup context that can be cancelled independently
 	g, workerCtx := errgroup.WithContext(ctx)
 	for i := 0; i < s.workers; i++ {
 		workerID := i + 1
@@ -123,21 +115,14 @@ func (s *Syncer) Sync(ctx context.Context) error {
 
 			for day := range workCh {
 				processedDays++
-				// Workers use workerCtx which can be cancelled without affecting committer
-				if err := s.syncDay(workerCtx, day, commitCh, processID); err != nil {
+				if err := s.syncDay(workerCtx, day, commitCh); err != nil {
 					failedDays++
-					fmt.Printf("WORKER #%d [%s]: Failed to process day %s: %v\n", workerID, processID, day, err)
 					workerErrors = append(workerErrors, fmt.Errorf("day %s: %w", day, err))
 
-					// Continue processing other days instead of failing immediately
 					continue
 				}
-				fmt.Printf("WORKER #%d [%s]: Successfully processed day %s\n", workerID, processID, day)
 			}
 
-			fmt.Printf("WORKER #%d [%s]: Finished - processed %d days, failed %d days\n", workerID, processID, processedDays, failedDays)
-
-			// Only return error if all days failed or if we have critical errors
 			if len(workerErrors) > 0 && failedDays == processedDays {
 				return fmt.Errorf("worker #%d failed all %d days: %v", workerID, processedDays, workerErrors)
 			}
@@ -146,36 +131,25 @@ func (s *Syncer) Sync(ctx context.Context) error {
 		})
 	}
 
-	// wait for workers to finish
-	fmt.Printf("MAIN [%s]: Waiting for workers to finish\n", processID)
 	workerErr := g.Wait()
 	if workerErr != nil {
-		// Log worker errors but don't fail immediately - let committer finish processing
-		fmt.Printf("MAIN [%s]: Workers encountered errors: %v\n", processID, workerErr)
-		fmt.Printf("MAIN [%s]: Continuing to let committer process remaining batches\n", processID)
+		slog.Error("Workers encountered errors", "processID", processID, "error", workerErr)
 	}
-	fmt.Printf("MAIN [%s]: All workers finished, closing commit channel\n", processID)
-	close(commitCh) // tell committer we're done
+	close(commitCh)
 
-	// wait for committer to finish processing all batches
-	fmt.Printf("MAIN [%s]: Waiting for committer to finish\n", processID)
 	committerWG.Wait()
-	fmt.Printf("MAIN [%s]: Committer finished\n", processID)
 
-	// Check for any commit errors (these are more critical)
 	select {
 	case err := <-errCh:
 		return fmt.Errorf("committer error: %w", err)
 	default:
 	}
 
-	// If workers had errors, report them now (after committer finished)
 	if workerErr != nil {
 		return fmt.Errorf("worker errors occurred: %w", workerErr)
 	}
 
 	slog.Info("CloudTrail sync finished")
-	fmt.Printf("=== FINISHED CloudTrail Sync Process %s ===\n", processID)
 	return nil
 }
 
@@ -346,8 +320,7 @@ func (p *prefixIter) reset()         { p.i++ }
 func (s *Syncer) syncDay(
 	ctx context.Context,
 	dayPrefix string,
-	commitCh chan<- []ocsf.APIActivity,
-	processID string) error {
+	commitCh chan<- []ocsf.APIActivity) error {
 
 	slog.Info("Syncing day", "dayPrefix", dayPrefix)
 
