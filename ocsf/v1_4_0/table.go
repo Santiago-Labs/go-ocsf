@@ -8,7 +8,7 @@ import (
 type Table struct {
 
 	// Created Time: The time when the table was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Description: The description of the table.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -17,7 +17,7 @@ type Table struct {
 	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the table.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Name: The table name, ordinarily as assigned by a database administrator.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -30,10 +30,10 @@ type Table struct {
 }
 
 var TableFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "groups", Type: arrow.ListOf(GroupStruct), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "size", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},

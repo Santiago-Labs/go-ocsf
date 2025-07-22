@@ -8,10 +8,10 @@ import (
 type DigitalCertificate struct {
 
 	// Created Time: The time when the certificate was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Expiration Time: The expiration time of the certificate.
-	ExpirationTime *int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Fingerprints: The fingerprint list of the certificate.
 	Fingerprints []*Fingerprint `json:"fingerprints,omitempty" parquet:"fingerprints,optional,list"`
@@ -39,8 +39,8 @@ type DigitalCertificate struct {
 }
 
 var DigitalCertificateFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "fingerprints", Type: arrow.ListOf(FingerprintStruct), Nullable: true},
 	{Name: "is_self_signed", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "issuer", Type: arrow.BinaryTypes.String, Nullable: false},

@@ -90,22 +90,20 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	severity, severityID := mapSecurityHubSeverity(securityHubFinding.Severity)
 	status, statusID := mapSecurityHubStatus(securityHubFinding.Workflow)
 
-	var createdAt *int64
+	var createdAt *time.Time
 	if securityHubFinding.CreatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.CreatedAt)
 		if err == nil {
-			createdAtUnix := parsedTime.UnixMilli()
-			createdAt = &createdAtUnix
+			createdAt = &parsedTime
 		}
 	}
 
-	var endTime *int64
+	var endTime *time.Time
 	if status == "Closed" {
 		if securityHubFinding.UpdatedAt != nil {
 			parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 			if err == nil {
-				endTimeUnix := parsedTime.UnixMilli()
-				endTime = &endTimeUnix
+				endTime = &parsedTime
 			}
 		}
 	}
@@ -144,14 +142,16 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	}
 
 	// Convert UpdatedAt string to time.Time for LastSeenTime
-	var lastSeenTime *int64
+	var lastSeenTime *time.Time
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			lastSeenTimeUnix := parsedTime.UnixMilli()
-			lastSeenTime = &lastSeenTimeUnix
+			lastSeenTime = &parsedTime
 		}
 	}
+
+	createdTimeInt := createdAt.UnixMilli()
+	lastSeenTimeInt := lastSeenTime.UnixMilli()
 
 	vulnerabilities := []ocsf.VulnerabilityDetails{
 		{
@@ -161,9 +161,9 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 			Title:              &title,
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
-			FirstSeenTime:      createdAt,
+			FirstSeenTime:      createdTimeInt,
 			IsFixAvailable:     &fixAvailable,
-			LastSeenTime:       lastSeenTime,
+			LastSeenTime:       lastSeenTimeInt,
 			VendorName:         &vendorName,
 			Remediation:        remediation,
 		},
@@ -173,7 +173,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	var activityName string
 	var typeUID int64
 	var typeName string
-	var eventTime int64
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -200,7 +200,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		if err != nil {
 			return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
 		}
-		eventTime = parsedTime.UnixMilli()
+		eventTime = parsedTime
 	}
 
 	productName := "SecurityHub"
@@ -213,32 +213,33 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Version: "1.4.0",
 	}
 
-	var modifiedTime *int64
+	var modifiedTime *time.Time
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			modifiedTimeUnix := parsedTime.UnixMilli()
-			modifiedTime = &modifiedTimeUnix
+			modifiedTime = &parsedTime
 		}
 	}
+
+	modifiedTimeInt := modifiedTime.UnixMilli()
+	endTimeInt := endTime.UnixMilli()
 
 	findingInfo := ocsf.FindingInformation{
 		Uid:           *securityHubFinding.Id,
 		Title:         securityHubFinding.Title,
 		Desc:          securityHubFinding.Description,
-		CreatedTime:   createdAt,
-		FirstSeenTime: createdAt,
-		LastSeenTime:  lastSeenTime,
-		ModifiedTime:  modifiedTime,
+		CreatedTime:   createdTimeInt,
+		FirstSeenTime: createdTimeInt,
+		LastSeenTime:  lastSeenTimeInt,
+		ModifiedTime:  modifiedTimeInt,
 		DataSources:   []string{"securityhub"},
 		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            eventTime,
-		StartTime:       createdAt,
-		EventDay:        int32(eventTime),
-		EndTime:         endTime,
+		Time:            eventTime.UnixMilli(),
+		StartTime:       createdTimeInt,
+		EndTime:         endTimeInt,
 		ActivityId:      activityID,
 		ActivityName:    &activityName,
 		CategoryUid:     categoryUID,

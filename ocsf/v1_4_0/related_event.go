@@ -14,22 +14,22 @@ type RelatedEventFinding struct {
 	Count *int32 `json:"count,omitempty" parquet:"count,optional"`
 
 	// Created Time: The time when the related event/finding was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Description: A description of the related event/finding.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed. e.g. The time when a vulnerability was first observed.<br>It can differ from the <code>created_time</code> timestamp, which reflects the time this finding was created.
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Kill Chain: The <a target='_blank' href='https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html'>Cyber Kill Chain®</a> provides a detailed description of each phase and its associated activities within the broader context of a cyber attack.
 	KillChain []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,optional,list"`
 
 	// Last Seen: The time when the finding was most recently observed. e.g. The time when a vulnerability was most recently observed.<br>It can differ from the <code>modified_time</code> timestamp, which reflects the time this finding was last modified.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Modified Time: The time when the related event/finding was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Observables: The observables associated with the event or a finding.
 	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
@@ -65,12 +65,12 @@ type RelatedEventFinding struct {
 var RelatedEventFindingFields = []arrow.Field{
 	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct), Nullable: true},
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "kill_chain", Type: arrow.ListOf(KillChainPhaseStruct), Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},

@@ -17,7 +17,7 @@ type DigitalSignature struct {
 	Certificate *DigitalCertificate `json:"certificate,omitempty" parquet:"certificate,optional"`
 
 	// Created Time: The time when the digital signature was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Developer UID: The developer ID on the certificate that signed the file.
 	DeveloperUid *string `json:"developer_uid,omitempty" parquet:"developer_uid,optional"`
@@ -36,7 +36,7 @@ var DigitalSignatureFields = []arrow.Field{
 	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "algorithm_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "certificate", Type: DigitalCertificateStruct, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "developer_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "digest", Type: FingerprintStruct, Nullable: true},
 	{Name: "state", Type: arrow.BinaryTypes.String, Nullable: true},

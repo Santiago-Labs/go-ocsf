@@ -97,12 +97,20 @@ import (
 	goStruct := fmt.Sprintf("type %s struct {\n", sanitizedObjectCaption)
 
 	if partitionedTypes[class["name"].(string)] {
-		classFields["event_day"] = map[string]interface{}{
-			"caption":     "Event Day",
-			"description": "The day of the event. Used for partitioning.",
+		classFields["region"] = map[string]interface{}{
+			"caption":     "Region",
+			"description": "The region of the event. Used for partitioning.",
 			"requirement": "required",
-			"type":        "date_t", // custom type to represent date as DATE32
+			"type":        "string_t",
 		}
+
+		classFields["account_id"] = map[string]interface{}{
+			"caption":     "Account ID",
+			"description": "The account ID of the event. Used for partitioning.",
+			"requirement": "required",
+			"type":        "string_t",
+		}
+
 	}
 
 	for _, fieldName := range sortedKeys(classFields) {
@@ -121,10 +129,15 @@ import (
 		var fieldType string
 		var arrowType string
 		var isPrimitive bool
+		var isTimestamp bool
 		if strings.HasSuffix(rawType, "_t") {
 			if rawType == "date_t" {
 				fieldType = "int32"
 				arrowType = "arrow.FixedWidthTypes.Date32"
+			} else if rawType == "timestamp_t" {
+				fieldType = "int64"
+				isTimestamp = true
+				arrowType = "arrow.FixedWidthTypes.Timestamp_ms"
 			} else {
 				var err error
 				fieldType, err = resolveOCSFType(rawType, types)
@@ -156,11 +169,11 @@ import (
 			}
 		}
 
-		if !required {
+		if !required && !isTimestamp {
 			fieldType = "*" + fieldType
 		}
 
-		var listTag string
+		var extraTags string
 		if fieldValue["is_array"] == true {
 			// go-parquet does not handle slices of primitive pointer types.
 			if isPrimitive && !required {
@@ -168,15 +181,19 @@ import (
 			}
 			fieldType = "[]" + fieldType
 			arrowType = "arrow.ListOf(" + arrowType + ")"
-			listTag = ",list"
+			extraTags = ",list"
+		}
+
+		if isTimestamp {
+			extraTags = ",timestamp_millis,timestamp(millisecond)"
 		}
 
 		goStruct += fmt.Sprintf("\n// %s: %s\n", fieldValue["caption"].(string), fieldValue["description"].(string))
 		if required {
-			goStruct += fmt.Sprintf("%s %s `json:\"%s\" parquet:\"%s%s\"`\n", fieldTitle, fieldType, fieldName, fieldName, listTag)
+			goStruct += fmt.Sprintf("%s %s `json:\"%s\" parquet:\"%s%s\"`\n", fieldTitle, fieldType, fieldName, fieldName, extraTags)
 			arrowFields += fmt.Sprintf("{Name: \"%s\", Type: %s, Nullable: false},\n", fieldName, arrowType)
 		} else {
-			goStruct += fmt.Sprintf("%s %s `json:\"%s,omitempty\" parquet:\"%s,optional%s\"`\n", fieldTitle, fieldType, fieldName, fieldName, listTag)
+			goStruct += fmt.Sprintf("%s %s `json:\"%s,omitempty\" parquet:\"%s,optional%s\"`\n", fieldTitle, fieldType, fieldName, fieldName, extraTags)
 			arrowFields += fmt.Sprintf("{Name: \"%s\", Type: %s, Nullable: true},\n", fieldName, arrowType)
 		}
 	}
@@ -195,7 +212,7 @@ import (
 		return err
 	}
 
-	cmd := exec.Command("gofmt", "-w", "../ocsf/v1_4_0/"+filename)
+	cmd := exec.Command("goimports", "-w", "../ocsf/v1_4_0/"+filename)
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to gofmt file %s: %v", fmt.Sprintf("../ocsf/v1_4_0/%s", filename), err)
 	}

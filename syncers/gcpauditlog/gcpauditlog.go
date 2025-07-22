@@ -243,7 +243,6 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 
 		SrcEndpoint:    srcEndpoint,
 		Time:           ts.UnixMilli(),
-		EventDay:       int32(ts.UnixMilli() / 86400000),
 		TypeName:       &typeName,
 		TypeUid:        int64(typeUID),
 		TimezoneOffset: int32Ptr(0),

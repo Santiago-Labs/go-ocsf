@@ -8,7 +8,7 @@ import (
 type CVE struct {
 
 	// Created Time: The Record Creation Date identifies when the CVE ID was issued to a CVE Numbering Authority (CNA) or the CVE Record was published on the CVE List. Note that the Record Creation Date does not necessarily indicate when this vulnerability was discovered, shared with the affected vendor, publicly disclosed, or updated in CVE.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// CVSS Score: The CVSS object details Common Vulnerability Scoring System (<a target='_blank' href='https://www.first.org/cvss/'>CVSS</a>) scores from the advisory that are related to the vulnerability.
 	Cvss []*CVSSScore `json:"cvss,omitempty" parquet:"cvss,optional,list"`
@@ -20,7 +20,7 @@ type CVE struct {
 	Epss *EPSS `json:"epss,omitempty" parquet:"epss,optional"`
 
 	// Modified Time: The Record Modified Date identifies when the CVE record was last updated.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Product: The product where the vulnerability was discovered.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
@@ -42,11 +42,11 @@ type CVE struct {
 }
 
 var CVEFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "cvss", Type: arrow.ListOf(CVSSScoreStruct), Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "epss", Type: EPSSStruct, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "related_cwes", Type: arrow.ListOf(CWEStruct), Nullable: true},

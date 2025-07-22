@@ -20,7 +20,7 @@ type QueryInformation struct {
 	QueryString string `json:"query_string" parquet:"query_string"`
 
 	// Query Time: The time when the query was run.
-	QueryTime *int64 `json:"query_time,omitempty" parquet:"query_time,optional"`
+	QueryTime int64 `json:"query_time,omitempty" parquet:"query_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Unique ID: The unique identifier of the query.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
@@ -31,7 +31,7 @@ var QueryInformationFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "query_string", Type: arrow.BinaryTypes.String, Nullable: false},
-	{Name: "query_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "query_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 }
 

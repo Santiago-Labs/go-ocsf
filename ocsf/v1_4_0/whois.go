@@ -11,7 +11,7 @@ type WHOIS struct {
 	AutonomousSystem *AutonomousSystem `json:"autonomous_system,omitempty" parquet:"autonomous_system,optional"`
 
 	// Registered At: When the domain was registered or WHOIS entry was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// DNSSEC Status: The normalized value of dnssec_status_id.
 	DnssecStatus *string `json:"dnssec_status,omitempty" parquet:"dnssec_status,optional"`
@@ -29,7 +29,7 @@ type WHOIS struct {
 	EmailAddr *string `json:"email_addr,omitempty" parquet:"email_addr,optional"`
 
 	// Last Updated At: When the WHOIS record was last updated or seen at.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Name Servers: A collection of name servers related to a domain registration or other record.
 	NameServers []string `json:"name_servers,omitempty" parquet:"name_servers,optional,list"`
@@ -52,13 +52,13 @@ type WHOIS struct {
 
 var WHOISFields = []arrow.Field{
 	{Name: "autonomous_system", Type: AutonomousSystemStruct, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "dnssec_status", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "dnssec_status_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "domain_contacts", Type: arrow.ListOf(DomainContactStruct), Nullable: true},
 	{Name: "email_addr", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name_servers", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "phone_number", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "registrar", Type: arrow.BinaryTypes.String, Nullable: true},

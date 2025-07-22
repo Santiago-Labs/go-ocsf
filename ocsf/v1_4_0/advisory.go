@@ -17,7 +17,7 @@ type Advisory struct {
 	Classification *string `json:"classification,omitempty" parquet:"classification,optional"`
 
 	// Created Time: The time when the Advisory record was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Description: A brief description of the Advisory Record.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -32,7 +32,7 @@ type Advisory struct {
 	IsSuperseded *bool `json:"is_superseded,omitempty" parquet:"is_superseded,optional"`
 
 	// Modified Time: The time when the Advisory record was last updated.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// OS: The operating system the Advisory applies to.
 	Os *OperatingSystemOS `json:"os,omitempty" parquet:"os,optional"`
@@ -66,12 +66,12 @@ var AdvisoryFields = []arrow.Field{
 	{Name: "avg_timespan", Type: TimeSpanStruct, Nullable: true},
 	{Name: "bulletin", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "classification", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "install_state", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "install_state_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "is_superseded", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "os", Type: OperatingSystemOSStruct, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},

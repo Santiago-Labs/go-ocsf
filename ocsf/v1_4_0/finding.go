@@ -8,19 +8,19 @@ import (
 type Finding struct {
 
 	// Created Time: The time when the finding was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Description: The description of the reported finding.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed.
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Last Seen: The time when the finding was most recently observed.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Modified Time: The time when the finding was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Product: Details about the product that reported the finding.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
@@ -48,11 +48,11 @@ type Finding struct {
 }
 
 var FindingFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "related_events", Type: arrow.ListOf(RelatedEventFindingStruct), Nullable: true},
 	{Name: "remediation", Type: RemediationStruct, Nullable: true},
