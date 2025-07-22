@@ -30,3 +30,4 @@ var RequestElementsFields = []arrow.Field{
 var RequestElementsStruct = arrow.StructOf(RequestElementsFields...)
 
 var RequestElementsSchema = arrow.NewSchema(RequestElementsFields, nil)
+var RequestElementsClassname = "request"

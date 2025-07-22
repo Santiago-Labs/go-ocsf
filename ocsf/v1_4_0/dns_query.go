@@ -38,3 +38,4 @@ var DNSQueryFields = []arrow.Field{
 var DNSQueryStruct = arrow.StructOf(DNSQueryFields...)
 
 var DNSQuerySchema = arrow.NewSchema(DNSQueryFields, nil)
+var DNSQueryClassname = "dns_query"

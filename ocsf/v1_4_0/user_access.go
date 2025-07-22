@@ -158,3 +158,4 @@ var UserAccessManagementFields = []arrow.Field{
 var UserAccessManagementStruct = arrow.StructOf(UserAccessManagementFields...)
 
 var UserAccessManagementSchema = arrow.NewSchema(UserAccessManagementFields, nil)
+var UserAccessManagementClassname = "user_access"

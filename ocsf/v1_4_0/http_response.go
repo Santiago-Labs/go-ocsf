@@ -46,3 +46,4 @@ var HTTPResponseFields = []arrow.Field{
 var HTTPResponseStruct = arrow.StructOf(HTTPResponseFields...)
 
 var HTTPResponseSchema = arrow.NewSchema(HTTPResponseFields, nil)
+var HTTPResponseClassname = "http_response"

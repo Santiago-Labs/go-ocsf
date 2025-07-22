@@ -26,3 +26,4 @@ var MITREATTCKTacticFields = []arrow.Field{
 var MITREATTCKTacticStruct = arrow.StructOf(MITREATTCKTacticFields...)
 
 var MITREATTCKTacticSchema = arrow.NewSchema(MITREATTCKTacticFields, nil)
+var MITREATTCKTacticClassname = "tactic"

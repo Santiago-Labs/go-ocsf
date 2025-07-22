@@ -190,3 +190,4 @@ var DroneFlightsActivityFields = []arrow.Field{
 var DroneFlightsActivityStruct = arrow.StructOf(DroneFlightsActivityFields...)
 
 var DroneFlightsActivitySchema = arrow.NewSchema(DroneFlightsActivityFields, nil)
+var DroneFlightsActivityClassname = "drone_flights_activity"

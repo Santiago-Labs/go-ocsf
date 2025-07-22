@@ -66,3 +66,4 @@ var NetworkConnectionInformationFields = []arrow.Field{
 var NetworkConnectionInformationStruct = arrow.StructOf(NetworkConnectionInformationFields...)
 
 var NetworkConnectionInformationSchema = arrow.NewSchema(NetworkConnectionInformationFields, nil)
+var NetworkConnectionInformationClassname = "network_connection_info"

@@ -122,6 +122,7 @@ var NetworkProxyEndpointFields = []arrow.Field{
 var NetworkProxyEndpointStruct = arrow.StructOf(NetworkProxyEndpointFields...)
 
 var NetworkProxyEndpointSchema = arrow.NewSchema(NetworkProxyEndpointFields, nil)
+var NetworkProxyEndpointClassname = "network_proxy"
 var NetworkProxyEndpointRefFields = []arrow.Field{
 
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},

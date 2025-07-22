@@ -166,3 +166,4 @@ var NetworkActivityFields = []arrow.Field{
 var NetworkActivityStruct = arrow.StructOf(NetworkActivityFields...)
 
 var NetworkActivitySchema = arrow.NewSchema(NetworkActivityFields, nil)
+var NetworkActivityClassname = "network_activity"

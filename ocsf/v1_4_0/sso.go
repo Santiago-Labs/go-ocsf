@@ -74,3 +74,4 @@ var SSOFields = []arrow.Field{
 var SSOStruct = arrow.StructOf(SSOFields...)
 
 var SSOSchema = arrow.NewSchema(SSOFields, nil)
+var SSOClassname = "sso"

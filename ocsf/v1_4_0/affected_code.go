@@ -34,3 +34,4 @@ var AffectedCodeFields = []arrow.Field{
 var AffectedCodeStruct = arrow.StructOf(AffectedCodeFields...)
 
 var AffectedCodeSchema = arrow.NewSchema(AffectedCodeFields, nil)
+var AffectedCodeClassname = "affected_code"

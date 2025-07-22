@@ -166,3 +166,4 @@ var AuthorizeSessionFields = []arrow.Field{
 var AuthorizeSessionStruct = arrow.StructOf(AuthorizeSessionFields...)
 
 var AuthorizeSessionSchema = arrow.NewSchema(AuthorizeSessionFields, nil)
+var AuthorizeSessionClassname = "authorize_session"

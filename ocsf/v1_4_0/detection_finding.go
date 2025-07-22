@@ -162,3 +162,4 @@ var DetectionFindingFields = []arrow.Field{
 var DetectionFindingStruct = arrow.StructOf(DetectionFindingFields...)
 
 var DetectionFindingSchema = arrow.NewSchema(DetectionFindingFields, nil)
+var DetectionFindingClassname = "detection_finding"

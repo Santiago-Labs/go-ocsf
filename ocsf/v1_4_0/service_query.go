@@ -150,3 +150,4 @@ var ServiceQueryFields = []arrow.Field{
 var ServiceQueryStruct = arrow.StructOf(ServiceQueryFields...)
 
 var ServiceQuerySchema = arrow.NewSchema(ServiceQueryFields, nil)
+var ServiceQueryClassname = "service_query"

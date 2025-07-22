@@ -46,3 +46,4 @@ var HTTPCookieFields = []arrow.Field{
 var HTTPCookieStruct = arrow.StructOf(HTTPCookieFields...)
 
 var HTTPCookieSchema = arrow.NewSchema(HTTPCookieFields, nil)
+var HTTPCookieClassname = "http_cookie"

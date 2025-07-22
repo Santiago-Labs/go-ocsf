@@ -42,3 +42,4 @@ var DNSAnswerFields = []arrow.Field{
 var DNSAnswerStruct = arrow.StructOf(DNSAnswerFields...)
 
 var DNSAnswerSchema = arrow.NewSchema(DNSAnswerFields, nil)
+var DNSAnswerClassname = "dns_answer"

@@ -54,3 +54,4 @@ var DatabaseFields = []arrow.Field{
 var DatabaseStruct = arrow.StructOf(DatabaseFields...)
 
 var DatabaseSchema = arrow.NewSchema(DatabaseFields, nil)
+var DatabaseClassname = "database"

@@ -158,3 +158,4 @@ var PrefetchQueryFields = []arrow.Field{
 var PrefetchQueryStruct = arrow.StructOf(PrefetchQueryFields...)
 
 var PrefetchQuerySchema = arrow.NewSchema(PrefetchQueryFields, nil)
+var PrefetchQueryClassname = "prefetch_query"

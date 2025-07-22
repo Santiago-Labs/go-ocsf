@@ -30,3 +30,4 @@ var ReputationFields = []arrow.Field{
 var ReputationStruct = arrow.StructOf(ReputationFields...)
 
 var ReputationSchema = arrow.NewSchema(ReputationFields, nil)
+var ReputationClassname = "reputation"

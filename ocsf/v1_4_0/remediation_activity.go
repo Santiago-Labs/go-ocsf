@@ -150,3 +150,4 @@ var RemediationActivityFields = []arrow.Field{
 var RemediationActivityStruct = arrow.StructOf(RemediationActivityFields...)
 
 var RemediationActivitySchema = arrow.NewSchema(RemediationActivityFields, nil)
+var RemediationActivityClassname = "remediation_activity"

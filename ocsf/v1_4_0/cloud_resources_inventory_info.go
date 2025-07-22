@@ -154,3 +154,4 @@ var CloudResourcesInventoryInfoFields = []arrow.Field{
 var CloudResourcesInventoryInfoStruct = arrow.StructOf(CloudResourcesInventoryInfoFields...)
 
 var CloudResourcesInventoryInfoSchema = arrow.NewSchema(CloudResourcesInventoryInfoFields, nil)
+var CloudResourcesInventoryInfoClassname = "cloud_resources_inventory_info"

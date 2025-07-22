@@ -66,3 +66,4 @@ var StartupItemFields = []arrow.Field{
 var StartupItemStruct = arrow.StructOf(StartupItemFields...)
 
 var StartupItemSchema = arrow.NewSchema(StartupItemFields, nil)
+var StartupItemClassname = "startup_item"

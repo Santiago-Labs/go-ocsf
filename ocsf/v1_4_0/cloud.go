@@ -38,3 +38,4 @@ var CloudFields = []arrow.Field{
 var CloudStruct = arrow.StructOf(CloudFields...)
 
 var CloudSchema = arrow.NewSchema(CloudFields, nil)
+var CloudClassname = "cloud"

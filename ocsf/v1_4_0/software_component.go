@@ -58,3 +58,4 @@ var SoftwareComponentFields = []arrow.Field{
 var SoftwareComponentStruct = arrow.StructOf(SoftwareComponentFields...)
 
 var SoftwareComponentSchema = arrow.NewSchema(SoftwareComponentFields, nil)
+var SoftwareComponentClassname = "software_component"

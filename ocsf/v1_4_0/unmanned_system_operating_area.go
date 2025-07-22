@@ -118,3 +118,4 @@ var UnmannedSystemOperatingAreaFields = []arrow.Field{
 var UnmannedSystemOperatingAreaStruct = arrow.StructOf(UnmannedSystemOperatingAreaFields...)
 
 var UnmannedSystemOperatingAreaSchema = arrow.NewSchema(UnmannedSystemOperatingAreaFields, nil)
+var UnmannedSystemOperatingAreaClassname = "unmanned_system_operating_area"

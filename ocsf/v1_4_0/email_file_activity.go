@@ -138,3 +138,4 @@ var EmailFileActivityFields = []arrow.Field{
 var EmailFileActivityStruct = arrow.StructOf(EmailFileActivityFields...)
 
 var EmailFileActivitySchema = arrow.NewSchema(EmailFileActivityFields, nil)
+var EmailFileActivityClassname = "email_file_activity"

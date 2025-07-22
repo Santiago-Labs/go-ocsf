@@ -170,3 +170,4 @@ var ProcessActivityFields = []arrow.Field{
 var ProcessActivityStruct = arrow.StructOf(ProcessActivityFields...)
 
 var ProcessActivitySchema = arrow.NewSchema(ProcessActivityFields, nil)
+var ProcessActivityClassname = "process_activity"

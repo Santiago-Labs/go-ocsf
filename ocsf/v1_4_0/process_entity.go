@@ -38,3 +38,4 @@ var ProcessEntityFields = []arrow.Field{
 var ProcessEntityStruct = arrow.StructOf(ProcessEntityFields...)
 
 var ProcessEntitySchema = arrow.NewSchema(ProcessEntityFields, nil)
+var ProcessEntityClassname = "process_entity"

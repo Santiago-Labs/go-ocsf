@@ -58,3 +58,4 @@ var LoadBalancerFields = []arrow.Field{
 var LoadBalancerStruct = arrow.StructOf(LoadBalancerFields...)
 
 var LoadBalancerSchema = arrow.NewSchema(LoadBalancerFields, nil)
+var LoadBalancerClassname = "load_balancer"

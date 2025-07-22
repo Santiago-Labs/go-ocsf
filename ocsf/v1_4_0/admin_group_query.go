@@ -154,3 +154,4 @@ var AdminGroupQueryFields = []arrow.Field{
 var AdminGroupQueryStruct = arrow.StructOf(AdminGroupQueryFields...)
 
 var AdminGroupQuerySchema = arrow.NewSchema(AdminGroupQueryFields, nil)
+var AdminGroupQueryClassname = "admin_group_query"

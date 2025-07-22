@@ -26,3 +26,4 @@ var CISBenchmarkFields = []arrow.Field{
 var CISBenchmarkStruct = arrow.StructOf(CISBenchmarkFields...)
 
 var CISBenchmarkSchema = arrow.NewSchema(CISBenchmarkFields, nil)
+var CISBenchmarkClassname = "cis_benchmark"

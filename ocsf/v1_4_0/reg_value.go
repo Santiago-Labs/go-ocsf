@@ -46,3 +46,4 @@ var RegistryValueFields = []arrow.Field{
 var RegistryValueStruct = arrow.StructOf(RegistryValueFields...)
 
 var RegistryValueSchema = arrow.NewSchema(RegistryValueFields, nil)
+var RegistryValueClassname = "reg_value"

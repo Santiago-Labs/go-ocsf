@@ -90,3 +90,4 @@ var FindingInformationFields = []arrow.Field{
 var FindingInformationStruct = arrow.StructOf(FindingInformationFields...)
 
 var FindingInformationSchema = arrow.NewSchema(FindingInformationFields, nil)
+var FindingInformationClassname = "finding_info"

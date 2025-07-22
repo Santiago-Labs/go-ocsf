@@ -150,3 +150,4 @@ var UserSessionQueryFields = []arrow.Field{
 var UserSessionQueryStruct = arrow.StructOf(UserSessionQueryFields...)
 
 var UserSessionQuerySchema = arrow.NewSchema(UserSessionQueryFields, nil)
+var UserSessionQueryClassname = "session_query"

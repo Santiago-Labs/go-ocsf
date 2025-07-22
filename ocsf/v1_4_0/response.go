@@ -42,3 +42,4 @@ var ResponseElementsFields = []arrow.Field{
 var ResponseElementsStruct = arrow.StructOf(ResponseElementsFields...)
 
 var ResponseElementsSchema = arrow.NewSchema(ResponseElementsFields, nil)
+var ResponseElementsClassname = "response"

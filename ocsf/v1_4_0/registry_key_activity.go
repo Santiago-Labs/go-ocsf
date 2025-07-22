@@ -162,3 +162,4 @@ var RegistryKeyActivityFields = []arrow.Field{
 var RegistryKeyActivityStruct = arrow.StructOf(RegistryKeyActivityFields...)
 
 var RegistryKeyActivitySchema = arrow.NewSchema(RegistryKeyActivityFields, nil)
+var RegistryKeyActivityClassname = "registry_key_activity"

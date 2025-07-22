@@ -66,3 +66,4 @@ var TransportLayerSecurityTLSFields = []arrow.Field{
 var TransportLayerSecurityTLSStruct = arrow.StructOf(TransportLayerSecurityTLSFields...)
 
 var TransportLayerSecurityTLSSchema = arrow.NewSchema(TransportLayerSecurityTLSFields, nil)
+var TransportLayerSecurityTLSClassname = "tls"

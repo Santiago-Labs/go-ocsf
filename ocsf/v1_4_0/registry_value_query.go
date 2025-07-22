@@ -150,3 +150,4 @@ var RegistryValueQueryFields = []arrow.Field{
 var RegistryValueQueryStruct = arrow.StructOf(RegistryValueQueryFields...)
 
 var RegistryValueQuerySchema = arrow.NewSchema(RegistryValueQueryFields, nil)
+var RegistryValueQueryClassname = "registry_value_query"

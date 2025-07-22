@@ -70,3 +70,4 @@ var IdentityProviderFields = []arrow.Field{
 var IdentityProviderStruct = arrow.StructOf(IdentityProviderFields...)
 
 var IdentityProviderSchema = arrow.NewSchema(IdentityProviderFields, nil)
+var IdentityProviderClassname = "idp"

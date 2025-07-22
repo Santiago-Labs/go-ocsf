@@ -146,3 +146,4 @@ var SoftwareInventoryInfoFields = []arrow.Field{
 var SoftwareInventoryInfoStruct = arrow.StructOf(SoftwareInventoryInfoFields...)
 
 var SoftwareInventoryInfoSchema = arrow.NewSchema(SoftwareInventoryInfoFields, nil)
+var SoftwareInventoryInfoClassname = "software_info"

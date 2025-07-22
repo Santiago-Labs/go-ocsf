@@ -70,3 +70,4 @@ var DataClassificationFields = []arrow.Field{
 var DataClassificationStruct = arrow.StructOf(DataClassificationFields...)
 
 var DataClassificationSchema = arrow.NewSchema(DataClassificationFields, nil)
+var DataClassificationClassname = "data_classification"

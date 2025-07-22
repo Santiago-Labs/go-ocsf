@@ -58,3 +58,4 @@ var ContainerFields = []arrow.Field{
 var ContainerStruct = arrow.StructOf(ContainerFields...)
 
 var ContainerSchema = arrow.NewSchema(ContainerFields, nil)
+var ContainerClassname = "container"

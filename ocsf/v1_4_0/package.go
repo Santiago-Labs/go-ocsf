@@ -62,3 +62,4 @@ var SoftwarePackageFields = []arrow.Field{
 var SoftwarePackageStruct = arrow.StructOf(SoftwarePackageFields...)
 
 var SoftwarePackageSchema = arrow.NewSchema(SoftwarePackageFields, nil)
+var SoftwarePackageClassname = "package"

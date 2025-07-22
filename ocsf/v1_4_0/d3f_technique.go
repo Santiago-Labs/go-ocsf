@@ -26,3 +26,4 @@ var MITREDEFENDTechniqueFields = []arrow.Field{
 var MITREDEFENDTechniqueStruct = arrow.StructOf(MITREDEFENDTechniqueFields...)
 
 var MITREDEFENDTechniqueSchema = arrow.NewSchema(MITREDEFENDTechniqueFields, nil)
+var MITREDEFENDTechniqueClassname = "d3f_technique"

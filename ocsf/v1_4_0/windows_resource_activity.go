@@ -146,3 +146,4 @@ var WindowsResourceActivityFields = []arrow.Field{
 var WindowsResourceActivityStruct = arrow.StructOf(WindowsResourceActivityFields...)
 
 var WindowsResourceActivitySchema = arrow.NewSchema(WindowsResourceActivityFields, nil)
+var WindowsResourceActivityClassname = "windows_resource_activity"

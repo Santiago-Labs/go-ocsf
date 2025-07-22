@@ -50,3 +50,4 @@ var WebResourceFields = []arrow.Field{
 var WebResourceStruct = arrow.StructOf(WebResourceFields...)
 
 var WebResourceSchema = arrow.NewSchema(WebResourceFields, nil)
+var WebResourceClassname = "web_resource"

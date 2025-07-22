@@ -122,3 +122,4 @@ var NetworkEndpointFields = []arrow.Field{
 var NetworkEndpointStruct = arrow.StructOf(NetworkEndpointFields...)
 
 var NetworkEndpointSchema = arrow.NewSchema(NetworkEndpointFields, nil)
+var NetworkEndpointClassname = "network_endpoint"

@@ -162,3 +162,4 @@ var NetworkConnectionQueryFields = []arrow.Field{
 var NetworkConnectionQueryStruct = arrow.StructOf(NetworkConnectionQueryFields...)
 
 var NetworkConnectionQuerySchema = arrow.NewSchema(NetworkConnectionQueryFields, nil)
+var NetworkConnectionQueryClassname = "network_connection_query"

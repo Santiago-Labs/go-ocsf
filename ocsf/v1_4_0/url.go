@@ -58,3 +58,4 @@ var UniformResourceLocatorFields = []arrow.Field{
 var UniformResourceLocatorStruct = arrow.StructOf(UniformResourceLocatorFields...)
 
 var UniformResourceLocatorSchema = arrow.NewSchema(UniformResourceLocatorFields, nil)
+var UniformResourceLocatorClassname = "url"

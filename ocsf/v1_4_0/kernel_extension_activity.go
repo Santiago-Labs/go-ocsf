@@ -146,3 +146,4 @@ var KernelExtensionActivityFields = []arrow.Field{
 var KernelExtensionActivityStruct = arrow.StructOf(KernelExtensionActivityFields...)
 
 var KernelExtensionActivitySchema = arrow.NewSchema(KernelExtensionActivityFields, nil)
+var KernelExtensionActivityClassname = "kernel_extension_activity"

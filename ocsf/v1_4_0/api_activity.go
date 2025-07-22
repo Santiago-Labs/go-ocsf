@@ -162,3 +162,4 @@ var APIActivityFields = []arrow.Field{
 var APIActivityStruct = arrow.StructOf(APIActivityFields...)
 
 var APIActivitySchema = arrow.NewSchema(APIActivityFields, nil)
+var APIActivityClassname = "api_activity"

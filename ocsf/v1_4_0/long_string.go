@@ -26,3 +26,4 @@ var LongStringFields = []arrow.Field{
 var LongStringStruct = arrow.StructOf(LongStringFields...)
 
 var LongStringSchema = arrow.NewSchema(LongStringFields, nil)
+var LongStringClassname = "long_string"

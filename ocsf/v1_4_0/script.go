@@ -46,3 +46,4 @@ var ScriptFields = []arrow.Field{
 var ScriptStruct = arrow.StructOf(ScriptFields...)
 
 var ScriptSchema = arrow.NewSchema(ScriptFields, nil)
+var ScriptClassname = "script"

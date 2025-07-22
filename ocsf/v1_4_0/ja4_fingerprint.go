@@ -42,3 +42,4 @@ var JA4FingerprintFields = []arrow.Field{
 var JA4FingerprintStruct = arrow.StructOf(JA4FingerprintFields...)
 
 var JA4FingerprintSchema = arrow.NewSchema(JA4FingerprintFields, nil)
+var JA4FingerprintClassname = "ja4_fingerprint"

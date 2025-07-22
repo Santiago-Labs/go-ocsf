@@ -94,3 +94,4 @@ var DataSecurityFields = []arrow.Field{
 var DataSecurityStruct = arrow.StructOf(DataSecurityFields...)
 
 var DataSecuritySchema = arrow.NewSchema(DataSecurityFields, nil)
+var DataSecurityClassname = "data_security"

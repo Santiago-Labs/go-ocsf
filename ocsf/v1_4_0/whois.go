@@ -70,3 +70,4 @@ var WHOISFields = []arrow.Field{
 var WHOISStruct = arrow.StructOf(WHOISFields...)
 
 var WHOISSchema = arrow.NewSchema(WHOISFields, nil)
+var WHOISClassname = "whois"

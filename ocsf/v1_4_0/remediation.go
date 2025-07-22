@@ -26,3 +26,4 @@ var RemediationFields = []arrow.Field{
 var RemediationStruct = arrow.StructOf(RemediationFields...)
 
 var RemediationSchema = arrow.NewSchema(RemediationFields, nil)
+var RemediationClassname = "remediation"

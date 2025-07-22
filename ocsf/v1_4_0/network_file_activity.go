@@ -174,3 +174,4 @@ var NetworkFileActivityFields = []arrow.Field{
 var NetworkFileActivityStruct = arrow.StructOf(NetworkFileActivityFields...)
 
 var NetworkFileActivitySchema = arrow.NewSchema(NetworkFileActivityFields, nil)
+var NetworkFileActivityClassname = "network_file_activity"

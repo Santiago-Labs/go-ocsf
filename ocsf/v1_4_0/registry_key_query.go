@@ -150,3 +150,4 @@ var RegistryKeyQueryFields = []arrow.Field{
 var RegistryKeyQueryStruct = arrow.StructOf(RegistryKeyQueryFields...)
 
 var RegistryKeyQuerySchema = arrow.NewSchema(RegistryKeyQueryFields, nil)
+var RegistryKeyQueryClassname = "registry_key_query"

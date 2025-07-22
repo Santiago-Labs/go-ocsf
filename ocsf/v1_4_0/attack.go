@@ -30,3 +30,4 @@ var MITREATTCKFields = []arrow.Field{
 var MITREATTCKStruct = arrow.StructOf(MITREATTCKFields...)
 
 var MITREATTCKSchema = arrow.NewSchema(MITREATTCKFields, nil)
+var MITREATTCKClassname = "attack"

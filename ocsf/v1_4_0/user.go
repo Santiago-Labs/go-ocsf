@@ -90,3 +90,4 @@ var UserFields = []arrow.Field{
 var UserStruct = arrow.StructOf(UserFields...)
 
 var UserSchema = arrow.NewSchema(UserFields, nil)
+var UserClassname = "user"

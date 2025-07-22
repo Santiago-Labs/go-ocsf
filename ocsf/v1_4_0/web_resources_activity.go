@@ -162,3 +162,4 @@ var WebResourcesActivityFields = []arrow.Field{
 var WebResourcesActivityStruct = arrow.StructOf(WebResourcesActivityFields...)
 
 var WebResourcesActivitySchema = arrow.NewSchema(WebResourcesActivityFields, nil)
+var WebResourcesActivityClassname = "web_resources_activity"

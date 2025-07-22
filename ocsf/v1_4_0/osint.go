@@ -122,3 +122,4 @@ var OSINTFields = []arrow.Field{
 var OSINTStruct = arrow.StructOf(OSINTFields...)
 
 var OSINTSchema = arrow.NewSchema(OSINTFields, nil)
+var OSINTClassname = "osint"

@@ -122,3 +122,4 @@ var DatabucketFields = []arrow.Field{
 var DatabucketStruct = arrow.StructOf(DatabucketFields...)
 
 var DatabucketSchema = arrow.NewSchema(DatabucketFields, nil)
+var DatabucketClassname = "databucket"

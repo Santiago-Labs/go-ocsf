@@ -178,3 +178,4 @@ var DHCPActivityFields = []arrow.Field{
 var DHCPActivityStruct = arrow.StructOf(DHCPActivityFields...)
 
 var DHCPActivitySchema = arrow.NewSchema(DHCPActivityFields, nil)
+var DHCPActivityClassname = "dhcp_activity"

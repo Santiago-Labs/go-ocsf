@@ -54,3 +54,4 @@ var ProductFields = []arrow.Field{
 var ProductStruct = arrow.StructOf(ProductFields...)
 
 var ProductSchema = arrow.NewSchema(ProductFields, nil)
+var ProductClassname = "product"

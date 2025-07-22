@@ -70,3 +70,4 @@ var KBArticleFields = []arrow.Field{
 var KBArticleStruct = arrow.StructOf(KBArticleFields...)
 
 var KBArticleSchema = arrow.NewSchema(KBArticleFields, nil)
+var KBArticleClassname = "kb_article"

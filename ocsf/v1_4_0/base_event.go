@@ -134,3 +134,4 @@ var BaseEventFields = []arrow.Field{
 var BaseEventStruct = arrow.StructOf(BaseEventFields...)
 
 var BaseEventSchema = arrow.NewSchema(BaseEventFields, nil)
+var BaseEventClassname = "base_event"

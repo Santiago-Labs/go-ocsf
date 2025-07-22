@@ -34,3 +34,4 @@ var ServiceFields = []arrow.Field{
 var ServiceStruct = arrow.StructOf(ServiceFields...)
 
 var ServiceSchema = arrow.NewSchema(ServiceFields, nil)
+var ServiceClassname = "service"

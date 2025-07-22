@@ -150,3 +150,4 @@ var FolderQueryFields = []arrow.Field{
 var FolderQueryStruct = arrow.StructOf(FolderQueryFields...)
 
 var FolderQuerySchema = arrow.NewSchema(FolderQueryFields, nil)
+var FolderQueryClassname = "folder_query"

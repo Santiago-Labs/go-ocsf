@@ -82,3 +82,4 @@ var ResourceDetailsFields = []arrow.Field{
 var ResourceDetailsStruct = arrow.StructOf(ResourceDetailsFields...)
 
 var ResourceDetailsSchema = arrow.NewSchema(ResourceDetailsFields, nil)
+var ResourceDetailsClassname = "resource_details"

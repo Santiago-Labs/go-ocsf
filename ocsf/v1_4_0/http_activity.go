@@ -178,3 +178,4 @@ var HTTPActivityFields = []arrow.Field{
 var HTTPActivityStruct = arrow.StructOf(HTTPActivityFields...)
 
 var HTTPActivitySchema = arrow.NewSchema(HTTPActivityFields, nil)
+var HTTPActivityClassname = "http_activity"

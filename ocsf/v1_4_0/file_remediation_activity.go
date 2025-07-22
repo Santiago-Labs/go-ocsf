@@ -154,3 +154,4 @@ var FileRemediationActivityFields = []arrow.Field{
 var FileRemediationActivityStruct = arrow.StructOf(FileRemediationActivityFields...)
 
 var FileRemediationActivitySchema = arrow.NewSchema(FileRemediationActivityFields, nil)
+var FileRemediationActivityClassname = "file_remediation_activity"

@@ -162,3 +162,4 @@ var GroupManagementFields = []arrow.Field{
 var GroupManagementStruct = arrow.StructOf(GroupManagementFields...)
 
 var GroupManagementSchema = arrow.NewSchema(GroupManagementFields, nil)
+var GroupManagementClassname = "group_management"

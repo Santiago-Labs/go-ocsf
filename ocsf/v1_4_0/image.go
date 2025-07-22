@@ -34,3 +34,4 @@ var ImageFields = []arrow.Field{
 var ImageStruct = arrow.StructOf(ImageFields...)
 
 var ImageSchema = arrow.NewSchema(ImageFields, nil)
+var ImageClassname = "image"

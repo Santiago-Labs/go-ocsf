@@ -38,3 +38,4 @@ var APIFields = []arrow.Field{
 var APIStruct = arrow.StructOf(APIFields...)
 
 var APISchema = arrow.NewSchema(APIFields, nil)
+var APIClassname = "api"

@@ -154,3 +154,4 @@ var ProcessRemediationActivityFields = []arrow.Field{
 var ProcessRemediationActivityStruct = arrow.StructOf(ProcessRemediationActivityFields...)
 
 var ProcessRemediationActivitySchema = arrow.NewSchema(ProcessRemediationActivityFields, nil)
+var ProcessRemediationActivityClassname = "process_remediation_activity"

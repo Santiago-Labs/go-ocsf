@@ -30,3 +30,4 @@ var ScanFields = []arrow.Field{
 var ScanStruct = arrow.StructOf(ScanFields...)
 
 var ScanSchema = arrow.NewSchema(ScanFields, nil)
+var ScanClassname = "scan"

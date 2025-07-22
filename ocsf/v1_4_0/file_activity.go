@@ -170,3 +170,4 @@ var FileSystemActivityFields = []arrow.Field{
 var FileSystemActivityStruct = arrow.StructOf(FileSystemActivityFields...)
 
 var FileSystemActivitySchema = arrow.NewSchema(FileSystemActivityFields, nil)
+var FileSystemActivityClassname = "file_activity"

@@ -30,3 +30,4 @@ var SoftwareBillofMaterialsFields = []arrow.Field{
 var SoftwareBillofMaterialsStruct = arrow.StructOf(SoftwareBillofMaterialsFields...)
 
 var SoftwareBillofMaterialsSchema = arrow.NewSchema(SoftwareBillofMaterialsFields, nil)
+var SoftwareBillofMaterialsClassname = "sbom"

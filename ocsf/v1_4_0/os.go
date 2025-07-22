@@ -66,3 +66,4 @@ var OperatingSystemOSFields = []arrow.Field{
 var OperatingSystemOSStruct = arrow.StructOf(OperatingSystemOSFields...)
 
 var OperatingSystemOSSchema = arrow.NewSchema(OperatingSystemOSFields, nil)
+var OperatingSystemOSClassname = "os"

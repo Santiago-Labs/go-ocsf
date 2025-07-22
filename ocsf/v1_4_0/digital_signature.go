@@ -46,3 +46,4 @@ var DigitalSignatureFields = []arrow.Field{
 var DigitalSignatureStruct = arrow.StructOf(DigitalSignatureFields...)
 
 var DigitalSignatureSchema = arrow.NewSchema(DigitalSignatureFields, nil)
+var DigitalSignatureClassname = "digital_signature"

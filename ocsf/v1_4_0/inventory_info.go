@@ -138,3 +138,4 @@ var DeviceInventoryInfoFields = []arrow.Field{
 var DeviceInventoryInfoStruct = arrow.StructOf(DeviceInventoryInfoFields...)
 
 var DeviceInventoryInfoSchema = arrow.NewSchema(DeviceInventoryInfoFields, nil)
+var DeviceInventoryInfoClassname = "inventory_info"

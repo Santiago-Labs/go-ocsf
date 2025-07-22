@@ -150,3 +150,4 @@ var KernelObjectQueryFields = []arrow.Field{
 var KernelObjectQueryStruct = arrow.StructOf(KernelObjectQueryFields...)
 
 var KernelObjectQuerySchema = arrow.NewSchema(KernelObjectQueryFields, nil)
+var KernelObjectQueryClassname = "kernel_object_query"

@@ -94,3 +94,4 @@ var SCIMFields = []arrow.Field{
 var SCIMStruct = arrow.StructOf(SCIMFields...)
 
 var SCIMSchema = arrow.NewSchema(SCIMFields, nil)
+var SCIMClassname = "scim"

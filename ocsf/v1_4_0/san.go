@@ -22,3 +22,4 @@ var SubjectAlternativeNameFields = []arrow.Field{
 var SubjectAlternativeNameStruct = arrow.StructOf(SubjectAlternativeNameFields...)
 
 var SubjectAlternativeNameSchema = arrow.NewSchema(SubjectAlternativeNameFields, nil)
+var SubjectAlternativeNameClassname = "san"

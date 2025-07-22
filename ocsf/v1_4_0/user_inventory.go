@@ -138,3 +138,4 @@ var UserInventoryInfoFields = []arrow.Field{
 var UserInventoryInfoStruct = arrow.StructOf(UserInventoryInfoFields...)
 
 var UserInventoryInfoSchema = arrow.NewSchema(UserInventoryInfoFields, nil)
+var UserInventoryInfoClassname = "user_inventory"

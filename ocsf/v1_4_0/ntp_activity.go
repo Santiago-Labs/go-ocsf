@@ -186,3 +186,4 @@ var NTPActivityFields = []arrow.Field{
 var NTPActivityStruct = arrow.StructOf(NTPActivityFields...)
 
 var NTPActivitySchema = arrow.NewSchema(NTPActivityFields, nil)
+var NTPActivityClassname = "ntp_activity"

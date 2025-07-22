@@ -170,3 +170,4 @@ var FileFields = []arrow.Field{
 var FileStruct = arrow.StructOf(FileFields...)
 
 var FileSchema = arrow.NewSchema(FileFields, nil)
+var FileClassname = "file"

@@ -22,3 +22,4 @@ var AutonomousSystemFields = []arrow.Field{
 var AutonomousSystemStruct = arrow.StructOf(AutonomousSystemFields...)
 
 var AutonomousSystemSchema = arrow.NewSchema(AutonomousSystemFields, nil)
+var AutonomousSystemClassname = "autonomous_system"

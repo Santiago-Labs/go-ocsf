@@ -162,3 +162,4 @@ var MemoryActivityFields = []arrow.Field{
 var MemoryActivityStruct = arrow.StructOf(MemoryActivityFields...)
 
 var MemoryActivitySchema = arrow.NewSchema(MemoryActivityFields, nil)
+var MemoryActivityClassname = "memory_activity"

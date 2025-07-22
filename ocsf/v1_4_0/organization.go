@@ -30,3 +30,4 @@ var OrganizationFields = []arrow.Field{
 var OrganizationStruct = arrow.StructOf(OrganizationFields...)
 
 var OrganizationSchema = arrow.NewSchema(OrganizationFields, nil)
+var OrganizationClassname = "organization"

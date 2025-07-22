@@ -154,3 +154,4 @@ var ModuleQueryFields = []arrow.Field{
 var ModuleQueryStruct = arrow.StructOf(ModuleQueryFields...)
 
 var ModuleQuerySchema = arrow.NewSchema(ModuleQueryFields, nil)
+var ModuleQueryClassname = "module_query"

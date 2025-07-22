@@ -178,3 +178,4 @@ var DatastoreActivityFields = []arrow.Field{
 var DatastoreActivityStruct = arrow.StructOf(DatastoreActivityFields...)
 
 var DatastoreActivitySchema = arrow.NewSchema(DatastoreActivityFields, nil)
+var DatastoreActivityClassname = "datastore_activity"

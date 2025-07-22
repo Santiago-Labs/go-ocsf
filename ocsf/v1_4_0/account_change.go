@@ -158,3 +158,4 @@ var AccountChangeFields = []arrow.Field{
 var AccountChangeStruct = arrow.StructOf(AccountChangeFields...)
 
 var AccountChangeSchema = arrow.NewSchema(AccountChangeFields, nil)
+var AccountChangeClassname = "account_change"

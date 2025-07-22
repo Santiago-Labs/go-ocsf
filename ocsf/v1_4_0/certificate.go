@@ -54,3 +54,4 @@ var DigitalCertificateFields = []arrow.Field{
 var DigitalCertificateStruct = arrow.StructOf(DigitalCertificateFields...)
 
 var DigitalCertificateSchema = arrow.NewSchema(DigitalCertificateFields, nil)
+var DigitalCertificateClassname = "certificate"

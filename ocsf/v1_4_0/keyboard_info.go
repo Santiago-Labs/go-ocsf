@@ -34,3 +34,4 @@ var KeyboardInformationFields = []arrow.Field{
 var KeyboardInformationStruct = arrow.StructOf(KeyboardInformationFields...)
 
 var KeyboardInformationSchema = arrow.NewSchema(KeyboardInformationFields, nil)
+var KeyboardInformationClassname = "keyboard_info"

@@ -22,3 +22,4 @@ var AuthorizationResultFields = []arrow.Field{
 var AuthorizationResultStruct = arrow.StructOf(AuthorizationResultFields...)
 
 var AuthorizationResultSchema = arrow.NewSchema(AuthorizationResultFields, nil)
+var AuthorizationResultClassname = "authorization"

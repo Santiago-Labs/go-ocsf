@@ -186,3 +186,4 @@ var SSHActivityFields = []arrow.Field{
 var SSHActivityStruct = arrow.StructOf(SSHActivityFields...)
 
 var SSHActivitySchema = arrow.NewSchema(SSHActivityFields, nil)
+var SSHActivityClassname = "ssh_activity"

@@ -138,3 +138,4 @@ var EmailURLActivityFields = []arrow.Field{
 var EmailURLActivityStruct = arrow.StructOf(EmailURLActivityFields...)
 
 var EmailURLActivitySchema = arrow.NewSchema(EmailURLActivityFields, nil)
+var EmailURLActivityClassname = "email_url_activity"

@@ -102,3 +102,4 @@ var MetadataFields = []arrow.Field{
 var MetadataStruct = arrow.StructOf(MetadataFields...)
 
 var MetadataSchema = arrow.NewSchema(MetadataFields, nil)
+var MetadataClassname = "metadata"

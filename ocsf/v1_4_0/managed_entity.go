@@ -66,3 +66,4 @@ var ManagedEntityFields = []arrow.Field{
 var ManagedEntityStruct = arrow.StructOf(ManagedEntityFields...)
 
 var ManagedEntitySchema = arrow.NewSchema(ManagedEntityFields, nil)
+var ManagedEntityClassname = "managed_entity"
