@@ -26,3 +26,4 @@ var TLSExtensionFields = []arrow.Field{
 var TLSExtensionStruct = arrow.StructOf(TLSExtensionFields...)
 
 var TLSExtensionSchema = arrow.NewSchema(TLSExtensionFields, nil)
+var TLSExtensionClassname = "tls_extension"

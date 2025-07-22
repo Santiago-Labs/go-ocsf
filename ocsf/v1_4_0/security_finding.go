@@ -194,3 +194,4 @@ var SecurityFindingFields = []arrow.Field{
 var SecurityFindingStruct = arrow.StructOf(SecurityFindingFields...)
 
 var SecurityFindingSchema = arrow.NewSchema(SecurityFindingFields, nil)
+var SecurityFindingClassname = "security_finding"

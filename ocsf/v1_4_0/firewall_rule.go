@@ -62,3 +62,4 @@ var FirewallRuleFields = []arrow.Field{
 var FirewallRuleStruct = arrow.StructOf(FirewallRuleFields...)
 
 var FirewallRuleSchema = arrow.NewSchema(FirewallRuleFields, nil)
+var FirewallRuleClassname = "firewall_rule"

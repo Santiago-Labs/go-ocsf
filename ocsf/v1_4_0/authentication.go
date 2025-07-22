@@ -206,3 +206,4 @@ var AuthenticationFields = []arrow.Field{
 var AuthenticationStruct = arrow.StructOf(AuthenticationFields...)
 
 var AuthenticationSchema = arrow.NewSchema(AuthenticationFields, nil)
+var AuthenticationClassname = "authentication"

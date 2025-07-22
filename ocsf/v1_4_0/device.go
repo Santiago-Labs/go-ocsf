@@ -206,3 +206,4 @@ var DeviceFields = []arrow.Field{
 var DeviceStruct = arrow.StructOf(DeviceFields...)
 
 var DeviceSchema = arrow.NewSchema(DeviceFields, nil)
+var DeviceClassname = "device"

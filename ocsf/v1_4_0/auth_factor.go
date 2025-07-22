@@ -50,3 +50,4 @@ var AuthenticationFactorFields = []arrow.Field{
 var AuthenticationFactorStruct = arrow.StructOf(AuthenticationFactorFields...)
 
 var AuthenticationFactorSchema = arrow.NewSchema(AuthenticationFactorFields, nil)
+var AuthenticationFactorClassname = "auth_factor"

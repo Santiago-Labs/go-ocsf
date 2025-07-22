@@ -150,3 +150,4 @@ var RegistryValueActivityFields = []arrow.Field{
 var RegistryValueActivityStruct = arrow.StructOf(RegistryValueActivityFields...)
 
 var RegistryValueActivitySchema = arrow.NewSchema(RegistryValueActivityFields, nil)
+var RegistryValueActivityClassname = "registry_value_activity"

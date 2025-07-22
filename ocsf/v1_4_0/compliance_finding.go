@@ -162,3 +162,4 @@ var ComplianceFindingFields = []arrow.Field{
 var ComplianceFindingStruct = arrow.StructOf(ComplianceFindingFields...)
 
 var ComplianceFindingSchema = arrow.NewSchema(ComplianceFindingFields, nil)
+var ComplianceFindingClassname = "compliance_finding"

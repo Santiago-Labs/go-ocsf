@@ -150,3 +150,4 @@ var IncidentFindingFields = []arrow.Field{
 var IncidentFindingStruct = arrow.StructOf(IncidentFindingFields...)
 
 var IncidentFindingSchema = arrow.NewSchema(IncidentFindingFields, nil)
+var IncidentFindingClassname = "incident_finding"

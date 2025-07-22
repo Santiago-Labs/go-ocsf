@@ -146,3 +146,4 @@ var ModuleActivityFields = []arrow.Field{
 var ModuleActivityStruct = arrow.StructOf(ModuleActivityFields...)
 
 var ModuleActivitySchema = arrow.NewSchema(ModuleActivityFields, nil)
+var ModuleActivityClassname = "module_activity"

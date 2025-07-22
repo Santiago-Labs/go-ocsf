@@ -38,3 +38,4 @@ var PeripheralDeviceFields = []arrow.Field{
 var PeripheralDeviceStruct = arrow.StructOf(PeripheralDeviceFields...)
 
 var PeripheralDeviceSchema = arrow.NewSchema(PeripheralDeviceFields, nil)
+var PeripheralDeviceClassname = "peripheral_device"

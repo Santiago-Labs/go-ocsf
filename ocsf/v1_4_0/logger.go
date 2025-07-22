@@ -62,3 +62,4 @@ var LoggerFields = []arrow.Field{
 var LoggerStruct = arrow.StructOf(LoggerFields...)
 
 var LoggerSchema = arrow.NewSchema(LoggerFields, nil)
+var LoggerClassname = "logger"

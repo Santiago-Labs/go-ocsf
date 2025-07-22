@@ -198,3 +198,4 @@ var RDPActivityFields = []arrow.Field{
 var RDPActivityStruct = arrow.StructOf(RDPActivityFields...)
 
 var RDPActivitySchema = arrow.NewSchema(RDPActivityFields, nil)
+var RDPActivityClassname = "rdp_activity"

@@ -186,3 +186,4 @@ var ScanActivityFields = []arrow.Field{
 var ScanActivityStruct = arrow.StructOf(ScanActivityFields...)
 
 var ScanActivitySchema = arrow.NewSchema(ScanActivityFields, nil)
+var ScanActivityClassname = "scan_activity"

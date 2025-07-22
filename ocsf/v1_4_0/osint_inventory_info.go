@@ -134,3 +134,4 @@ var OSINTInventoryInfoFields = []arrow.Field{
 var OSINTInventoryInfoStruct = arrow.StructOf(OSINTInventoryInfoFields...)
 
 var OSINTInventoryInfoSchema = arrow.NewSchema(OSINTInventoryInfoFields, nil)
+var OSINTInventoryInfoClassname = "osint_inventory_info"

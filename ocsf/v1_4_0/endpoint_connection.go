@@ -22,3 +22,4 @@ var EndpointConnectionFields = []arrow.Field{
 var EndpointConnectionStruct = arrow.StructOf(EndpointConnectionFields...)
 
 var EndpointConnectionSchema = arrow.NewSchema(EndpointConnectionFields, nil)
+var EndpointConnectionClassname = "endpoint_connection"

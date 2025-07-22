@@ -150,3 +150,4 @@ var NetworksQueryFields = []arrow.Field{
 var NetworksQueryStruct = arrow.StructOf(NetworksQueryFields...)
 
 var NetworksQuerySchema = arrow.NewSchema(NetworksQueryFields, nil)
+var NetworksQueryClassname = "networks_query"

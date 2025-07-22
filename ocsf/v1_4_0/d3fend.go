@@ -26,3 +26,4 @@ var MITRED3FENDFields = []arrow.Field{
 var MITRED3FENDStruct = arrow.StructOf(MITRED3FENDFields...)
 
 var MITRED3FENDSchema = arrow.NewSchema(MITRED3FENDFields, nil)
+var MITRED3FENDClassname = "d3fend"

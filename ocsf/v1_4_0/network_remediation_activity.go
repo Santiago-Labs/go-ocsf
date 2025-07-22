@@ -154,3 +154,4 @@ var NetworkRemediationActivityFields = []arrow.Field{
 var NetworkRemediationActivityStruct = arrow.StructOf(NetworkRemediationActivityFields...)
 
 var NetworkRemediationActivitySchema = arrow.NewSchema(NetworkRemediationActivityFields, nil)
+var NetworkRemediationActivityClassname = "network_remediation_activity"

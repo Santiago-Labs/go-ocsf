@@ -54,3 +54,4 @@ var ComplianceFields = []arrow.Field{
 var ComplianceStruct = arrow.StructOf(ComplianceFields...)
 
 var ComplianceSchema = arrow.NewSchema(ComplianceFields, nil)
+var ComplianceClassname = "compliance"

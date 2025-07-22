@@ -186,3 +186,4 @@ var FileHostingActivityFields = []arrow.Field{
 var FileHostingActivityStruct = arrow.StructOf(FileHostingActivityFields...)
 
 var FileHostingActivitySchema = arrow.NewSchema(FileHostingActivityFields, nil)
+var FileHostingActivityClassname = "file_hosting"

@@ -34,3 +34,4 @@ var DisplayFields = []arrow.Field{
 var DisplayStruct = arrow.StructOf(DisplayFields...)
 
 var DisplaySchema = arrow.NewSchema(DisplayFields, nil)
+var DisplayClassname = "display"

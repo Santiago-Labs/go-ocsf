@@ -86,3 +86,4 @@ var EmailFields = []arrow.Field{
 var EmailStruct = arrow.StructOf(EmailFields...)
 
 var EmailSchema = arrow.NewSchema(EmailFields, nil)
+var EmailClassname = "email"

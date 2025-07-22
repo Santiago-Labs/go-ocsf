@@ -34,3 +34,4 @@ var TicketFields = []arrow.Field{
 var TicketStruct = arrow.StructOf(TicketFields...)
 
 var TicketSchema = arrow.NewSchema(TicketFields, nil)
+var TicketClassname = "ticket"

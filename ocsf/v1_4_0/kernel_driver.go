@@ -18,3 +18,4 @@ var KernelExtensionFields = []arrow.Field{
 var KernelExtensionStruct = arrow.StructOf(KernelExtensionFields...)
 
 var KernelExtensionSchema = arrow.NewSchema(KernelExtensionFields, nil)
+var KernelExtensionClassname = "kernel_driver"

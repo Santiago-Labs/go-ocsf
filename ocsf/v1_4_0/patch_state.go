@@ -142,3 +142,4 @@ var OperatingSystemPatchStateFields = []arrow.Field{
 var OperatingSystemPatchStateStruct = arrow.StructOf(OperatingSystemPatchStateFields...)
 
 var OperatingSystemPatchStateSchema = arrow.NewSchema(OperatingSystemPatchStateFields, nil)
+var OperatingSystemPatchStateClassname = "patch_state"

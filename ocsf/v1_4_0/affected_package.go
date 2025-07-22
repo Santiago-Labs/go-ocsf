@@ -78,3 +78,4 @@ var AffectedSoftwarePackageFields = []arrow.Field{
 var AffectedSoftwarePackageStruct = arrow.StructOf(AffectedSoftwarePackageFields...)
 
 var AffectedSoftwarePackageSchema = arrow.NewSchema(AffectedSoftwarePackageFields, nil)
+var AffectedSoftwarePackageClassname = "affected_package"

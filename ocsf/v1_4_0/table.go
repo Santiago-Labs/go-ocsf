@@ -42,3 +42,4 @@ var TableFields = []arrow.Field{
 var TableStruct = arrow.StructOf(TableFields...)
 
 var TableSchema = arrow.NewSchema(TableFields, nil)
+var TableClassname = "table"

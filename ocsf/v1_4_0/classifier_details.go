@@ -26,3 +26,4 @@ var ClassifierDetailsFields = []arrow.Field{
 var ClassifierDetailsStruct = arrow.StructOf(ClassifierDetailsFields...)
 
 var ClassifierDetailsSchema = arrow.NewSchema(ClassifierDetailsFields, nil)
+var ClassifierDetailsClassname = "classifier_details"

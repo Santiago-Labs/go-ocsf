@@ -178,3 +178,4 @@ var DataSecurityFindingFields = []arrow.Field{
 var DataSecurityFindingStruct = arrow.StructOf(DataSecurityFindingFields...)
 
 var DataSecurityFindingSchema = arrow.NewSchema(DataSecurityFindingFields, nil)
+var DataSecurityFindingClassname = "data_security_finding"

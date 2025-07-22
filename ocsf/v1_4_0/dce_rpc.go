@@ -34,3 +34,4 @@ var DCERPCFields = []arrow.Field{
 var DCERPCStruct = arrow.StructOf(DCERPCFields...)
 
 var DCERPCSchema = arrow.NewSchema(DCERPCFields, nil)
+var DCERPCClassname = "dce_rpc"

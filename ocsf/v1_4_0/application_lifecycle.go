@@ -138,3 +138,4 @@ var ApplicationLifecycleFields = []arrow.Field{
 var ApplicationLifecycleStruct = arrow.StructOf(ApplicationLifecycleFields...)
 
 var ApplicationLifecycleSchema = arrow.NewSchema(ApplicationLifecycleFields, nil)
+var ApplicationLifecycleClassname = "application_lifecycle"

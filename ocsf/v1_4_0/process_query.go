@@ -150,3 +150,4 @@ var ProcessQueryFields = []arrow.Field{
 var ProcessQueryStruct = arrow.StructOf(ProcessQueryFields...)
 
 var ProcessQuerySchema = arrow.NewSchema(ProcessQueryFields, nil)
+var ProcessQueryClassname = "process_query"

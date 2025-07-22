@@ -42,3 +42,4 @@ var EmailAuthenticationFields = []arrow.Field{
 var EmailAuthenticationStruct = arrow.StructOf(EmailAuthenticationFields...)
 
 var EmailAuthenticationSchema = arrow.NewSchema(EmailAuthenticationFields, nil)
+var EmailAuthenticationClassname = "email_auth"

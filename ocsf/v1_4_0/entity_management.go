@@ -166,3 +166,4 @@ var EntityManagementFields = []arrow.Field{
 var EntityManagementStruct = arrow.StructOf(EntityManagementFields...)
 
 var EntityManagementSchema = arrow.NewSchema(EntityManagementFields, nil)
+var EntityManagementClassname = "entity_management"

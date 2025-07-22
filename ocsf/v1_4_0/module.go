@@ -42,3 +42,4 @@ var ModuleFields = []arrow.Field{
 var ModuleStruct = arrow.StructOf(ModuleFields...)
 
 var ModuleSchema = arrow.NewSchema(ModuleFields, nil)
+var ModuleClassname = "module"

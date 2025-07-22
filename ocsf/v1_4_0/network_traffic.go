@@ -54,3 +54,4 @@ var NetworkTrafficFields = []arrow.Field{
 var NetworkTrafficStruct = arrow.StructOf(NetworkTrafficFields...)
 
 var NetworkTrafficSchema = arrow.NewSchema(NetworkTrafficFields, nil)
+var NetworkTrafficClassname = "network_traffic"

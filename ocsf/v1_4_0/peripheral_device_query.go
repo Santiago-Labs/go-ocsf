@@ -150,3 +150,4 @@ var PeripheralDeviceQueryFields = []arrow.Field{
 var PeripheralDeviceQueryStruct = arrow.StructOf(PeripheralDeviceQueryFields...)
 
 var PeripheralDeviceQuerySchema = arrow.NewSchema(PeripheralDeviceQueryFields, nil)
+var PeripheralDeviceQueryClassname = "peripheral_device_query"

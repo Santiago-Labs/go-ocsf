@@ -142,3 +142,4 @@ var ScheduledJobActivityFields = []arrow.Field{
 var ScheduledJobActivityStruct = arrow.StructOf(ScheduledJobActivityFields...)
 
 var ScheduledJobActivitySchema = arrow.NewSchema(ScheduledJobActivityFields, nil)
+var ScheduledJobActivityClassname = "scheduled_job_activity"

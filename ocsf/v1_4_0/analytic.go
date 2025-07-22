@@ -42,3 +42,4 @@ var AnalyticFields = []arrow.Field{
 var AnalyticStruct = arrow.StructOf(AnalyticFields...)
 
 var AnalyticSchema = arrow.NewSchema(AnalyticFields, nil)
+var AnalyticClassname = "analytic"

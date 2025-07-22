@@ -150,3 +150,4 @@ var StartupItemQueryFields = []arrow.Field{
 var StartupItemQueryStruct = arrow.StructOf(StartupItemQueryFields...)
 
 var StartupItemQuerySchema = arrow.NewSchema(StartupItemQueryFields, nil)
+var StartupItemQueryClassname = "startup_item_query"

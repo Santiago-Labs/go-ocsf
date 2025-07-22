@@ -114,3 +114,4 @@ var EvidenceArtifactsFields = []arrow.Field{
 var EvidenceArtifactsStruct = arrow.StructOf(EvidenceArtifactsFields...)
 
 var EvidenceArtifactsSchema = arrow.NewSchema(EvidenceArtifactsFields, nil)
+var EvidenceArtifactsClassname = "evidences"

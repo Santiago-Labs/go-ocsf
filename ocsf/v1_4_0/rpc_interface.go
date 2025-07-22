@@ -30,3 +30,4 @@ var RPCInterfaceFields = []arrow.Field{
 var RPCInterfaceStruct = arrow.StructOf(RPCInterfaceFields...)
 
 var RPCInterfaceSchema = arrow.NewSchema(RPCInterfaceFields, nil)
+var RPCInterfaceClassname = "rpc_interface"

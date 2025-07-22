@@ -22,3 +22,4 @@ var KillChainPhaseFields = []arrow.Field{
 var KillChainPhaseStruct = arrow.StructOf(KillChainPhaseFields...)
 
 var KillChainPhaseSchema = arrow.NewSchema(KillChainPhaseFields, nil)
+var KillChainPhaseClassname = "kill_chain_phase"

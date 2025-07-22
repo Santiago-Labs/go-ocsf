@@ -70,3 +70,4 @@ var UnmannedAerialSystemFields = []arrow.Field{
 var UnmannedAerialSystemStruct = arrow.StructOf(UnmannedAerialSystemFields...)
 
 var UnmannedAerialSystemSchema = arrow.NewSchema(UnmannedAerialSystemFields, nil)
+var UnmannedAerialSystemClassname = "unmanned_aerial_system"

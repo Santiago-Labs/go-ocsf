@@ -134,3 +134,4 @@ var ApplicationErrorFields = []arrow.Field{
 var ApplicationErrorStruct = arrow.StructOf(ApplicationErrorFields...)
 
 var ApplicationErrorSchema = arrow.NewSchema(ApplicationErrorFields, nil)
+var ApplicationErrorClassname = "application_error"

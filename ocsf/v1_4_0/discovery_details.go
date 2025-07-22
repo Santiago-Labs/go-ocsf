@@ -30,3 +30,4 @@ var DiscoveryDetailsFields = []arrow.Field{
 var DiscoveryDetailsStruct = arrow.StructOf(DiscoveryDetailsFields...)
 
 var DiscoveryDetailsSchema = arrow.NewSchema(DiscoveryDetailsFields, nil)
+var DiscoveryDetailsClassname = "discovery_details"

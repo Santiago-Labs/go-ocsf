@@ -34,3 +34,4 @@ var EncryptionDetailsFields = []arrow.Field{
 var EncryptionDetailsStruct = arrow.StructOf(EncryptionDetailsFields...)
 
 var EncryptionDetailsSchema = arrow.NewSchema(EncryptionDetailsFields, nil)
+var EncryptionDetailsClassname = "encryption_details"

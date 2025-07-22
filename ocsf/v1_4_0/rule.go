@@ -38,3 +38,4 @@ var RuleFields = []arrow.Field{
 var RuleStruct = arrow.StructOf(RuleFields...)
 
 var RuleSchema = arrow.NewSchema(RuleFields, nil)
+var RuleClassname = "rule"

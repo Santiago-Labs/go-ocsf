@@ -38,3 +38,4 @@ var PolicyFields = []arrow.Field{
 var PolicyStruct = arrow.StructOf(PolicyFields...)
 
 var PolicySchema = arrow.NewSchema(PolicyFields, nil)
+var PolicyClassname = "policy"

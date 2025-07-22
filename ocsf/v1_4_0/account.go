@@ -38,3 +38,4 @@ var AccountFields = []arrow.Field{
 var AccountStruct = arrow.StructOf(AccountFields...)
 
 var AccountSchema = arrow.NewSchema(AccountFields, nil)
+var AccountClassname = "account"

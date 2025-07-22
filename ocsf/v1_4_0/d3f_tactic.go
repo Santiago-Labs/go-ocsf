@@ -26,3 +26,4 @@ var MITRED3FENDTacticFields = []arrow.Field{
 var MITRED3FENDTacticStruct = arrow.StructOf(MITRED3FENDTacticFields...)
 
 var MITRED3FENDTacticSchema = arrow.NewSchema(MITRED3FENDTacticFields, nil)
+var MITRED3FENDTacticClassname = "d3f_tactic"

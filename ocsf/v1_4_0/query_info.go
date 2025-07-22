@@ -38,3 +38,4 @@ var QueryInformationFields = []arrow.Field{
 var QueryInformationStruct = arrow.StructOf(QueryInformationFields...)
 
 var QueryInformationSchema = arrow.NewSchema(QueryInformationFields, nil)
+var QueryInformationClassname = "query_info"

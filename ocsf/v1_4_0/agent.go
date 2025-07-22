@@ -46,3 +46,4 @@ var AgentFields = []arrow.Field{
 var AgentStruct = arrow.StructOf(AgentFields...)
 
 var AgentSchema = arrow.NewSchema(AgentFields, nil)
+var AgentClassname = "agent"

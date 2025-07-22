@@ -66,3 +66,4 @@ var FindingFields = []arrow.Field{
 var FindingStruct = arrow.StructOf(FindingFields...)
 
 var FindingSchema = arrow.NewSchema(FindingFields, nil)
+var FindingClassname = "finding"

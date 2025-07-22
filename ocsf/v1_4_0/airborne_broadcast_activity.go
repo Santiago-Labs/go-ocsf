@@ -182,3 +182,4 @@ var AirborneBroadcastActivityFields = []arrow.Field{
 var AirborneBroadcastActivityStruct = arrow.StructOf(AirborneBroadcastActivityFields...)
 
 var AirborneBroadcastActivitySchema = arrow.NewSchema(AirborneBroadcastActivityFields, nil)
+var AirborneBroadcastActivityClassname = "airborne_broadcast_activity"

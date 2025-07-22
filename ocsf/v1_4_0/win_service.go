@@ -82,3 +82,4 @@ var WindowsServiceFields = []arrow.Field{
 var WindowsServiceStruct = arrow.StructOf(WindowsServiceFields...)
 
 var WindowsServiceSchema = arrow.NewSchema(WindowsServiceFields, nil)
+var WindowsServiceClassname = "win_service"

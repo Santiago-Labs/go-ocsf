@@ -186,3 +186,4 @@ var DNSActivityFields = []arrow.Field{
 var DNSActivityStruct = arrow.StructOf(DNSActivityFields...)
 
 var DNSActivitySchema = arrow.NewSchema(DNSActivityFields, nil)
+var DNSActivityClassname = "dns_activity"

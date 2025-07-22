@@ -86,3 +86,4 @@ var RelatedEventFindingFields = []arrow.Field{
 var RelatedEventFindingStruct = arrow.StructOf(RelatedEventFindingFields...)
 
 var RelatedEventFindingSchema = arrow.NewSchema(RelatedEventFindingFields, nil)
+var RelatedEventFindingClassname = "related_event"

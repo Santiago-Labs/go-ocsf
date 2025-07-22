@@ -86,3 +86,4 @@ var AdvisoryFields = []arrow.Field{
 var AdvisoryStruct = arrow.StructOf(AdvisoryFields...)
 
 var AdvisorySchema = arrow.NewSchema(AdvisoryFields, nil)
+var AdvisoryClassname = "advisory"

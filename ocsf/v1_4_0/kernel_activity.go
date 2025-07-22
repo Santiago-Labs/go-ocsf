@@ -146,3 +146,4 @@ var KernelActivityFields = []arrow.Field{
 var KernelActivityStruct = arrow.StructOf(KernelActivityFields...)
 
 var KernelActivitySchema = arrow.NewSchema(KernelActivityFields, nil)
+var KernelActivityClassname = "kernel_activity"

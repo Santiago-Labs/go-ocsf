@@ -50,3 +50,4 @@ var OccurrenceDetailsFields = []arrow.Field{
 var OccurrenceDetailsStruct = arrow.StructOf(OccurrenceDetailsFields...)
 
 var OccurrenceDetailsSchema = arrow.NewSchema(OccurrenceDetailsFields, nil)
+var OccurrenceDetailsClassname = "occurrence_details"

@@ -54,3 +54,4 @@ var JobFields = []arrow.Field{
 var JobStruct = arrow.StructOf(JobFields...)
 
 var JobSchema = arrow.NewSchema(JobFields, nil)
+var JobClassname = "job"

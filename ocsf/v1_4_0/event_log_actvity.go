@@ -162,3 +162,4 @@ var EventLogActivityFields = []arrow.Field{
 var EventLogActivityStruct = arrow.StructOf(EventLogActivityFields...)
 
 var EventLogActivitySchema = arrow.NewSchema(EventLogActivityFields, nil)
+var EventLogActivityClassname = "event_log_actvity"

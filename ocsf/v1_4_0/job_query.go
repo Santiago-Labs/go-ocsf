@@ -150,3 +150,4 @@ var JobQueryFields = []arrow.Field{
 var JobQueryStruct = arrow.StructOf(JobQueryFields...)
 
 var JobQuerySchema = arrow.NewSchema(JobQueryFields, nil)
+var JobQueryClassname = "job_query"

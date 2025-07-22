@@ -146,3 +146,4 @@ var WindowsServiceActivityFields = []arrow.Field{
 var WindowsServiceActivityStruct = arrow.StructOf(WindowsServiceActivityFields...)
 
 var WindowsServiceActivitySchema = arrow.NewSchema(WindowsServiceActivityFields, nil)
+var WindowsServiceActivityClassname = "windows_service_activity"

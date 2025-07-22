@@ -38,3 +38,4 @@ var GroupFields = []arrow.Field{
 var GroupStruct = arrow.StructOf(GroupFields...)
 
 var GroupSchema = arrow.NewSchema(GroupFields, nil)
+var GroupClassname = "group"

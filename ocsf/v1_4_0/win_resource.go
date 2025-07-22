@@ -54,3 +54,4 @@ var WindowsResourceFields = []arrow.Field{
 var WindowsResourceStruct = arrow.StructOf(WindowsResourceFields...)
 
 var WindowsResourceSchema = arrow.NewSchema(WindowsResourceFields, nil)
+var WindowsResourceClassname = "win_resource"

@@ -26,3 +26,4 @@ var CISControlFields = []arrow.Field{
 var CISControlStruct = arrow.StructOf(CISControlFields...)
 
 var CISControlSchema = arrow.NewSchema(CISControlFields, nil)
+var CISControlClassname = "cis_control"

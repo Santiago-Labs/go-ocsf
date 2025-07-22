@@ -58,3 +58,4 @@ var CVEFields = []arrow.Field{
 var CVEStruct = arrow.StructOf(CVEFields...)
 
 var CVESchema = arrow.NewSchema(CVEFields, nil)
+var CVEClassname = "cve"

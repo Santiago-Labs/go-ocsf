@@ -142,3 +142,4 @@ var DeviceConfigStateFields = []arrow.Field{
 var DeviceConfigStateStruct = arrow.StructOf(DeviceConfigStateFields...)
 
 var DeviceConfigStateSchema = arrow.NewSchema(DeviceConfigStateFields, nil)
+var DeviceConfigStateClassname = "config_state"

@@ -190,3 +190,4 @@ var FTPActivityFields = []arrow.Field{
 var FTPActivityStruct = arrow.StructOf(FTPActivityFields...)
 
 var FTPActivitySchema = arrow.NewSchema(FTPActivityFields, nil)
+var FTPActivityClassname = "ftp_activity"

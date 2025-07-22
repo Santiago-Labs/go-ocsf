@@ -150,3 +150,4 @@ var UserQueryFields = []arrow.Field{
 var UserQueryStruct = arrow.StructOf(UserQueryFields...)
 
 var UserQuerySchema = arrow.NewSchema(UserQueryFields, nil)
+var UserQueryClassname = "user_query"

@@ -146,3 +146,4 @@ var ScriptActivityFields = []arrow.Field{
 var ScriptActivityStruct = arrow.StructOf(ScriptActivityFields...)
 
 var ScriptActivitySchema = arrow.NewSchema(ScriptActivityFields, nil)
+var ScriptActivityClassname = "script_activity"

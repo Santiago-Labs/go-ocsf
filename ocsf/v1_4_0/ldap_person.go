@@ -94,6 +94,7 @@ var LDAPPersonFields = []arrow.Field{
 var LDAPPersonStruct = arrow.StructOf(LDAPPersonFields...)
 
 var LDAPPersonSchema = arrow.NewSchema(LDAPPersonFields, nil)
+var LDAPPersonClassname = "ldap_person"
 var LDAPPersonRefFields = []arrow.Field{
 	{Name: "cost_center", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

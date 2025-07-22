@@ -186,3 +186,4 @@ var TunnelActivityFields = []arrow.Field{
 var TunnelActivityStruct = arrow.StructOf(TunnelActivityFields...)
 
 var TunnelActivitySchema = arrow.NewSchema(TunnelActivityFields, nil)
+var TunnelActivityClassname = "tunnel_activity"

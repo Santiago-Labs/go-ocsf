@@ -26,3 +26,4 @@ var KeyValueobjectFields = []arrow.Field{
 var KeyValueobjectStruct = arrow.StructOf(KeyValueobjectFields...)
 
 var KeyValueobjectSchema = arrow.NewSchema(KeyValueobjectFields, nil)
+var KeyValueobjectClassname = "key_value_object"

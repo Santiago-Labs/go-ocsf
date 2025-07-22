@@ -206,3 +206,4 @@ var SMBActivityFields = []arrow.Field{
 var SMBActivityStruct = arrow.StructOf(SMBActivityFields...)
 
 var SMBActivitySchema = arrow.NewSchema(SMBActivityFields, nil)
+var SMBActivityClassname = "smb_activity"

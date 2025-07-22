@@ -26,3 +26,4 @@ var MITREATTCKSubTechniqueFields = []arrow.Field{
 var MITREATTCKSubTechniqueStruct = arrow.StructOf(MITREATTCKSubTechniqueFields...)
 
 var MITREATTCKSubTechniqueSchema = arrow.NewSchema(MITREATTCKSubTechniqueFields, nil)
+var MITREATTCKSubTechniqueClassname = "sub_technique"

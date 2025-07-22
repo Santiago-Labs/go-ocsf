@@ -66,3 +66,4 @@ var SessionFields = []arrow.Field{
 var SessionStruct = arrow.StructOf(SessionFields...)
 
 var SessionSchema = arrow.NewSchema(SessionFields, nil)
+var SessionClassname = "session"

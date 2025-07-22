@@ -42,3 +42,4 @@ var ActorFields = []arrow.Field{
 var ActorStruct = arrow.StructOf(ActorFields...)
 
 var ActorSchema = arrow.NewSchema(ActorFields, nil)
+var ActorClassname = "actor"

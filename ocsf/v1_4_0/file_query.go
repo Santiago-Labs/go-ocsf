@@ -150,3 +150,4 @@ var FileQueryFields = []arrow.Field{
 var FileQueryStruct = arrow.StructOf(FileQueryFields...)
 
 var FileQuerySchema = arrow.NewSchema(FileQueryFields, nil)
+var FileQueryClassname = "file_query"

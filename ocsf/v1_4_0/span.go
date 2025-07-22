@@ -50,3 +50,4 @@ var SpanFields = []arrow.Field{
 var SpanStruct = arrow.StructOf(SpanFields...)
 
 var SpanSchema = arrow.NewSchema(SpanFields, nil)
+var SpanClassname = "span"

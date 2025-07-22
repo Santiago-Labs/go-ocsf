@@ -58,3 +58,4 @@ var HTTPRequestFields = []arrow.Field{
 var HTTPRequestStruct = arrow.StructOf(HTTPRequestFields...)
 
 var HTTPRequestSchema = arrow.NewSchema(HTTPRequestFields, nil)
+var HTTPRequestClassname = "http_request"

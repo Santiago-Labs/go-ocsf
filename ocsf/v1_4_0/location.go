@@ -82,3 +82,4 @@ var GeoLocationFields = []arrow.Field{
 var GeoLocationStruct = arrow.StructOf(GeoLocationFields...)
 
 var GeoLocationSchema = arrow.NewSchema(GeoLocationFields, nil)
+var GeoLocationClassname = "location"

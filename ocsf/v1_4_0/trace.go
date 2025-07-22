@@ -42,3 +42,4 @@ var TraceFields = []arrow.Field{
 var TraceStruct = arrow.StructOf(TraceFields...)
 
 var TraceSchema = arrow.NewSchema(TraceFields, nil)
+var TraceClassname = "trace"

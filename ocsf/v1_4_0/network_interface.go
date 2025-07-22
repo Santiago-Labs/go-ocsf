@@ -50,3 +50,4 @@ var NetworkInterfaceFields = []arrow.Field{
 var NetworkInterfaceStruct = arrow.StructOf(NetworkInterfaceFields...)
 
 var NetworkInterfaceSchema = arrow.NewSchema(NetworkInterfaceFields, nil)
+var NetworkInterfaceClassname = "network_interface"

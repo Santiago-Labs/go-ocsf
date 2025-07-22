@@ -118,6 +118,7 @@ var ProcessFields = []arrow.Field{
 var ProcessStruct = arrow.StructOf(ProcessFields...)
 
 var ProcessSchema = arrow.NewSchema(ProcessFields, nil)
+var ProcessClassname = "process"
 var ProcessRefFields = []arrow.Field{
 
 	{Name: "auid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

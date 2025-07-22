@@ -102,3 +102,4 @@ var EndpointFields = []arrow.Field{
 var EndpointStruct = arrow.StructOf(EndpointFields...)
 
 var EndpointSchema = arrow.NewSchema(EndpointFields, nil)
+var EndpointClassname = "endpoint"

@@ -30,3 +30,4 @@ var RegistryKeyFields = []arrow.Field{
 var RegistryKeyStruct = arrow.StructOf(RegistryKeyFields...)
 
 var RegistryKeySchema = arrow.NewSchema(RegistryKeyFields, nil)
+var RegistryKeyClassname = "reg_key"

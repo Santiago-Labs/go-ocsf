@@ -50,3 +50,4 @@ var CVSSScoreFields = []arrow.Field{
 var CVSSScoreStruct = arrow.StructOf(CVSSScoreFields...)
 
 var CVSSScoreSchema = arrow.NewSchema(CVSSScoreFields, nil)
+var CVSSScoreClassname = "cvss"

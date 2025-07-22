@@ -22,3 +22,4 @@ var SecurityStateFields = []arrow.Field{
 var SecurityStateStruct = arrow.StructOf(SecurityStateFields...)
 
 var SecurityStateSchema = arrow.NewSchema(SecurityStateFields, nil)
+var SecurityStateClassname = "security_state"
