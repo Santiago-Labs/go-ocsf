@@ -25,7 +25,6 @@ type BaseDatastore[T any] struct {
 
 // Save saves a batch of events to the datastore. Datastore implementations handle file formats.
 func (d *BaseDatastore[T]) Save(ctx context.Context, items []T) error {
-	fmt.Printf("BaseDatastore.Save received: %d items\n", len(items))
 	if err := d.store.WriteBatch(ctx, items); err != nil {
 		return err
 	}
