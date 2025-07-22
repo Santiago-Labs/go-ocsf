@@ -20,7 +20,7 @@ type Process struct {
 	Container *Container `json:"container,omitempty" parquet:"container,optional"`
 
 	// Created Time: The time when the process was created/started.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Effective Group ID: The effective group under which this process is running.
 	Egid *int32 `json:"egid,omitempty" parquet:"egid,optional"`
@@ -68,7 +68,7 @@ type Process struct {
 	Session *Session `json:"session,omitempty" parquet:"session,optional"`
 
 	// Terminated Time: The time when the process was terminated.
-	TerminatedTime *int64 `json:"terminated_time,omitempty" parquet:"terminated_time,optional"`
+	TerminatedTime int64 `json:"terminated_time,omitempty" parquet:"terminated_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Thread ID: The Identifier of the thread associated with the event, as returned by the operating system.
 	Tid *int32 `json:"tid,omitempty" parquet:"tid,optional"`
@@ -91,7 +91,7 @@ var ProcessFields = []arrow.Field{
 	{Name: "auid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "container", Type: ContainerStruct, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "egid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "environment_variables", Type: arrow.ListOf(EnvironmentVariableStruct), Nullable: true},
 	{Name: "euid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -107,7 +107,7 @@ var ProcessFields = []arrow.Field{
 	{Name: "pid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "sandbox", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "session", Type: SessionStruct, Nullable: true},
-	{Name: "terminated_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "terminated_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "tid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "user", Type: UserStruct, Nullable: true},
@@ -123,7 +123,7 @@ var ProcessRefFields = []arrow.Field{
 	{Name: "auid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "egid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 
 	{Name: "euid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -138,7 +138,7 @@ var ProcessRefFields = []arrow.Field{
 	{Name: "pid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "sandbox", Type: arrow.BinaryTypes.String, Nullable: true},
 
-	{Name: "terminated_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "terminated_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "tid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 
@@ -154,7 +154,7 @@ type ProcessRef struct {
 	CmdLine *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 
 	// Created Time: The time when the process was created/started.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	Egid *int32 `json:"egid,omitempty" parquet:"egid,optional"`
 
@@ -186,7 +186,7 @@ type ProcessRef struct {
 	Sandbox *string `json:"sandbox,omitempty" parquet:"sandbox,optional"`
 
 	// Terminated Time: The time when the process was terminated.
-	TerminatedTime *int64 `json:"terminated_time,omitempty" parquet:"terminated_time,optional"`
+	TerminatedTime int64 `json:"terminated_time,omitempty" parquet:"terminated_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Thread ID: The Identifier of the thread associated with the event, as returned by the operating system.
 	Tid *int32 `json:"tid,omitempty" parquet:"tid,optional"`

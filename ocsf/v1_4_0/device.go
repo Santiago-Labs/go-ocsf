@@ -14,13 +14,13 @@ type Device struct {
 	AutoscaleUid *string `json:"autoscale_uid,omitempty" parquet:"autoscale_uid,optional"`
 
 	// Boot Time: The time the system was booted.
-	BootTime *int64 `json:"boot_time,omitempty" parquet:"boot_time,optional"`
+	BootTime int64 `json:"boot_time,omitempty" parquet:"boot_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Container: The information describing an instance of a container. A container is a prepackaged, portable system image that runs isolated on an existing system using a container runtime like containerd.
 	Container *Container `json:"container,omitempty" parquet:"container,optional"`
 
 	// Created Time: The time when the device was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Description: The description of the device, ordinarily as reported by the operating system.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -29,7 +29,7 @@ type Device struct {
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
 
 	// First Seen: The initial discovery time of the device.
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Groups: The group names to which the device belongs. For example: <code>["Windows Laptops", "Engineering"]</code>.
 	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
@@ -74,7 +74,7 @@ type Device struct {
 	IsTrusted *bool `json:"is_trusted,omitempty" parquet:"is_trusted,optional"`
 
 	// Last Seen: The most recent discovery time of the device.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Geo Location: The geographical location of the device.
 	Location *GeoLocation `json:"location,omitempty" parquet:"location,optional"`
@@ -86,7 +86,7 @@ type Device struct {
 	Model *string `json:"model,omitempty" parquet:"model,optional"`
 
 	// Modified Time: The time when the device was last known to have been modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Name: The alternate device name, ordinarily as assigned by an administrator. <p><b>Note:</b> The <b>Name</b> could be any other string that helps to identify the device, such as a phone number; for example <code>310-555-1234</code>.</p>
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -155,12 +155,12 @@ type Device struct {
 var DeviceFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "autoscale_uid", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "boot_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "boot_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "container", Type: ContainerStruct, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "groups", Type: arrow.ListOf(GroupStruct), Nullable: true},
 	{Name: "hostname", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "hw_info", Type: DeviceHardwareInfoStruct, Nullable: true},
@@ -175,11 +175,11 @@ var DeviceFields = []arrow.Field{
 	{Name: "is_managed", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_personal", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_trusted", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "location", Type: GeoLocationStruct, Nullable: true},
 	{Name: "mac", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "model", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "namespace_pid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "network_interfaces", Type: arrow.ListOf(NetworkInterfaceStruct), Nullable: true},

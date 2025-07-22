@@ -11,7 +11,7 @@ type HTTPCookie struct {
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
 
 	// Expiration Time: The expiration time of the HTTP cookie.
-	ExpirationTime *int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// HTTP Only: This attribute prevents the cookie from being accessed via JavaScript.
 	IsHttpOnly *bool `json:"is_http_only,omitempty" parquet:"is_http_only,optional"`
@@ -34,7 +34,7 @@ type HTTPCookie struct {
 
 var HTTPCookieFields = []arrow.Field{
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "is_http_only", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_secure", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},

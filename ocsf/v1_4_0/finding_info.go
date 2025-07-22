@@ -14,7 +14,7 @@ type FindingInformation struct {
 	Attacks []*MITREATTCK `json:"attacks,omitempty" parquet:"attacks,optional,list"`
 
 	// Created Time: The time when the finding was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Data Sources: A list of data sources utilized in generation of the finding.
 	DataSources []string `json:"data_sources,omitempty" parquet:"data_sources,optional,list"`
@@ -23,16 +23,16 @@ type FindingInformation struct {
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed. e.g. The time when a vulnerability was first observed. <p>It can differ from the <code>created_time</code> timestamp, which reflects the time this finding was created.</p>
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Kill Chain: The <a target='_blank' href='https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html'>Cyber Kill Chain®</a> provides a detailed description of each phase and its associated activities within the broader context of a cyber attack.
 	KillChain []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,optional,list"`
 
 	// Last Seen: The time when the finding was most recently observed. e.g. The time when a vulnerability was most recently observed. <p>It can differ from the <code>modified_time</code> timestamp, which reflects the time this finding was last modified.</p>
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Modified Time: The time when the finding was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Product: Details about the product that reported the finding.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
@@ -68,13 +68,13 @@ type FindingInformation struct {
 var FindingInformationFields = []arrow.Field{
 	{Name: "analytic", Type: AnalyticStruct, Nullable: true},
 	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct), Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "data_sources", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "kill_chain", Type: arrow.ListOf(KillChainPhaseStruct), Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "related_analytics", Type: arrow.ListOf(AnalyticStruct), Nullable: true},
 	{Name: "related_events", Type: arrow.ListOf(RelatedEventFindingStruct), Nullable: true},

@@ -1,161 +1,478 @@
 package cloudtrail
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
+	"path"
+	"strconv"
 	"strings"
 	"time"
 
+	"sync"
+
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	ocsf "github.com/Santiago-Labs/go-ocsf/ocsf/v1_4_0"
-	"github.com/aws/aws-sdk-go-v2/service/cloudtrail"
-	"github.com/aws/aws-sdk-go-v2/service/cloudtrail/types"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/samsarahq/go/oops"
+	"golang.org/x/sync/errgroup"
 )
 
+const (
+	defaultWorkers   = 10
+	defaultBatchSize = 1000
+)
+
+// Syncer pulls CloudTrail *.json.gz files from S3 and republishes them as OCSF.
 type Syncer struct {
-	cloudtrailClient *cloudtrail.Client
-	datastore        datastore.Datastore[ocsf.APIActivity]
+	bucket    string     // trail bucket name
+	s3        *s3.Client // injected S3 client
+	ds        datastore.Datastore[ocsf.APIActivity]
+	workers   int
+	batchSize int
 }
 
-type CloudtrailEvent struct {
-	EventVersion string `json:"eventVersion"`
-	UserIdentity struct {
-		Type           string  `json:"type"`
-		PrincipalID    string  `json:"principalId"`
-		Arn            string  `json:"arn"`
-		AccountID      *string `json:"accountId"`
-		AccessKeyID    string  `json:"accessKeyId"`
-		SessionContext struct {
-			SessionIssuer struct {
-				Type        string `json:"type"`
-				PrincipalID string `json:"principalId"`
-				Arn         string `json:"arn"`
-				AccountID   string `json:"accountId"`
-				UserName    string `json:"userName"`
-			} `json:"sessionIssuer"`
-			Attributes struct {
-				CreationDate     time.Time `json:"creationDate"`
-				MfaAuthenticated string    `json:"mfaAuthenticated"`
-			} `json:"attributes"`
-		} `json:"sessionContext"`
-		InvokedBy string `json:"invokedBy"`
-	} `json:"userIdentity"`
-	EventTime          time.Time `json:"eventTime"`
-	EventSource        string    `json:"eventSource"`
-	EventName          string    `json:"eventName"`
-	AwsRegion          string    `json:"awsRegion"`
-	SourceIPAddress    string    `json:"sourceIPAddress"`
-	UserAgent          string    `json:"userAgent"`
-	ErrorCode          *string   `json:"errorCode"`
-	ErrorMessage       *string   `json:"errorMessage"`
-	RequestParameters  any       `json:"requestParameters"`
-	ResponseElements   any       `json:"responseElements"`
-	RequestID          string    `json:"requestID"`
-	EventID            string    `json:"eventID"`
-	ReadOnly           bool      `json:"readOnly"`
-	EventType          string    `json:"eventType"`
-	ManagementEvent    bool      `json:"managementEvent"`
-	RecipientAccountID string    `json:"recipientAccountId"`
-	EventCategory      string    `json:"eventCategory"`
-}
+// New creates a new Syncer.  The bucket *must* contain standard CloudTrail keys
+// (AWSLogs/<acct>/CloudTrail/<region>/<yyyy>/<mm>/<dd>/…json.gz).
+func NewSyncer(
+	ctx context.Context,
+	s3client *s3.Client,
+	bucket string,
+	storage datastore.StorageOpts,
+) (*Syncer, error) {
 
-func NewSyncer(ctx context.Context, cloudtrailClient *cloudtrail.Client, storageOpts datastore.StorageOpts) (*Syncer, error) {
-	dataStoreInst, err := datastore.SetupStorage[ocsf.APIActivity](ctx, storageOpts)
+	ds, err := datastore.SetupStorage[ocsf.APIActivity](ctx, storage)
 	if err != nil {
-		return nil, fmt.Errorf("failed to setup datastore: %w", err)
+		return nil, fmt.Errorf("setup datastore: %w", err)
 	}
-
 	return &Syncer{
-		cloudtrailClient: cloudtrailClient,
-		datastore:        dataStoreInst,
+		s3:        s3client,
+		bucket:    bucket,
+		ds:        ds,
+		workers:   defaultWorkers,
+		batchSize: defaultBatchSize,
 	}, nil
 }
 
+// ---------------------------------------------------------------------------
+// PUBLIC API
+// ---------------------------------------------------------------------------
+
+// Sync streams every historical object plus today's keys into the datastore.
 func (s *Syncer) Sync(ctx context.Context) error {
-	slog.Info("syncing CloudTrail data")
+	processID := fmt.Sprintf("PROC-%d", time.Now().UnixNano())
+	fmt.Printf("=== STARTING CloudTrail Sync Process %s ===\n", processID)
 
-	// CloudTrail limits to 2 calls per second per account per region
-	// We'll use pagination to get all events
-	var nextToken *string
-	var savedActivities, foundActivities int
-	var ocsfEvents []ocsf.APIActivity
-	const batchSize = 100
+	// Check for other running go-ocsf processes
+	fmt.Printf("=== PROCESS CHECK [%s] ===\n", processID)
 
-	// Rate limiting setup - CloudTrail has a limit of 2 calls per second
-	limiter := time.NewTicker(500 * time.Millisecond) // 500ms = 2 calls per second
-	defer limiter.Stop()
+	slog.Info("CloudTrail sync – discovery", "bucket", s.bucket)
+	accRegs, err := s.discoverAccountsAndRegions(ctx)
+	if err != nil {
+		return err
+	}
 
-	for {
-		// Wait for rate limit before making API call
-		select {
-		case <-limiter.C:
-			// Proceed with API call
-		case <-ctx.Done():
-			return ctx.Err()
+	cutoff := time.Now().UTC().AddDate(0, 0, -30)
+	cutoffDay := time.Date(cutoff.Year(), cutoff.Month(), cutoff.Day(),
+		0, 0, 0, 0, time.UTC)
+
+	workCh := make(chan string, 100)              // day prefixes
+	commitCh := make(chan []ocsf.APIActivity, 64) // batches to write
+	errCh := make(chan error, 1)
+
+	if err := s.enqueueAllDays(ctx, accRegs, cutoffDay, workCh); err != nil {
+		return err
+	}
+	close(workCh) // enqueue is done
+
+	// ❶ single committer goroutine with WaitGroup - uses original context
+	var committerWG sync.WaitGroup
+	committerWG.Add(1)
+	go func() {
+		defer committerWG.Done()
+		batchCount := 0
+		totalItems := 0
+		for batch := range commitCh {
+			batchCount++
+			batchLen := len(batch)
+			totalItems += batchLen
+
+			fmt.Printf("COMMITTER: Processing batch #%d with %d items (total: %d)\n", batchCount, batchLen, totalItems)
+
+			// Use original context so committer continues even if workers fail
+			if err := s.ds.Save(ctx, batch); err != nil {
+				errCh <- err
+				return
+			}
 		}
+		fmt.Printf("COMMITTER: Finished processing %d batches with %d total items\n", batchCount, totalItems)
+	}()
 
-		cloudtrailEvents, err := s.cloudtrailClient.LookupEvents(ctx, &cloudtrail.LookupEventsInput{
-			NextToken: nextToken,
-		})
-		if err != nil {
-			// Add exponential backoff for rate limiting errors
-			if retryErr, ok := err.(interface{ RetryAfter() time.Duration }); ok {
-				slog.Warn("rate limited by CloudTrail API, backing off", "retry_after", retryErr.RetryAfter())
-				select {
-				case <-time.After(retryErr.RetryAfter()):
-					continue // retry the request
-				case <-ctx.Done():
-					return ctx.Err()
+	// ❂ workers use separate errgroup context that can be cancelled independently
+	g, workerCtx := errgroup.WithContext(ctx)
+	for i := 0; i < s.workers; i++ {
+		workerID := i + 1
+		g.Go(func() error {
+			var workerErrors []error
+			processedDays := 0
+			failedDays := 0
+
+			for day := range workCh {
+				processedDays++
+				// Workers use workerCtx which can be cancelled without affecting committer
+				if err := s.syncDay(workerCtx, day, commitCh, processID); err != nil {
+					failedDays++
+					fmt.Printf("WORKER #%d [%s]: Failed to process day %s: %v\n", workerID, processID, day, err)
+					workerErrors = append(workerErrors, fmt.Errorf("day %s: %w", day, err))
+
+					// Continue processing other days instead of failing immediately
+					continue
 				}
+				fmt.Printf("WORKER #%d [%s]: Successfully processed day %s\n", workerID, processID, day)
 			}
-			return fmt.Errorf("failed to get event history: %w", err)
-		}
 
-		foundActivities += len(cloudtrailEvents.Events)
+			fmt.Printf("WORKER #%d [%s]: Finished - processed %d days, failed %d days\n", workerID, processID, processedDays, failedDays)
 
-		// Convert CloudTrail events to OCSF format
-		for _, event := range cloudtrailEvents.Events {
-			ocsfEvent, err := s.ToOCSF(ctx, event)
-			if err != nil {
-				slog.Warn("failed to convert event to OCSF", "error", err)
-				continue
+			// Only return error if all days failed or if we have critical errors
+			if len(workerErrors) > 0 && failedDays == processedDays {
+				return fmt.Errorf("worker #%d failed all %d days: %v", workerID, processedDays, workerErrors)
 			}
-			ocsfEvents = append(ocsfEvents, ocsfEvent)
-		}
 
-		// Save in batches
-		if len(ocsfEvents) >= batchSize {
-			err = s.datastore.Save(ctx, ocsfEvents)
-			if err != nil {
-				return fmt.Errorf("failed to save OCSF events batch: %w", err)
-			}
-			savedActivities += len(ocsfEvents)
-			ocsfEvents = nil // Reset the slice
-		}
-
-		// Check if we have more pages to fetch
-		if cloudtrailEvents.NextToken == nil {
-			break
-		}
-		nextToken = cloudtrailEvents.NextToken
+			return nil
+		})
 	}
 
-	// Save any remaining events
-	if len(ocsfEvents) > 0 {
-		err := s.datastore.Save(ctx, ocsfEvents)
-		if err != nil {
-			return fmt.Errorf("failed to save remaining OCSF events: %w", err)
-		}
-		savedActivities += len(ocsfEvents)
+	// wait for workers to finish
+	fmt.Printf("MAIN [%s]: Waiting for workers to finish\n", processID)
+	workerErr := g.Wait()
+	if workerErr != nil {
+		// Log worker errors but don't fail immediately - let committer finish processing
+		fmt.Printf("MAIN [%s]: Workers encountered errors: %v\n", processID, workerErr)
+		fmt.Printf("MAIN [%s]: Continuing to let committer process remaining batches\n", processID)
+	}
+	fmt.Printf("MAIN [%s]: All workers finished, closing commit channel\n", processID)
+	close(commitCh) // tell committer we're done
+
+	// wait for committer to finish processing all batches
+	fmt.Printf("MAIN [%s]: Waiting for committer to finish\n", processID)
+	committerWG.Wait()
+	fmt.Printf("MAIN [%s]: Committer finished\n", processID)
+
+	// Check for any commit errors (these are more critical)
+	select {
+	case err := <-errCh:
+		return fmt.Errorf("committer error: %w", err)
+	default:
 	}
 
-	slog.Info("Finished syncing CloudTrail data", "saved_activities", savedActivities, "found_activities", foundActivities)
+	// If workers had errors, report them now (after committer finished)
+	if workerErr != nil {
+		return fmt.Errorf("worker errors occurred: %w", workerErr)
+	}
+
+	slog.Info("CloudTrail sync finished")
+	fmt.Printf("=== FINISHED CloudTrail Sync Process %s ===\n", processID)
 	return nil
 }
 
-func (s *Syncer) ToOCSF(ctx context.Context, event types.Event) (ocsf.APIActivity, error) {
+// ---------------------------------------------------------------------------
+// DISCOVERY
+// ---------------------------------------------------------------------------
+
+// discoverAccountsAndRegions walks `AWSLogs/` and returns account→[]region map.
+func (s *Syncer) discoverAccountsAndRegions(ctx context.Context) (map[string][]string, error) {
+	slog.Info("Discovering accounts and regions")
+	root := "AWSLogs/"
+	out := map[string][]string{}
+
+	it := s.prefixIter(ctx, root, "")
+	for it.Next() {
+		accountID := strings.TrimSuffix(strings.TrimPrefix(it.Prefix(), root), "/")
+		regPath := path.Join(it.Prefix(), "CloudTrail") + "/"
+		regIter := s.prefixIter(ctx, regPath, "")
+		for regIter.Next() {
+			region := strings.TrimSuffix(strings.TrimPrefix(regIter.Prefix(), regPath), "/")
+			out[accountID] = append(out[accountID], region)
+		}
+		if err := regIter.Err(); err != nil {
+			return nil, err
+		}
+	}
+	return out, it.Err()
+}
+
+// enqueueAllDays emits one prefix per calendar-day into work chan.
+func (s *Syncer) enqueueAllDays(ctx context.Context, acc map[string][]string, cutoff time.Time, work chan<- string) error {
+	slog.Info("Enqueuing days", "accounts", acc)
+	for acct, regions := range acc {
+		for _, region := range regions {
+			root := fmt.Sprintf("AWSLogs/%s/CloudTrail/%s/", acct, region)
+			yearIter := s.prefixIter(ctx, root, "")
+			for yearIter.Next() {
+				yr := yearIter.Suffix()
+
+				yrInt, err := strconv.Atoi(yr[:4])
+				if err != nil {
+					return err
+				}
+				if yrInt < cutoff.Year() { // entire year older → stop
+					continue
+				}
+
+				monthIter := s.prefixIter(ctx, root+yr, "")
+				for monthIter.Next() {
+					mo := monthIter.Suffix()
+
+					moInt, err := strconv.Atoi(mo[:2])
+					if err != nil {
+						return err
+					}
+					if yrInt == cutoff.Year() && time.Month(moInt) < cutoff.Month() {
+						continue
+					}
+
+					dayIter := s.prefixIter(ctx, root+yr+mo, "")
+					for dayIter.Next() {
+
+						day := dayIter.Suffix()
+						prefix := root + yr + mo + day // yyyy/mm/dd/
+
+						dayInt, err := strconv.Atoi(day[:2])
+						if err != nil {
+							return err
+						}
+
+						dayDate := time.Date(yrInt, time.Month(moInt), dayInt,
+							0, 0, 0, 0, time.UTC)
+						if dayDate.Before(cutoff) {
+							continue
+						}
+
+						work <- prefix
+					}
+					if err := dayIter.Err(); err != nil {
+						return err
+					}
+				}
+				if err := monthIter.Err(); err != nil {
+					return err
+				}
+			}
+			if err := yearIter.Err(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// prefixIter is a helper that yields "folders" one level below base.
+type prefixIter struct {
+	ctx    context.Context
+	s3     *s3.Client
+	bucket string
+	base   string
+	token  *string
+	err    error
+	cur    []string // batch of prefixes
+	seen   map[string]bool
+	i      int
+}
+
+func (s *Syncer) prefixIter(ctx context.Context, base, delim string) *prefixIter {
+	if delim == "" {
+		delim = "/"
+	}
+	return &prefixIter{ctx: ctx, s3: s.s3, bucket: s.bucket, base: base, seen: map[string]bool{}}
+}
+func (p *prefixIter) Next() bool {
+	// load a page if we’ve exhausted the current slice
+	for p.err == nil && p.i >= len(p.cur) {
+		out, err := p.s3.ListObjectsV2(p.ctx, &s3.ListObjectsV2Input{
+			Bucket:            &p.bucket,
+			Prefix:            &p.base,
+			Delimiter:         aws.String("/"),
+			ContinuationToken: p.token,
+		})
+		if err != nil {
+			p.err = err
+			return false
+		}
+
+		// rebuild slice with unseen prefixes from this page
+		p.cur = p.cur[:0]
+		for _, cp := range out.CommonPrefixes {
+			pfx := strings.TrimPrefix(*cp.Prefix, p.base)
+			if !p.seen[pfx] {
+				p.cur = append(p.cur, pfx)
+				p.seen[pfx] = true
+			}
+		}
+		p.i = 0                // reset index for new page
+		if !*out.IsTruncated { // no more pages
+			p.token = nil
+		} else {
+			p.token = out.NextContinuationToken
+		}
+		// if the current page had *no* new prefixes and there is no
+		// next page, bail out
+		if len(p.cur) == 0 && p.token == nil {
+			return false
+		}
+	}
+
+	// nothing left
+	if p.err != nil || p.i >= len(p.cur) {
+		return false
+	}
+
+	p.i++ // <-- advance cursor so the next call moves on
+	return true
+}
+
+func (p *prefixIter) Prefix() string { return p.base + p.cur[p.i-1] }
+func (p *prefixIter) Suffix() string { return p.cur[p.i-1] }
+func (p *prefixIter) Err() error     { return p.err }
+func (p *prefixIter) reset()         { p.i++ }
+
+// ---------------------------------------------------------------------------
+// PER-DAY PROCESSING
+// ---------------------------------------------------------------------------
+
+func (s *Syncer) syncDay(
+	ctx context.Context,
+	dayPrefix string,
+	commitCh chan<- []ocsf.APIActivity,
+	processID string) error {
+
+	slog.Info("Syncing day", "dayPrefix", dayPrefix)
+
+	it := s.objectIter(ctx, dayPrefix)
+	buf := make([]ocsf.APIActivity, 0, s.batchSize)
+
+	for it.Next() {
+		key := it.Key()
+		if !strings.HasSuffix(key, ".json.gz") {
+			continue
+		}
+
+		if err := s.processFile(ctx, key, &buf); err != nil {
+			return err
+		}
+
+		if len(buf) >= s.batchSize {
+			out := make([]ocsf.APIActivity, len(buf))
+			copy(out, buf)
+			commitCh <- out
+			buf = buf[:0]
+		}
+	}
+	if err := it.Err(); err != nil {
+		return err
+	}
+
+	if len(buf) > 0 {
+		out := make([]ocsf.APIActivity, len(buf))
+		copy(out, buf)
+		commitCh <- out
+	}
+	return nil
+}
+
+// objectIter paginates all objects under prefix.
+type objectIter struct {
+	ctx    context.Context
+	s3     *s3.Client
+	bucket string
+	prefix string
+	token  *string
+	cur    []string
+	seen   map[string]bool
+	i      int
+	err    error
+}
+
+func (s *Syncer) objectIter(ctx context.Context, pfx string) *objectIter {
+	return &objectIter{ctx: ctx, s3: s.s3, bucket: s.bucket, prefix: pfx, seen: map[string]bool{}}
+}
+func (o *objectIter) Next() bool {
+	for o.err == nil && o.i >= len(o.cur) {
+		out, err := o.s3.ListObjectsV2(o.ctx, &s3.ListObjectsV2Input{
+			Bucket:            &o.bucket,
+			Prefix:            &o.prefix,
+			ContinuationToken: o.token,
+		})
+		if err != nil {
+			o.err = err
+			return false
+		}
+		o.cur = o.cur[:0]
+		for _, obj := range out.Contents {
+			if !o.seen[*obj.Key] {
+				o.cur = append(o.cur, *obj.Key)
+				o.seen[*obj.Key] = true
+			}
+		}
+		o.i = 0
+		if !*out.IsTruncated {
+			o.token = nil
+		} else {
+			o.token = out.NextContinuationToken
+		}
+		if len(o.cur) == 0 && o.token == nil {
+			return false
+		}
+	}
+	if o.err != nil || o.i >= len(o.cur) {
+		return false
+	}
+
+	o.i++
+	return true
+}
+func (o *objectIter) Key() string { return o.cur[o.i-1] }
+func (o *objectIter) Err() error  { return o.err }
+func (o *objectIter) reset()      { o.i++ }
+
+// ---------------------------------------------------------------------------
+// FILE → OCSF CONVERSION
+// ---------------------------------------------------------------------------
+
+func (s *Syncer) processFile(ctx context.Context, key string, buf *[]ocsf.APIActivity) error {
+	slog.Info("Processing file", "key", key)
+	obj, err := s.s3.GetObject(ctx, &s3.GetObjectInput{Bucket: &s.bucket, Key: &key})
+	if err != nil {
+		return oops.Wrapf(err, "get object")
+	}
+	defer obj.Body.Close()
+
+	gzr, err := gzip.NewReader(obj.Body)
+	if err != nil {
+		return fmt.Errorf("gzip %s: %w", key, err)
+	}
+	defer gzr.Close()
+
+	var file LogFile
+	if err := json.NewDecoder(gzr).Decode(&file); err != nil && err != io.EOF {
+		return fmt.Errorf("decode %s: %w", key, err)
+	}
+
+	for _, rec := range file.Records {
+		evt, err := s.ToOCSF(ctx, rec)
+		if err != nil {
+			slog.Warn("convert", "key", key, "err", err)
+			continue
+		}
+		*buf = append(*buf, evt)
+	}
+	return nil
+}
+
+func (s *Syncer) ToOCSF(ctx context.Context, event CloudtrailEvent) (ocsf.APIActivity, error) {
 	// Parse the event data for OCSF conversion
 	classUID := 6003
 	categoryUID := 6
@@ -167,14 +484,8 @@ func (s *Syncer) ToOCSF(ctx context.Context, event types.Event) (ocsf.APIActivit
 	var typeUID int
 	var typeName string
 
-	var cloudtrailEvent CloudtrailEvent
-	err := json.Unmarshal([]byte(*event.CloudTrailEvent), &cloudtrailEvent)
-	if err != nil {
-		return ocsf.APIActivity{}, fmt.Errorf("failed to unmarshal CloudTrail event: %w", err)
-	}
-
 	// Determine the activity type based on the event name
-	eventName := toString(event.EventName)
+	eventName := event.EventName
 	if strings.HasPrefix(eventName, "Create") || strings.HasPrefix(eventName, "Add") ||
 		strings.HasPrefix(eventName, "Put") || strings.HasPrefix(eventName, "Insert") {
 		activityID = 1
@@ -210,7 +521,7 @@ func (s *Syncer) ToOCSF(ctx context.Context, event types.Event) (ocsf.APIActivit
 	statusID := 0
 	// TODO: each response type is different depending on the event source
 
-	if cloudtrailEvent.ErrorCode == nil || toString(cloudtrailEvent.ErrorCode) == "" {
+	if event.ErrorCode == nil || *event.ErrorCode == "" {
 		status = "Success"
 		statusID = 1
 	} else {
@@ -221,40 +532,40 @@ func (s *Syncer) ToOCSF(ctx context.Context, event types.Event) (ocsf.APIActivit
 	// Set severity based on error information
 	severity := "Informational"
 	severityID := 1
-	if cloudtrailEvent.ErrorCode != nil {
+	if event.ErrorCode != nil {
 		severity = "Medium"
 		severityID = 3
 	}
 
 	// Parse actor information
 	var actor ocsf.Actor
-	if event.Username != nil {
+	if event.UserIdentity.UserName != nil && *event.UserIdentity.UserName != "" {
 		actor = ocsf.Actor{
-			AppName: stringPtr(toString(event.EventSource)),
+			AppName: stringPtr(event.EventSource),
 			User: &ocsf.User{
-				Uid:  stringPtr(toString(event.Username)),
-				Name: stringPtr(toString(event.Username)),
+				Uid:  stringPtr(*event.UserIdentity.UserName),
+				Name: stringPtr(*event.UserIdentity.UserName),
 			},
 		}
-		acctID := cloudtrailEvent.UserIdentity.AccountID
+		acctID := event.UserIdentity.AccountID
 		if acctID != nil {
 			actor.User.Account = &ocsf.Account{
 				TypeId: int32Ptr(10), // AWS Account
 				Type:   stringPtr("AWS Account"),
-				Uid:    stringPtr(toString(event.Username)),
+				Uid:    stringPtr(*event.UserIdentity.AccountID),
 			}
 		}
 	} else {
 		actor = ocsf.Actor{
-			AppName: stringPtr(toString(event.EventSource)),
+			AppName: stringPtr(event.EventSource),
 		}
 	}
 
 	// Parse API information
 	api := ocsf.API{
-		Operation: toString(event.EventName),
+		Operation: event.EventName,
 		Service: &ocsf.Service{
-			Name: stringPtr(toString(event.EventSource)),
+			Name: stringPtr(event.EventSource),
 		},
 	}
 
@@ -263,29 +574,29 @@ func (s *Syncer) ToOCSF(ctx context.Context, event types.Event) (ocsf.APIActivit
 	if event.Resources != nil {
 		for _, resource := range event.Resources {
 			resources = append(resources, &ocsf.ResourceDetails{
-				Name: resource.ResourceName,
-				Type: resource.ResourceType,
-				Uid:  resource.ResourceName,
+				Name: stringPtr(resource.ARN),
+				Type: stringPtr(resource.Type),
+				Uid:  stringPtr(resource.ARN),
 			})
 		}
 	}
 
 	// Parse source endpoint information
 	var srcEndpoint ocsf.NetworkEndpoint
-	if cloudtrailEvent.SourceIPAddress != "" {
+	if event.SourceIP != "" {
 		srcEndpoint = ocsf.NetworkEndpoint{
-			Ip: stringPtr(cloudtrailEvent.SourceIPAddress),
+			Ip: stringPtr(event.SourceIP),
 		}
 	} else {
 		srcEndpoint = ocsf.NetworkEndpoint{
-			SvcName: stringPtr(cloudtrailEvent.EventSource),
+			SvcName: stringPtr(event.EventSource),
 		}
 	}
 
 	// Parse timestamp
 	var ts time.Time
-	if event.EventTime != nil {
-		ts = *event.EventTime
+	if !event.EventTime.IsZero() {
+		ts = event.EventTime
 	} else {
 		ts = time.Now()
 	}
@@ -302,21 +613,32 @@ func (s *Syncer) ToOCSF(ctx context.Context, event types.Event) (ocsf.APIActivit
 		ClassUid:     int32(classUID),
 		Status:       &status,
 		StatusId:     int32Ptr(int32(statusID)),
+		Cloud: ocsf.Cloud{
+			Provider: "AWS",
+			Region:   stringPtr(event.AwsRegion),
+			Account: &ocsf.Account{
+				TypeId: int32Ptr(10), // AWS Account
+				Type:   stringPtr("AWS Account"),
+				Uid:    stringPtr(event.RecipientAccountID),
+			},
+		},
 
 		Resources:  resources,
 		Severity:   &severity,
 		SeverityId: int32(severityID),
 
 		Metadata: ocsf.Metadata{
-			CorrelationUid: stringPtr(toString(event.EventId)),
+			CorrelationUid: stringPtr(event.EventID),
 		},
 
 		SrcEndpoint:    srcEndpoint,
 		Time:           ts.UnixMilli(),
-		EventDay:       int32(ts.UnixMilli() / 86400000),
 		TypeName:       &typeName,
 		TypeUid:        int64(typeUID),
 		TimezoneOffset: int32Ptr(0),
+
+		Region:    event.AwsRegion,
+		AccountId: event.RecipientAccountID,
 	}
 
 	return activity, nil
@@ -343,4 +665,11 @@ func toInt32(i *int32) int32 {
 		return 0
 	}
 	return *i
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

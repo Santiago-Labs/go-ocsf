@@ -38,19 +38,19 @@ type Metadata struct {
 	LogVersion *string `json:"log_version,omitempty" parquet:"log_version,optional"`
 
 	// Logged Time: <p>The time when the logging system collected and logged the event.</p>This attribute is distinct from the event time in that event time typically contain the time extracted from the original event. Most of the time, these two times will be different.
-	LoggedTime *int64 `json:"logged_time,omitempty" parquet:"logged_time,optional"`
+	LoggedTime int64 `json:"logged_time,omitempty" parquet:"logged_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Loggers: An array of Logger objects that describe the devices and logging products between the event source and its eventual destination. Note, this attribute can be used when there is a complex end-to-end path of event flow.
 	Loggers []*Logger `json:"loggers,omitempty" parquet:"loggers,optional,list"`
 
 	// Modified Time: The time when the event was last modified or enriched.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Original Time: The original event time as reported by the event source. For example, the time in the original format from system event log such as Syslog on Unix/Linux and the System event file on Windows. Omit if event is generated instead of collected via logs.
 	OriginalTime *string `json:"original_time,omitempty" parquet:"original_time,optional"`
 
 	// Processed Time: The event processed time, such as an ETL operation.
-	ProcessedTime *int64 `json:"processed_time,omitempty" parquet:"processed_time,optional"`
+	ProcessedTime int64 `json:"processed_time,omitempty" parquet:"processed_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Product: The product that reported the event.
 	Product Product `json:"product" parquet:"product"`
@@ -85,11 +85,11 @@ var MetadataFields = []arrow.Field{
 	{Name: "log_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "log_provider", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "log_version", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "logged_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "logged_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "loggers", Type: arrow.ListOf(LoggerStruct), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "original_time", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "processed_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "processed_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: false},
 	{Name: "profiles", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "sequence", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

@@ -14,7 +14,7 @@ type SCIM struct {
 	AuthProtocolId *int32 `json:"auth_protocol_id,omitempty" parquet:"auth_protocol_id,optional"`
 
 	// Created Time: When the SCIM resource was added to the service provider.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Last Error Message: Message or code associated with the last encountered error.
 	ErrorMessage *string `json:"error_message,omitempty" parquet:"error_message,optional"`
@@ -26,10 +26,10 @@ type SCIM struct {
 	IsUserProvisioningEnabled *bool `json:"is_user_provisioning_enabled,omitempty" parquet:"is_user_provisioning_enabled,optional"`
 
 	// Last Sync Time: Timestamp of the most recent successful synchronization.
-	LastRunTime *int64 `json:"last_run_time,omitempty" parquet:"last_run_time,optional"`
+	LastRunTime int64 `json:"last_run_time,omitempty" parquet:"last_run_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Modified Time: The most recent time when the SCIM resource was updated at the service provider.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Name: The name of the SCIM resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -71,12 +71,12 @@ type SCIM struct {
 var SCIMFields = []arrow.Field{
 	{Name: "auth_protocol", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "auth_protocol_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "error_message", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "is_group_provisioning_enabled", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_user_provisioning_enabled", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "last_run_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_run_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "protocol_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "rate_limit", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

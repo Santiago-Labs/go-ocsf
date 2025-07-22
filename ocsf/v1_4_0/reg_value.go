@@ -17,7 +17,7 @@ type RegistryValue struct {
 	IsSystem *bool `json:"is_system,omitempty" parquet:"is_system,optional"`
 
 	// Modified Time: The time when the registry value was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Name: The name of the registry value.
 	Name string `json:"name" parquet:"name"`
@@ -36,7 +36,7 @@ var RegistryValueFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "is_default", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_system", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},

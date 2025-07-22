@@ -32,7 +32,7 @@ type UnmannedSystemOperatingArea struct {
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// End Time: The date and time at which a group or an Intent-Based Network Participant operation ends. (This field is only applicable to Network Remote ID.)
-	EndTime *int64 `json:"end_time,omitempty" parquet:"end_time,optional"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Geodetic Altitude: The aircraft distance above or below the ellipsoid as measured along a line that passes through the aircraft and is normal to the surface of the WGS-84 ellipsoid. This value is provided in meters and must have a minimum resolution of 1 m. Special Values: <code>Invalid</code>, <code>No Value</code>, or <code>Unknown: -1000 m</code>.
 	GeodeticAltitude *string `json:"geodetic_altitude,omitempty" parquet:"geodetic_altitude,optional"`
@@ -77,7 +77,7 @@ type UnmannedSystemOperatingArea struct {
 	Region *string `json:"region,omitempty" parquet:"region,optional"`
 
 	// Start Time: The date and time at which a group or an Intent-Based Network Participant operation starts. (This field is only applicable to Network Remote ID.)
-	StartTime *int64 `json:"start_time,omitempty" parquet:"start_time,optional"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Type: The type of operating area. For example, <code>Takeoff Location</code>, <code>Fixed Location</code>, <code>Dynamic Location</code>.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -95,7 +95,7 @@ var UnmannedSystemOperatingAreaFields = []arrow.Field{
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "country", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "geodetic_altitude", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "geodetic_vertical_accuracy", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "geohash", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -110,7 +110,7 @@ var UnmannedSystemOperatingAreaFields = []arrow.Field{
 	{Name: "provider", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "radius", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 }

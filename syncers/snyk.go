@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
@@ -86,21 +87,20 @@ func (s *SnykOCSFSyncer) Sync(ctx context.Context) error {
 func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *snyk.Project) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapSnykSeverity(issue.Attributes.EffectiveSeverityLevel)
 	status, statusID := mapSnykStatus(issue.Attributes.Status)
-	createdAt := issue.Attributes.CreatedAt.UnixMilli()
-	updatedAt := issue.Attributes.UpdatedAt.UnixMilli()
-	var endTime *int64
+	createdAt := issue.Attributes.CreatedAt
+	updatedAt := issue.Attributes.UpdatedAt
+	var endTime *time.Time
 	if status == "Closed" {
-		endTimeUnix := updatedAt
-		endTime = &endTimeUnix
+		endTime = &updatedAt
 	}
 
-	var lastSeenTime int64
+	var lastSeenTime *time.Time
 	if status == "Open" {
-		lastSeenTime = issue.Attributes.UpdatedAt.UnixMilli()
+		lastSeenTime = &updatedAt
 	} else {
 		// This technically isn't correct because its when the issue was closed,
 		// but we don't have a way to know when the issue was last seen.
-		lastSeenTime = issue.Attributes.UpdatedAt.UnixMilli()
+		lastSeenTime = &updatedAt
 	}
 
 	projectName := project.Attributes.Name
@@ -129,6 +129,10 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 
 	issueURL := fmt.Sprintf("https://app.snyk.io/org/%s/project/%s#issue-%s", s.org.Attributes.Slug, project.ID, issue.Attributes.Key)
 	cwe := snykIssueCWE(issue)
+
+	createdTimeInt := createdAt.UnixMilli()
+	lastSeenTimeInt := lastSeenTime.UnixMilli()
+
 	if len(issue.Attributes.Problems) == 0 {
 		vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
 			Cwe:                cwe,
@@ -136,9 +140,9 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 			Title:              &issue.Attributes.Title,
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
-			FirstSeenTime:      &createdAt,
+			FirstSeenTime:      createdTimeInt,
 			IsFixAvailable:     &fixAvailable,
-			LastSeenTime:       &lastSeenTime,
+			LastSeenTime:       lastSeenTimeInt,
 			VendorName:         &vendorName,
 			AffectedCode:       snykAffectedCode(issue, project),
 			AffectedPackages:   snykAffectedPackages(issue),
@@ -161,9 +165,9 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				Title:              &issue.Attributes.Title,
 				Severity:           &severity,
 				IsExploitAvailable: &exploitAvailable,
-				FirstSeenTime:      &createdAt,
+				FirstSeenTime:      createdTimeInt,
 				IsFixAvailable:     &fixAvailable,
-				LastSeenTime:       &lastSeenTime,
+				LastSeenTime:       lastSeenTimeInt,
 				VendorName:         &vendorName,
 				Remediation:        remediation,
 				References:         []string{reference},
@@ -182,13 +186,13 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	var activityName string
 	var typeUID int64
 	var typeName string
-	var eventTime int64
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if createdAt == issue.Attributes.UpdatedAt.UnixMilli() {
+	if createdAt == updatedAt {
 		activityID = int32(1)
 		activityName = "Create"
 		typeUID = int64(classUID)*100 + int64(activityID)
@@ -205,7 +209,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		activityName = "Update"
 		typeUID = int64(classUID)*100 + int64(activityID)
 		typeName = "Vulnerability Finding: Update"
-		eventTime = lastSeenTime
+		eventTime = *lastSeenTime
 	}
 
 	productName := "Snyk"
@@ -218,23 +222,25 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		Version: "1.4.0",
 	}
 
+	modifiedTimeInt := updatedAt.UnixMilli()
+	endTimeInt := endTime.UnixMilli()
+
 	findingInfo := ocsf.FindingInformation{
 		Uid:           issue.ID,
 		Title:         &issue.Attributes.Title,
 		Desc:          &issue.Attributes.Description,
-		CreatedTime:   &createdAt,
-		FirstSeenTime: &createdAt,
-		LastSeenTime:  &lastSeenTime,
-		ModifiedTime:  &updatedAt,
+		CreatedTime:   createdTimeInt,
+		FirstSeenTime: createdTimeInt,
+		LastSeenTime:  lastSeenTimeInt,
+		ModifiedTime:  modifiedTimeInt,
 		DataSources:   []string{"snyk"},
 		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            eventTime,
-		EventDay:        int32(eventTime / 86400000),
-		StartTime:       &createdAt,
-		EndTime:         endTime,
+		Time:            eventTime.UnixMilli(),
+		StartTime:       createdTimeInt,
+		EndTime:         endTimeInt,
 		ActivityId:      activityID,
 		ActivityName:    &activityName,
 		CategoryUid:     categoryUID,

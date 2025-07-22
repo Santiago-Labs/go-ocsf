@@ -14,7 +14,7 @@ type Databucket struct {
 	CloudPartition *string `json:"cloud_partition,omitempty" parquet:"cloud_partition,optional"`
 
 	// Created Time: The time when the databucket was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Criticality: The criticality of the resource as defined by the event source.
 	Criticality *string `json:"criticality,omitempty" parquet:"criticality,optional"`
@@ -56,7 +56,7 @@ type Databucket struct {
 	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the databucket.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Name: The databucket name.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -92,7 +92,7 @@ type Databucket struct {
 var DatabucketFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "cloud_partition", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "criticality", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
@@ -106,7 +106,7 @@ var DatabucketFields = []arrow.Field{
 	{Name: "is_encrypted", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_public", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "namespace", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "owner", Type: UserStruct, Nullable: true},

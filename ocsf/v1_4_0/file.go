@@ -8,7 +8,7 @@ import (
 type File struct {
 
 	// Accessed Time: The time when the file was last accessed.
-	AccessedTime *int64 `json:"accessed_time,omitempty" parquet:"accessed_time,optional"`
+	AccessedTime int64 `json:"accessed_time,omitempty" parquet:"accessed_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Accessor: The name of the user who last accessed the object.
 	Accessor *User `json:"accessor,omitempty" parquet:"accessor,optional"`
@@ -26,7 +26,7 @@ type File struct {
 	ConfidentialityId *int32 `json:"confidentiality_id,omitempty" parquet:"confidentiality_id,optional"`
 
 	// Created Time: The time when the file was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Creator: The user that created the file.
 	Creator *User `json:"creator,omitempty" parquet:"creator,optional"`
@@ -71,7 +71,7 @@ type File struct {
 	MimeType *string `json:"mime_type,omitempty" parquet:"mime_type,optional"`
 
 	// Modified Time: The time when the file was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
 
 	// Modifier: The user that last modified the file.
 	Modifier *User `json:"modifier,omitempty" parquet:"modifier,optional"`
@@ -126,13 +126,13 @@ type File struct {
 }
 
 var FileFields = []arrow.Field{
-	{Name: "accessed_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "accessed_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "accessor", Type: UserStruct, Nullable: true},
 	{Name: "attributes", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "company_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "confidentiality", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "confidentiality_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "creator", Type: UserStruct, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -147,7 +147,7 @@ var FileFields = []arrow.Field{
 	{Name: "is_public", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_system", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "mime_type", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "modifier", Type: UserStruct, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "owner", Type: UserStruct, Nullable: true},
