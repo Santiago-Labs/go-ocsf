@@ -138,8 +138,15 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		}
 	}
 
-	firstSeenTimeInt := firstSeenTime.UnixMilli()
-	lastSeenTimeInt := lastSeenTime.UnixMilli()
+	var firstSeenTimeInt int64
+	if !firstSeenTime.IsZero() {
+		firstSeenTimeInt = firstSeenTime.UnixMilli()
+	}
+
+	var lastSeenTimeInt int64
+	if !lastSeenTime.IsZero() {
+		lastSeenTimeInt = lastSeenTime.UnixMilli()
+	}
 
 	vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
 		Cve:                cve,
@@ -201,8 +208,15 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		Version: "1.1.0",
 	}
 
-	modifiedTimeInt := lastSeenTime.UnixMilli()
-	endTimeInt := endTime.UnixMilli()
+	var modifiedTimeInt int64
+	if !lastSeenTime.IsZero() {
+		modifiedTimeInt = lastSeenTime.UnixMilli()
+	}
+
+	var endTimeInt int64
+	if endTime != nil {
+		endTimeInt = endTime.UnixMilli()
+	}
 
 	findingInfo := ocsf.FindingInformation{
 		Uid:           findingID,
@@ -228,7 +242,7 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		ClassName:       &className,
 		Message:         &finding.Plugin.Description,
 		Metadata:        metadata,
-		Resources:       []*ocsf.ResourceDetails{&resource},
+		Resources:       []ocsf.ResourceDetails{resource},
 		Status:          &status,
 		StatusId:        &statusID,
 		TypeUid:         typeUID,
@@ -236,6 +250,7 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
 		SeverityId:      int32(severityID),
+		Severity:        &severity,
 	}
 
 	return ocsfFinding, nil
@@ -245,17 +260,17 @@ func (s *TenableOCSFSyncer) ToOCSF(ctx context.Context, finding tenable.Finding)
 func mapTenableSeverity(tenableSeverity int) (string, int) {
 	switch tenableSeverity {
 	case 0:
-		return "Informational", 1
+		return "informational", 1
 	case 1:
-		return "Low", 2
+		return "low", 2
 	case 2:
-		return "Medium", 3
+		return "medium", 3
 	case 3:
-		return "High", 4
+		return "high", 4
 	case 4:
-		return "Critical", 5
+		return "critical", 5
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
@@ -263,8 +278,8 @@ func mapTenableSeverity(tenableSeverity int) (string, int) {
 func mapTenableState(tenableState string) (string, int32) {
 	switch tenableState {
 	case "fixed":
-		return "Closed", 2
+		return "closed", 2
 	default:
-		return "Open", 1
+		return "open", 1
 	}
 }

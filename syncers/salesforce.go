@@ -336,13 +336,13 @@ func (c *SalesforceSyncer) ToOCSF(entry map[string]string) (ocsf.APIActivity, er
 	}
 
 	// Create resources
-	var resources []*ocsf.ResourceDetails
+	var resources []ocsf.ResourceDetails
 	if entry["RESOURCE_NAME"] != "" || entry["URI"] != "" {
 		resourceName := entry["RESOURCE_NAME"]
 		if resourceName == "" {
 			resourceName = entry["URI"]
 		}
-		resources = append(resources, &ocsf.ResourceDetails{
+		resources = append(resources, ocsf.ResourceDetails{
 			Name: stringPtr(resourceName),
 			Type: stringPtr(entry["EVENT_TYPE"]),
 		})

@@ -137,8 +137,15 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		title = *inspectorFinding.Title
 	}
 
-	createdTime := createdAt.UnixMilli()
-	lastSeenTimeInt := lastSeenTime.UnixMilli()
+	var createdTimeInt int64
+	if createdAt != nil {
+		createdTimeInt = createdAt.UnixMilli()
+	}
+
+	var lastSeenTimeInt int64
+	if lastSeenTime != nil {
+		lastSeenTimeInt = lastSeenTime.UnixMilli()
+	}
 
 	vulnerabilities := []ocsf.VulnerabilityDetails{
 		{
@@ -148,7 +155,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 			Title:              &title,
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
-			FirstSeenTime:      createdTime,
+			FirstSeenTime:      createdTimeInt,
 			IsFixAvailable:     &fixAvailable,
 			LastSeenTime:       lastSeenTimeInt,
 			VendorName:         &vendorName,
@@ -211,7 +218,7 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		Uid:           *inspectorFinding.FindingArn,
 		Title:         &title,
 		Desc:          inspectorFinding.Description,
-		CreatedTime:   createdTime,
+		CreatedTime:   createdTimeInt,
 		FirstSeenTime: firstSeenTimeInt,
 		LastSeenTime:  lastSeenTimeInt,
 		ModifiedTime:  modifiedTimeInt,
@@ -231,6 +238,8 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		ClassName:       &className,
 		Message:         inspectorFinding.Description,
 		Metadata:        metadata,
+		Region:          regionFromArn(*inspectorFinding.FindingArn),
+		AccountId:       *inspectorFinding.AwsAccountId,
 		Resources:       mapInspectorResources(inspectorFinding),
 		Status:          &status,
 		StatusId:        &statusID,
@@ -239,9 +248,15 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
 		SeverityId:      int32(severityID),
+		Severity:        &severity,
 	}
 
 	return finding, nil
+}
+
+func regionFromArn(arn string) string {
+	parts := strings.Split(arn, ":")
+	return parts[3]
 }
 
 // ----------------------------------------------------------------------------
@@ -251,39 +266,39 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 func mapInspectorSeverity(severity types.Severity) (string, int) {
 	switch severity {
 	case types.SeverityInformational:
-		return "Informational", 1
+		return "informational", 1
 	case types.SeverityLow:
-		return "Low", 2
+		return "low", 2
 	case types.SeverityMedium:
-		return "Medium", 3
+		return "medium", 3
 	case types.SeverityHigh:
-		return "High", 4
+		return "high", 4
 	case types.SeverityCritical:
-		return "Critical", 5
+		return "critical", 5
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
 func mapInspectorStatus(status types.FindingStatus) (string, int32) {
 	switch status {
 	case types.FindingStatusActive:
-		return "Open", 1
+		return "open", 1
 	case types.FindingStatusSuppressed:
-		return "Suppressed", 3
+		return "suppressed", 3
 	case types.FindingStatusClosed:
-		return "Closed", 4
+		return "closed", 4
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
-func mapInspectorResources(finding types.Finding) []*ocsf.ResourceDetails {
-	var resources []*ocsf.ResourceDetails
+func mapInspectorResources(finding types.Finding) []ocsf.ResourceDetails {
+	var resources []ocsf.ResourceDetails
 	for _, resource := range finding.Resources {
 
 		resourceType := string(resource.Type)
-		resources = append(resources, &ocsf.ResourceDetails{
+		resources = append(resources, ocsf.ResourceDetails{
 			Uid:  resource.Id,
 			Type: &resourceType,
 		})
@@ -294,9 +309,9 @@ func mapInspectorResources(finding types.Finding) []*ocsf.ResourceDetails {
 
 func mapInspectorCVE(finding types.Finding) *ocsf.CVE {
 	if finding.PackageVulnerabilityDetails != nil && finding.PackageVulnerabilityDetails.VulnerabilityId != nil {
-		var cvss []*ocsf.CVSSScore
+		var cvss []ocsf.CVSSScore
 		for _, c := range finding.PackageVulnerabilityDetails.Cvss {
-			cvss = append(cvss, &ocsf.CVSSScore{
+			cvss = append(cvss, ocsf.CVSSScore{
 				BaseScore:    *c.BaseScore,
 				VectorString: c.ScoringVector,
 				Version:      *c.Version,
@@ -326,8 +341,8 @@ func mapInspectorCWE(finding types.Finding) *ocsf.CWE {
 	return nil
 }
 
-func mapInspectorAffectedCode(finding types.Finding) []*ocsf.AffectedCode {
-	var affectedCode []*ocsf.AffectedCode
+func mapInspectorAffectedCode(finding types.Finding) []ocsf.AffectedCode {
+	var affectedCode []ocsf.AffectedCode
 
 	if finding.CodeVulnerabilityDetails != nil {
 		startLine := int32(0)
@@ -347,7 +362,7 @@ func mapInspectorAffectedCode(finding types.Finding) []*ocsf.AffectedCode {
 			}
 		}
 
-		affectedCode = append(affectedCode, &ocsf.AffectedCode{
+		affectedCode = append(affectedCode, ocsf.AffectedCode{
 			File: ocsf.File{
 				Path: &filePath,
 			},
@@ -359,8 +374,8 @@ func mapInspectorAffectedCode(finding types.Finding) []*ocsf.AffectedCode {
 	return affectedCode
 }
 
-func mapInspectorAffectedPackages(finding types.Finding) []*ocsf.AffectedSoftwarePackage {
-	var affectedPackages []*ocsf.AffectedSoftwarePackage
+func mapInspectorAffectedPackages(finding types.Finding) []ocsf.AffectedSoftwarePackage {
+	var affectedPackages []ocsf.AffectedSoftwarePackage
 
 	if finding.PackageVulnerabilityDetails != nil {
 		pkg := finding.PackageVulnerabilityDetails.VulnerablePackages
@@ -380,7 +395,7 @@ func mapInspectorAffectedPackages(finding types.Finding) []*ocsf.AffectedSoftwar
 				}
 			}
 
-			affectedPackages = append(affectedPackages, &ocsf.AffectedSoftwarePackage{
+			affectedPackages = append(affectedPackages, ocsf.AffectedSoftwarePackage{
 				Name:           *p.Name,
 				Version:        *p.Version,
 				Architecture:   p.Arch,
