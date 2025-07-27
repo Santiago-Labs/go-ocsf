@@ -8,7 +8,7 @@ import (
 type CISBenchmark struct {
 
 	// CIS Controls: The CIS Critical Security Controls is a prioritized set of actions to protect your organization and data from cyber-attack vectors.
-	CisControls []*CISControl `json:"cis_controls,omitempty" parquet:"cis_controls,optional,list"`
+	CisControls []CISControl `json:"cis_controls,omitempty" parquet:"cis_controls,list,optional"`
 
 	// Description: The CIS Benchmark description. For example: <i>The cramfs filesystem type is a compressed read-only Linux filesystem embedded in small footprint systems. A cramfs image can be used without having to first decompress the image.</i>
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`

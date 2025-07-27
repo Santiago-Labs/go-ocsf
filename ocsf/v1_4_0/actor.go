@@ -14,7 +14,7 @@ type Actor struct {
 	AppUid *string `json:"app_uid,omitempty" parquet:"app_uid,optional"`
 
 	// Authorization Information: Provides details about an authorization, such as authorization outcome, and any associated policies related to the activity/event.
-	Authorizations []*AuthorizationResult `json:"authorizations,omitempty" parquet:"authorizations,optional,list"`
+	Authorizations []AuthorizationResult `json:"authorizations,omitempty" parquet:"authorizations,list,optional"`
 
 	// Identity Provider: This object describes details about the Identity Provider used.
 	Idp *IdentityProvider `json:"idp,omitempty" parquet:"idp,optional"`

@@ -8,19 +8,19 @@ import (
 type Compliance struct {
 
 	// Compliance Standard References: A list of reference KB articles that provide information to help organizations understand, interpret, and implement compliance standards. They provide guidance, best practices, and examples.
-	ComplianceReferences []*KBArticle `json:"compliance_references,omitempty" parquet:"compliance_references,optional,list"`
+	ComplianceReferences []KBArticle `json:"compliance_references,omitempty" parquet:"compliance_references,list,optional"`
 
 	// Compliance Standards: Details: A list of established guidelines or criteria that define specific requirements an organization must follow.
-	ComplianceStandards []*KBArticle `json:"compliance_standards,omitempty" parquet:"compliance_standards,optional,list"`
+	ComplianceStandards []KBArticle `json:"compliance_standards,omitempty" parquet:"compliance_standards,list,optional"`
 
 	// Security Control: A Control is prescriptive, prioritized, and simplified set of best practices that one can use to strengthen their cybersecurity posture. e.g. AWS SecurityHub Controls, CIS Controls.
 	Control *string `json:"control,omitempty" parquet:"control,optional"`
 
 	// Control Parameters: The list of control parameters evaluated in a Compliance check.
-	ControlParameters []*KeyValueobject `json:"control_parameters,omitempty" parquet:"control_parameters,optional,list"`
+	ControlParameters []KeyValueobject `json:"control_parameters,omitempty" parquet:"control_parameters,list,optional"`
 
 	// Compliance Requirements: A list of requirements associated to a specific control in an industry or regulatory framework. e.g. <code>NIST.800-53.r5 AU-10</code>
-	Requirements []string `json:"requirements,omitempty" parquet:"requirements,optional,list"`
+	Requirements []string `json:"requirements,omitempty" parquet:"requirements,list,optional"`
 
 	// Compliance Standards: List: Compliance standards are a set of criteria organizations can follow to protect sensitive and confidential information. e.g. <code>NIST SP 800-53, CIS AWS Foundations Benchmark v1.4.0, ISO/IEC 27001</code>
 	Standards []string `json:"standards" parquet:"standards,list"`
@@ -32,7 +32,7 @@ type Compliance struct {
 	StatusCode *string `json:"status_code,omitempty" parquet:"status_code,optional"`
 
 	// Status Details: A list of contextual descriptions of the <code>status, status_code</code> values.
-	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,optional,list"`
+	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,list,optional"`
 
 	// Status ID: The normalized status identifier of the compliance check.
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`

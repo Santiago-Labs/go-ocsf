@@ -8,31 +8,31 @@ import (
 type RelatedEventFinding struct {
 
 	// MITRE ATT&CK® Details: An array of <a target='_blank' href='https://attack.mitre.org'>MITRE ATT&CK®</a> objects describing identified tactics, techniques & sub-techniques.
-	Attacks []*MITREATTCK `json:"attacks,omitempty" parquet:"attacks,optional,list"`
+	Attacks []MITREATTCK `json:"attacks,omitempty" parquet:"attacks,list,optional"`
 
 	// Count: The number of times that activity in the same logical group occurred, as reported by the related Finding.
 	Count *int32 `json:"count,omitempty" parquet:"count,optional"`
 
 	// Created Time: The time when the related event/finding was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: A description of the related event/finding.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed. e.g. The time when a vulnerability was first observed.<br>It can differ from the <code>created_time</code> timestamp, which reflects the time this finding was created.
-	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Kill Chain: The <a target='_blank' href='https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html'>Cyber Kill Chain®</a> provides a detailed description of each phase and its associated activities within the broader context of a cyber attack.
-	KillChain []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,optional,list"`
+	KillChain []KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
 
 	// Last Seen: The time when the finding was most recently observed. e.g. The time when a vulnerability was most recently observed.<br>It can differ from the <code>modified_time</code> timestamp, which reflects the time this finding was last modified.
-	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Modified Time: The time when the related event/finding was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// Product: Details about the product that reported the related event/finding.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
@@ -44,7 +44,7 @@ type RelatedEventFinding struct {
 	SeverityId *int32 `json:"severity_id,omitempty" parquet:"severity_id,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated with the related event/finding.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Title: A title or a brief phrase summarizing the related event/finding.
 	Title *string `json:"title,omitempty" parquet:"title,optional"`

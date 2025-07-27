@@ -17,7 +17,7 @@ type Group struct {
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Privileges: The group privileges.
-	Privileges []string `json:"privileges,omitempty" parquet:"privileges,optional,list"`
+	Privileges []string `json:"privileges,omitempty" parquet:"privileges,list,optional"`
 
 	// Account Type: The type of the group or account.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

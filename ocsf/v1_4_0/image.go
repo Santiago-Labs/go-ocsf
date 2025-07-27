@@ -8,7 +8,7 @@ import (
 type Image struct {
 
 	// Labels: The list of labels associated to the image.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The image name. For example: <code>elixir</code>.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -17,7 +17,7 @@ type Image struct {
 	Path *string `json:"path,omitempty" parquet:"path,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the image.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Unique ID: The unique image ID. For example: <code>77af4d6b9913</code>.
 	Uid string `json:"uid" parquet:"uid"`

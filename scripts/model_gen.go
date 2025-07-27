@@ -129,7 +129,6 @@ import (
 
 		var fieldType string
 		var arrowType string
-		var isPrimitive bool
 		var isTimestamp bool
 		if strings.HasSuffix(rawType, "_t") {
 			if rawType == "date_t" {
@@ -147,11 +146,9 @@ import (
 				}
 				arrowType = goTypeToArrowType(fieldType)
 			}
-			isPrimitive = true
 		} else {
 			if rawType == "object" {
 				fieldType = "string"
-				isPrimitive = true
 				arrowType = goTypeToArrowType(fieldType)
 			} else {
 				fieldType = sanitizeCaption(objects[rawType].(map[string]interface{})["caption"].(string))
@@ -176,8 +173,8 @@ import (
 
 		var extraTags string
 		if fieldValue["is_array"] == true {
-			// go-parquet does not handle slices of primitive pointer types.
-			if isPrimitive && !required {
+			// A bug in go-parquet causes it to not handle slices of pointers.
+			if !required {
 				fieldType = strings.ReplaceAll(fieldType, "*", "")
 			}
 			fieldType = "[]" + fieldType
@@ -194,7 +191,7 @@ import (
 			goStruct += fmt.Sprintf("%s %s `json:\"%s\" parquet:\"%s%s\"`\n", fieldTitle, fieldType, fieldName, fieldName, extraTags)
 			arrowFields += fmt.Sprintf("{Name: \"%s\", Type: %s, Nullable: false},\n", fieldName, arrowType)
 		} else {
-			goStruct += fmt.Sprintf("%s %s `json:\"%s,omitempty\" parquet:\"%s,optional%s\"`\n", fieldTitle, fieldType, fieldName, fieldName, extraTags)
+			goStruct += fmt.Sprintf("%s %s `json:\"%s,omitempty\" parquet:\"%s%s,optional\"`\n", fieldTitle, fieldType, fieldName, fieldName, extraTags)
 			arrowFields += fmt.Sprintf("{Name: \"%s\", Type: %s, Nullable: true},\n", fieldName, arrowType)
 		}
 	}

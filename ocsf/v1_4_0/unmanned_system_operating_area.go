@@ -32,7 +32,7 @@ type UnmannedSystemOperatingArea struct {
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// End Time: The date and time at which a group or an Intent-Based Network Participant operation ends. (This field is only applicable to Network Remote ID.)
-	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,optional,timestamp_millis,timestamp(millisecond)"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Geodetic Altitude: The aircraft distance above or below the ellipsoid as measured along a line that passes through the aircraft and is normal to the surface of the WGS-84 ellipsoid. This value is provided in meters and must have a minimum resolution of 1 m. Special Values: <code>Invalid</code>, <code>No Value</code>, or <code>Unknown: -1000 m</code>.
 	GeodeticAltitude *string `json:"geodetic_altitude,omitempty" parquet:"geodetic_altitude,optional"`
@@ -56,7 +56,7 @@ type UnmannedSystemOperatingArea struct {
 	Lat *float64 `json:"lat,omitempty" parquet:"lat,optional"`
 
 	// Operating Polygon: A list of Position Location Information (PLI) (latitude/longitude pairs) defining the area where a group or Intent-Based Network Participant operation is taking place. (This field is only applicable to Network Remote ID.)
-	Locations []*GeoLocation `json:"locations,omitempty" parquet:"locations,optional,list"`
+	Locations []GeoLocation `json:"locations,omitempty" parquet:"locations,list,optional"`
 
 	// Longitude: The geographical Longitude coordinate represented in Decimal Degrees (DD). For example: <code>-71.057083</code>.
 	Long *float64 `json:"long,omitempty" parquet:"long,optional"`
@@ -77,7 +77,7 @@ type UnmannedSystemOperatingArea struct {
 	Region *string `json:"region,omitempty" parquet:"region,optional"`
 
 	// Start Time: The date and time at which a group or an Intent-Based Network Participant operation starts. (This field is only applicable to Network Remote ID.)
-	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,optional,timestamp_millis,timestamp(millisecond)"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Type: The type of operating area. For example, <code>Takeoff Location</code>, <code>Fixed Location</code>, <code>Dynamic Location</code>.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

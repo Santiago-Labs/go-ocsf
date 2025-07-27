@@ -11,10 +11,10 @@ type DNSAnswer struct {
 	Class *string `json:"class,omitempty" parquet:"class,optional"`
 
 	// DNS Header Flags: The list of DNS answer header flag IDs.
-	FlagIds []int32 `json:"flag_ids,omitempty" parquet:"flag_ids,optional,list"`
+	FlagIds []int32 `json:"flag_ids,omitempty" parquet:"flag_ids,list,optional"`
 
 	// DNS Header Flags: The list of DNS answer header flags.
-	Flags []string `json:"flags,omitempty" parquet:"flags,optional,list"`
+	Flags []string `json:"flags,omitempty" parquet:"flags,list,optional"`
 
 	// Packet UID: The DNS packet identifier assigned by the program that generated the query. The identifier is copied to the response.
 	PacketUid *int32 `json:"packet_uid,omitempty" parquet:"packet_uid,optional"`

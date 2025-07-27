@@ -8,7 +8,7 @@ import (
 type SoftwareBillofMaterials struct {
 
 	// Created Time: The time when the SBOM was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Software Package: The device software that is being discovered by an inventory process.
 	Package SoftwarePackage `json:"package" parquet:"package"`

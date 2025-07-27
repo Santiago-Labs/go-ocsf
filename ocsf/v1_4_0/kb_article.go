@@ -17,7 +17,7 @@ type KBArticle struct {
 	Classification *string `json:"classification,omitempty" parquet:"classification,optional"`
 
 	// Created Time: The date the kb article was released by the vendor.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Install State: The install state of the kb article.
 	InstallState *string `json:"install_state,omitempty" parquet:"install_state,optional"`

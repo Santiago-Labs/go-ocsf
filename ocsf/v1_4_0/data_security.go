@@ -38,7 +38,7 @@ type DataSecurity struct {
 	DetectionSystemId *int32 `json:"detection_system_id,omitempty" parquet:"detection_system_id,optional"`
 
 	// Discovery Details: Details about the data discovered by classification job.
-	DiscoveryDetails []*DiscoveryDetails `json:"discovery_details,omitempty" parquet:"discovery_details,optional,list"`
+	DiscoveryDetails []DiscoveryDetails `json:"discovery_details,omitempty" parquet:"discovery_details,list,optional"`
 
 	// Pattern Match: A text, binary, file name, or datastore that matched against a detection rule.
 	PatternMatch *string `json:"pattern_match,omitempty" parquet:"pattern_match,optional"`
@@ -56,7 +56,7 @@ type DataSecurity struct {
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
 
 	// Status Details: The contextual description of the <code>status, status_id</code> value.
-	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,optional,list"`
+	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,list,optional"`
 
 	// Status ID: The normalized status identifier of the classification job.
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`

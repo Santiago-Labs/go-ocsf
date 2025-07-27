@@ -8,7 +8,7 @@ import (
 type Process struct {
 
 	// Ancestry: An array of Process Entities describing the extended parentage of this process object. Direct parent information sould be expressed through the <code>parent_process</code> attribute. The first array element is the direct parent of this process object. Subsequent list elements go up the process parentage hierarchy. That is, the array is sorted from newest to oldest process. It is recommended to only populate this field for the top-level process object.
-	Ancestry []*ProcessEntity `json:"ancestry,omitempty" parquet:"ancestry,optional,list"`
+	Ancestry []ProcessEntity `json:"ancestry,omitempty" parquet:"ancestry,list,optional"`
 
 	// Audit User ID: The audit user assigned at login by the audit subsystem.
 	Auid *int32 `json:"auid,omitempty" parquet:"auid,optional"`
@@ -20,13 +20,13 @@ type Process struct {
 	Container *Container `json:"container,omitempty" parquet:"container,optional"`
 
 	// Created Time: The time when the process was created/started.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Effective Group ID: The effective group under which this process is running.
 	Egid *int32 `json:"egid,omitempty" parquet:"egid,optional"`
 
 	// Environment Variables: Environment variables associated with the process.
-	EnvironmentVariables []*EnvironmentVariable `json:"environment_variables,omitempty" parquet:"environment_variables,optional,list"`
+	EnvironmentVariables []EnvironmentVariable `json:"environment_variables,omitempty" parquet:"environment_variables,list,optional"`
 
 	// Effective User ID: The effective user under which this process is running.
 	Euid *int32 `json:"euid,omitempty" parquet:"euid,optional"`
@@ -44,7 +44,7 @@ type Process struct {
 	IntegrityId *int32 `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
 
 	// Loaded Modules: The list of loaded module names.
-	LoadedModules []string `json:"loaded_modules,omitempty" parquet:"loaded_modules,optional,list"`
+	LoadedModules []string `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
 
 	// Name: The friendly name of the process, for example: <code>Notepad++</code>.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -68,7 +68,7 @@ type Process struct {
 	Session *Session `json:"session,omitempty" parquet:"session,optional"`
 
 	// Terminated Time: The time when the process was terminated.
-	TerminatedTime int64 `json:"terminated_time,omitempty" parquet:"terminated_time,optional,timestamp_millis,timestamp(millisecond)"`
+	TerminatedTime int64 `json:"terminated_time,omitempty" parquet:"terminated_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Thread ID: The Identifier of the thread associated with the event, as returned by the operating system.
 	Tid *int32 `json:"tid,omitempty" parquet:"tid,optional"`
@@ -155,7 +155,7 @@ type ProcessRef struct {
 	CmdLine *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 
 	// Created Time: The time when the process was created/started.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	Egid *int32 `json:"egid,omitempty" parquet:"egid,optional"`
 
@@ -170,7 +170,7 @@ type ProcessRef struct {
 	IntegrityId *int32 `json:"integrity_id,omitempty" parquet:"integrity_id,optional"`
 
 	// Loaded Modules: The list of loaded module names.
-	LoadedModules []string `json:"loaded_modules,omitempty" parquet:"loaded_modules,optional,list"`
+	LoadedModules []string `json:"loaded_modules,omitempty" parquet:"loaded_modules,list,optional"`
 
 	// Name: The friendly name of the process, for example: <code>Notepad++</code>.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -187,7 +187,7 @@ type ProcessRef struct {
 	Sandbox *string `json:"sandbox,omitempty" parquet:"sandbox,optional"`
 
 	// Terminated Time: The time when the process was terminated.
-	TerminatedTime int64 `json:"terminated_time,omitempty" parquet:"terminated_time,optional,timestamp_millis,timestamp(millisecond)"`
+	TerminatedTime int64 `json:"terminated_time,omitempty" parquet:"terminated_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Thread ID: The Identifier of the thread associated with the event, as returned by the operating system.
 	Tid *int32 `json:"tid,omitempty" parquet:"tid,optional"`

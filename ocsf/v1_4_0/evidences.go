@@ -47,7 +47,7 @@ type EvidenceArtifacts struct {
 	HttpResponse *HTTPResponse `json:"http_response,omitempty" parquet:"http_response,optional"`
 
 	// JA4+ Fingerprints: Describes details about the JA4+ fingerprints that triggered the detection.
-	Ja4FingerprintList []*JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,optional,list"`
+	Ja4FingerprintList []JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,list,optional"`
 
 	// Job: Describes details about the scheduled job that was associated with the activity that triggered the detection.
 	Job *Job `json:"job,omitempty" parquet:"job,optional"`

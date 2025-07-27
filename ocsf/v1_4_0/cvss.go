@@ -14,7 +14,7 @@ type CVSSScore struct {
 	Depth *string `json:"depth,omitempty" parquet:"depth,optional"`
 
 	// Metrics: The Common Vulnerability Scoring System metrics. This attribute contains information on the CVE's impact. If the CVE has been analyzed, this attribute will contain any CVSSv2 or CVSSv3 information associated with the vulnerability. For example: <code>{ {"Access Vector", "Network"}, {"Access Complexity", "Low"}, ...}</code>.
-	Metrics []*Metric `json:"metrics,omitempty" parquet:"metrics,optional,list"`
+	Metrics []Metric `json:"metrics,omitempty" parquet:"metrics,list,optional"`
 
 	// Overall Score: The CVSS overall score, impacted by base, temporal, and environmental metrics. For example: <code>9.1</code>.
 	OverallScore *float64 `json:"overall_score,omitempty" parquet:"overall_score,optional"`

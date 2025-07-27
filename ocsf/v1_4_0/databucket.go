@@ -8,13 +8,13 @@ import (
 type Databucket struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Cloud Partition: The canonical cloud partition name to which the region is assigned (e.g. AWS Partitions: aws, aws-cn, aws-us-gov).
 	CloudPartition *string `json:"cloud_partition,omitempty" parquet:"cloud_partition,optional"`
 
 	// Created Time: The time when the databucket was known to have been created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Criticality: The criticality of the resource as defined by the event source.
 	Criticality *string `json:"criticality,omitempty" parquet:"criticality,optional"`
@@ -23,7 +23,7 @@ type Databucket struct {
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: The description of the databucket.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -38,7 +38,7 @@ type Databucket struct {
 	Group *Group `json:"group,omitempty" parquet:"group,optional"`
 
 	// Groups: The group names to which the databucket belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Hostname: The fully qualified name of the resource.
 	Hostname *string `json:"hostname,omitempty" parquet:"hostname,optional"`
@@ -53,10 +53,10 @@ type Databucket struct {
 	IsPublic *bool `json:"is_public,omitempty" parquet:"is_public,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the databucket.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The databucket name.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -74,7 +74,7 @@ type Databucket struct {
 	Size *int64 `json:"size,omitempty" parquet:"size,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The databucket type.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

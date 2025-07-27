@@ -14,7 +14,7 @@ type KeyValueobject struct {
 	Value *string `json:"value,omitempty" parquet:"value,optional"`
 
 	// Values: Optional, the values associated to the key. You can populate this attribute, when you have multiple values for the same key.
-	Values []string `json:"values,omitempty" parquet:"values,optional,list"`
+	Values []string `json:"values,omitempty" parquet:"values,list,optional"`
 }
 
 var KeyValueobjectFields = []arrow.Field{

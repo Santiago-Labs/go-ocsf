@@ -11,37 +11,37 @@ type FindingInformation struct {
 	Analytic *Analytic `json:"analytic,omitempty" parquet:"analytic,optional"`
 
 	// MITRE ATT&CK® Details: The <a target='_blank' href='https://attack.mitre.org'>MITRE ATT&CK®</a> technique and associated tactics related to the finding.
-	Attacks []*MITREATTCK `json:"attacks,omitempty" parquet:"attacks,optional,list"`
+	Attacks []MITREATTCK `json:"attacks,omitempty" parquet:"attacks,list,optional"`
 
 	// Created Time: The time when the finding was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Data Sources: A list of data sources utilized in generation of the finding.
-	DataSources []string `json:"data_sources,omitempty" parquet:"data_sources,optional,list"`
+	DataSources []string `json:"data_sources,omitempty" parquet:"data_sources,list,optional"`
 
 	// Description: The description of the reported finding.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed. e.g. The time when a vulnerability was first observed. <p>It can differ from the <code>created_time</code> timestamp, which reflects the time this finding was created.</p>
-	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Kill Chain: The <a target='_blank' href='https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html'>Cyber Kill Chain®</a> provides a detailed description of each phase and its associated activities within the broader context of a cyber attack.
-	KillChain []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,optional,list"`
+	KillChain []KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
 
 	// Last Seen: The time when the finding was most recently observed. e.g. The time when a vulnerability was most recently observed. <p>It can differ from the <code>modified_time</code> timestamp, which reflects the time this finding was last modified.</p>
-	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Modified Time: The time when the finding was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Product: Details about the product that reported the finding.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
 
 	// Related Analytics: Other analytics related to this finding.
-	RelatedAnalytics []*Analytic `json:"related_analytics,omitempty" parquet:"related_analytics,optional,list"`
+	RelatedAnalytics []Analytic `json:"related_analytics,omitempty" parquet:"related_analytics,list,optional"`
 
 	// Related Events/Findings: Describes events and/or other findings related to the finding as identified by the security product. Note that these events may or may not be in OCSF.
-	RelatedEvents []*RelatedEventFinding `json:"related_events,omitempty" parquet:"related_events,optional,list"`
+	RelatedEvents []RelatedEventFinding `json:"related_events,omitempty" parquet:"related_events,list,optional"`
 
 	// Related Events/Findings Count: Number of related events or findings.
 	RelatedEventsCount *int32 `json:"related_events_count,omitempty" parquet:"related_events_count,optional"`
@@ -50,13 +50,13 @@ type FindingInformation struct {
 	SrcUrl *string `json:"src_url,omitempty" parquet:"src_url,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated with the finding.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Title: A title or a brief phrase summarizing the reported finding.
 	Title *string `json:"title,omitempty" parquet:"title,optional"`
 
 	// Types: One or more types of the reported finding.
-	Types []string `json:"types,omitempty" parquet:"types,optional,list"`
+	Types []string `json:"types,omitempty" parquet:"types,list,optional"`
 
 	// Unique ID: The unique identifier of the reported finding.
 	Uid string `json:"uid" parquet:"uid"`

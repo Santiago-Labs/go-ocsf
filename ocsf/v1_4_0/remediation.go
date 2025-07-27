@@ -11,10 +11,10 @@ type Remediation struct {
 	Desc string `json:"desc" parquet:"desc"`
 
 	// Knowledgebase Articles: A list of KB articles or patches related to an endpoint. A KB Article contains metadata that describes the patch or an update.
-	KbArticleList []*KBArticle `json:"kb_article_list,omitempty" parquet:"kb_article_list,optional,list"`
+	KbArticleList []KBArticle `json:"kb_article_list,omitempty" parquet:"kb_article_list,list,optional"`
 
 	// References: A list of supporting URL/s, references that help describe the remediation strategy.
-	References []string `json:"references,omitempty" parquet:"references,optional,list"`
+	References []string `json:"references,omitempty" parquet:"references,list,optional"`
 }
 
 var RemediationFields = []arrow.Field{

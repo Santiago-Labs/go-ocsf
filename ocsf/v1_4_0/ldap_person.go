@@ -11,13 +11,13 @@ type LDAPPerson struct {
 	CostCenter *string `json:"cost_center,omitempty" parquet:"cost_center,optional"`
 
 	// Created Time: The timestamp when the user was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Deleted Time: The timestamp when the user was deleted. In Active Directory (AD), when a user is deleted they are moved to a temporary container and then removed after 30 days. So, this field can be populated even after a user is deleted for the next 30 days.
-	DeletedTime int64 `json:"deleted_time,omitempty" parquet:"deleted_time,optional,timestamp_millis,timestamp(millisecond)"`
+	DeletedTime int64 `json:"deleted_time,omitempty" parquet:"deleted_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Email Addresses: A list of additional email addresses for the user.
-	EmailAddrs []string `json:"email_addrs,omitempty" parquet:"email_addrs,optional,list"`
+	EmailAddrs []string `json:"email_addrs,omitempty" parquet:"email_addrs,list,optional"`
 
 	// Employee ID: The employee identifier assigned to the user by the organization.
 	EmployeeUid *string `json:"employee_uid,omitempty" parquet:"employee_uid,optional"`
@@ -26,16 +26,16 @@ type LDAPPerson struct {
 	GivenName *string `json:"given_name,omitempty" parquet:"given_name,optional"`
 
 	// Hire Time: The timestamp when the user was or will be hired by the organization.
-	HireTime int64 `json:"hire_time,omitempty" parquet:"hire_time,optional,timestamp_millis,timestamp(millisecond)"`
+	HireTime int64 `json:"hire_time,omitempty" parquet:"hire_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Job Title: The user's job title.
 	JobTitle *string `json:"job_title,omitempty" parquet:"job_title,optional"`
 
 	// Labels: The labels associated with the user. For example in AD this could be the <code>userType</code>, <code>employeeType</code>. For example: <code>Member, Employee</code>.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Last Login: The last time when the user logged in.
-	LastLoginTime int64 `json:"last_login_time,omitempty" parquet:"last_login_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastLoginTime int64 `json:"last_login_time,omitempty" parquet:"last_login_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// LDAP Common Name: The LDAP and X.500 <code>commonName</code> attribute, typically the full name of the person. For example, <code>John Doe</code>.
 	LdapCn *string `json:"ldap_cn,omitempty" parquet:"ldap_cn,optional"`
@@ -44,7 +44,7 @@ type LDAPPerson struct {
 	LdapDn *string `json:"ldap_dn,omitempty" parquet:"ldap_dn,optional"`
 
 	// Leave Time: The timestamp when the user left or will be leaving the organization.
-	LeaveTime int64 `json:"leave_time,omitempty" parquet:"leave_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LeaveTime int64 `json:"leave_time,omitempty" parquet:"leave_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Geo Location: The geographical location associated with a user. This is typically the user's usual work location.
 	Location *GeoLocation `json:"location,omitempty" parquet:"location,optional"`
@@ -53,7 +53,7 @@ type LDAPPerson struct {
 	Manager *User `json:"manager,omitempty" parquet:"manager,optional"`
 
 	// Modified Time: The timestamp when the user entry was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Office Location: The primary office location associated with the user. This could be any string and isn't a specific address. For example, <code>South East Virtual</code>.
 	OfficeLocation *string `json:"office_location,omitempty" parquet:"office_location,optional"`
@@ -65,7 +65,7 @@ type LDAPPerson struct {
 	Surname *string `json:"surname,omitempty" parquet:"surname,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the user.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 }
 
 var LDAPPersonFields = []arrow.Field{
@@ -123,13 +123,13 @@ type LDAPPersonRef struct {
 	CostCenter *string `json:"cost_center,omitempty" parquet:"cost_center,optional"`
 
 	// Created Time: The timestamp when the user was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Deleted Time: The timestamp when the user was deleted. In Active Directory (AD), when a user is deleted they are moved to a temporary container and then removed after 30 days. So, this field can be populated even after a user is deleted for the next 30 days.
-	DeletedTime int64 `json:"deleted_time,omitempty" parquet:"deleted_time,optional,timestamp_millis,timestamp(millisecond)"`
+	DeletedTime int64 `json:"deleted_time,omitempty" parquet:"deleted_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Email Addresses: A list of additional email addresses for the user.
-	EmailAddrs []string `json:"email_addrs,omitempty" parquet:"email_addrs,optional,list"`
+	EmailAddrs []string `json:"email_addrs,omitempty" parquet:"email_addrs,list,optional"`
 
 	// Employee ID: The employee identifier assigned to the user by the organization.
 	EmployeeUid *string `json:"employee_uid,omitempty" parquet:"employee_uid,optional"`
@@ -138,16 +138,16 @@ type LDAPPersonRef struct {
 	GivenName *string `json:"given_name,omitempty" parquet:"given_name,optional"`
 
 	// Hire Time: The timestamp when the user was or will be hired by the organization.
-	HireTime int64 `json:"hire_time,omitempty" parquet:"hire_time,optional,timestamp_millis,timestamp(millisecond)"`
+	HireTime int64 `json:"hire_time,omitempty" parquet:"hire_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Job Title: The user's job title.
 	JobTitle *string `json:"job_title,omitempty" parquet:"job_title,optional"`
 
 	// Labels: The labels associated with the user. For example in AD this could be the <code>userType</code>, <code>employeeType</code>. For example: <code>Member, Employee</code>.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Last Login: The last time when the user logged in.
-	LastLoginTime int64 `json:"last_login_time,omitempty" parquet:"last_login_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastLoginTime int64 `json:"last_login_time,omitempty" parquet:"last_login_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// LDAP Common Name: The LDAP and X.500 <code>commonName</code> attribute, typically the full name of the person. For example, <code>John Doe</code>.
 	LdapCn *string `json:"ldap_cn,omitempty" parquet:"ldap_cn,optional"`
@@ -156,14 +156,14 @@ type LDAPPersonRef struct {
 	LdapDn *string `json:"ldap_dn,omitempty" parquet:"ldap_dn,optional"`
 
 	// Leave Time: The timestamp when the user left or will be leaving the organization.
-	LeaveTime int64 `json:"leave_time,omitempty" parquet:"leave_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LeaveTime int64 `json:"leave_time,omitempty" parquet:"leave_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Geo Location: The geographical location associated with a user. This is typically the user's usual work location.
 
 	// Manager: The user's manager. This helps in understanding an org hierarchy. This should only ever be populated once in an event. I.e. there should not be a manager's manager in an event.
 
 	// Modified Time: The timestamp when the user entry was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Office Location: The primary office location associated with the user. This could be any string and isn't a specific address. For example, <code>South East Virtual</code>.
 	OfficeLocation *string `json:"office_location,omitempty" parquet:"office_location,optional"`

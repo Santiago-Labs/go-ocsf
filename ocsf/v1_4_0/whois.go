@@ -11,7 +11,7 @@ type WHOIS struct {
 	AutonomousSystem *AutonomousSystem `json:"autonomous_system,omitempty" parquet:"autonomous_system,optional"`
 
 	// Registered At: When the domain was registered or WHOIS entry was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// DNSSEC Status: The normalized value of dnssec_status_id.
 	DnssecStatus *string `json:"dnssec_status,omitempty" parquet:"dnssec_status,optional"`
@@ -23,16 +23,16 @@ type WHOIS struct {
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
 
 	// Domain Contacts: An array of <code>Domain Contact</code> objects.
-	DomainContacts []*DomainContact `json:"domain_contacts,omitempty" parquet:"domain_contacts,optional,list"`
+	DomainContacts []DomainContact `json:"domain_contacts,omitempty" parquet:"domain_contacts,list,optional"`
 
 	// Registrar Abuse Email Address: The email address for the registrar's abuse contact
 	EmailAddr *string `json:"email_addr,omitempty" parquet:"email_addr,optional"`
 
 	// Last Updated At: When the WHOIS record was last updated or seen at.
-	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name Servers: A collection of name servers related to a domain registration or other record.
-	NameServers []string `json:"name_servers,omitempty" parquet:"name_servers,optional,list"`
+	NameServers []string `json:"name_servers,omitempty" parquet:"name_servers,list,optional"`
 
 	// Registrar Abuse Phone Number: The phone number for the registrar's abuse contact
 	PhoneNumber *string `json:"phone_number,omitempty" parquet:"phone_number,optional"`
@@ -44,7 +44,7 @@ type WHOIS struct {
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
 
 	// Subdomains: An array of subdomain strings. Can be used to collect several subdomains such as those from Domain Generation Algorithms (DGAs).
-	Subdomains []string `json:"subdomains,omitempty" parquet:"subdomains,optional,list"`
+	Subdomains []string `json:"subdomains,omitempty" parquet:"subdomains,list,optional"`
 
 	// Subnet Block: The IP address block (CIDR) associated with a domain.
 	Subnet *string `json:"subnet,omitempty" parquet:"subnet,optional"`

@@ -11,7 +11,7 @@ type ProcessEntity struct {
 	CmdLine *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 
 	// Created Time: The time when the process was created/started.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The friendly name of the process, for example: <code>Notepad++</code>.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
