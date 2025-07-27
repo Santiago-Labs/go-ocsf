@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -31,27 +30,6 @@ func (d *BaseDatastore[T]) Save(ctx context.Context, items []T) error {
 	slog.Info("upserted items", "items", len(items))
 
 	return nil
-}
-
-func filesExistS3(ctx context.Context, s3Client *s3.Client, s3Bucket, path, extension string) (bool, error) {
-	resp, err := s3Client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: &s3Bucket,
-		Prefix: &path,
-	})
-	if err != nil {
-		return false, oops.Wrapf(err, "failed to list objects in S3")
-	}
-
-	files := resp.Contents
-	if len(files) > 0 {
-		for _, file := range files {
-			if strings.HasSuffix(*file.Key, extension) {
-				return true, nil
-			}
-		}
-	}
-
-	return false, nil
 }
 
 func SetupStorage[T any](ctx context.Context, opts StorageOpts) (Datastore[T], error) {
