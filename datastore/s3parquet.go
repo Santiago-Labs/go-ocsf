@@ -45,8 +45,6 @@ func NewS3ParquetDatastore[T any](ctx context.Context, bucketName string, s3Clie
 // WriteBatch creates a new Parquet file for storing ocsf data.
 // It writes the data to the specified file path
 func (s *s3ParquetDatastore[T]) WriteBatch(ctx context.Context, items []T) error {
-	fmt.Printf("s3ParquetDatastore.WriteBatch received: %d items\n", len(items))
-
 	savePath := filepath.Join(s.basePath, fmt.Sprintf("%s.parquet.gz", time.Now().Format("20060102T150405Z")))
 
 	var buf bytes.Buffer
@@ -54,7 +52,6 @@ func (s *s3ParquetDatastore[T]) WriteBatch(ctx context.Context, items []T) error
 	if err := goParquet.Write[T](writer, items, goParquet.Compression(&goParquet.Gzip)); err != nil {
 		return oops.Wrapf(err, "failed to write to parquet buffer")
 	}
-	fmt.Printf("Successfully wrote to Parquet buffer, size: %d bytes\n", buf.Len())
 
 	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:          &s.s3Bucket,
