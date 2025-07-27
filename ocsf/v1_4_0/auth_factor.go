@@ -32,7 +32,7 @@ type AuthenticationFactor struct {
 	Provider *string `json:"provider,omitempty" parquet:"provider,optional"`
 
 	// Security Questions: The question(s) provided to user for a question-based authentication factor.
-	SecurityQuestions []string `json:"security_questions,omitempty" parquet:"security_questions,optional,list"`
+	SecurityQuestions []string `json:"security_questions,omitempty" parquet:"security_questions,list,optional"`
 }
 
 var AuthenticationFactorFields = []arrow.Field{

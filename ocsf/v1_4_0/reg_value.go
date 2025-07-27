@@ -17,7 +17,7 @@ type RegistryValue struct {
 	IsSystem *bool `json:"is_system,omitempty" parquet:"is_system,optional"`
 
 	// Modified Time: The time when the registry value was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the registry value.
 	Name string `json:"name" parquet:"name"`

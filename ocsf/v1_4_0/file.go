@@ -8,7 +8,7 @@ import (
 type File struct {
 
 	// Accessed Time: The time when the file was last accessed.
-	AccessedTime int64 `json:"accessed_time,omitempty" parquet:"accessed_time,optional,timestamp_millis,timestamp(millisecond)"`
+	AccessedTime int64 `json:"accessed_time,omitempty" parquet:"accessed_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Accessor: The name of the user who last accessed the object.
 	Accessor *User `json:"accessor,omitempty" parquet:"accessor,optional"`
@@ -26,13 +26,13 @@ type File struct {
 	ConfidentialityId *int32 `json:"confidentiality_id,omitempty" parquet:"confidentiality_id,optional"`
 
 	// Created Time: The time when the file was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Creator: The user that created the file.
 	Creator *User `json:"creator,omitempty" parquet:"creator,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: The description of the file, as returned by file system. For example: the description as returned by the Unix file command or the Windows file type.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -50,7 +50,7 @@ type File struct {
 	Ext *string `json:"ext,omitempty" parquet:"ext,optional"`
 
 	// Hashes: An array of hash attributes.
-	Hashes []*Fingerprint `json:"hashes,omitempty" parquet:"hashes,optional,list"`
+	Hashes []Fingerprint `json:"hashes,omitempty" parquet:"hashes,list,optional"`
 
 	// Internal Name: The name of the file as identified within the file itself. This contrasts with the name by which the file is known on disk. Where available, the internal name is widely used by security practitioners and detection content because the on-disk file name is not reliable. On the Windows OS, most PE files contain a <a href="https://learn.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource">VERSIONINFO</a> resource from which the internal name can be obtained. On macOS, binaries can optionally embed a copy of the application's Info.plist file which in turn contains the name of the executable.
 	InternalName *string `json:"internal_name,omitempty" parquet:"internal_name,optional"`
@@ -71,7 +71,7 @@ type File struct {
 	MimeType *string `json:"mime_type,omitempty" parquet:"mime_type,optional"`
 
 	// Modified Time: The time when the file was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Modifier: The user that last modified the file.
 	Modifier *User `json:"modifier,omitempty" parquet:"modifier,optional"`
@@ -104,7 +104,7 @@ type File struct {
 	StorageClass *string `json:"storage_class,omitempty" parquet:"storage_class,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the file.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The file type.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

@@ -11,7 +11,7 @@ type Product struct {
 	CpeName *string `json:"cpe_name,omitempty" parquet:"cpe_name,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Feature: The feature that reported the event.
 	Feature *Feature `json:"feature,omitempty" parquet:"feature,optional"`

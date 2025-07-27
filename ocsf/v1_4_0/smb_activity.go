@@ -32,7 +32,7 @@ type SMBActivity struct {
 	ClassUid int32 `json:"class_uid" parquet:"class_uid"`
 
 	// Client Dialects: The list of SMB dialects that the client speaks.
-	ClientDialects []string `json:"client_dialects,omitempty" parquet:"client_dialects,optional,list"`
+	ClientDialects []string `json:"client_dialects,omitempty" parquet:"client_dialects,list,optional"`
 
 	// Cloud: Describes details about the Cloud environment where the event was originally created or logged.
 	Cloud Cloud `json:"cloud" parquet:"cloud"`
@@ -59,16 +59,16 @@ type SMBActivity struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The end time of a time period, or the time of the most recent event included in the aggregate event.
-	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,optional,timestamp_millis,timestamp(millisecond)"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Enrichments: The additional information from an external data source, which is associated with the event or a finding. For example add location information for the IP address in the DNS answers:</p><code>[{"name": "answers.ip", "value": "92.24.47.250", "type": "location", "data": {"city": "Socotra", "continent": "Asia", "coordinates": [-25.4153, 17.0743], "country": "YE", "desc": "Yemen"}}]</code>
-	Enrichments []*Enrichment `json:"enrichments,omitempty" parquet:"enrichments,optional,list"`
+	Enrichments []Enrichment `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 
 	// File: The file that is the target of the SMB activity.
 	File *File `json:"file,omitempty" parquet:"file,optional"`
 
 	// JA4+ Fingerprints: A list of the JA4+ network fingerprints.
-	Ja4FingerprintList []*JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,optional,list"`
+	Ja4FingerprintList []JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,list,optional"`
 
 	// Message: The description of the event/finding, as defined by the source.
 	Message *string `json:"message,omitempty" parquet:"message,optional"`
@@ -77,7 +77,7 @@ type SMBActivity struct {
 	Metadata Metadata `json:"metadata" parquet:"metadata"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// Open Type: Indicates how the file was opened (e.g. normal, delete on close).
 	OpenType *string `json:"open_type,omitempty" parquet:"open_type,optional"`
@@ -113,7 +113,7 @@ type SMBActivity struct {
 	SrcEndpoint *NetworkEndpoint `json:"src_endpoint,omitempty" parquet:"src_endpoint,optional"`
 
 	// Start Time: The start time of a time period, or the time of the least recent event included in the aggregate event.
-	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,optional,timestamp_millis,timestamp(millisecond)"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Status: The event status, normalized to the caption of the status_id value. In the case of 'Other', it is defined by the event source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`

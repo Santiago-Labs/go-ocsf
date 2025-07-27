@@ -20,7 +20,7 @@ type QueryInformation struct {
 	QueryString string `json:"query_string" parquet:"query_string"`
 
 	// Query Time: The time when the query was run.
-	QueryTime int64 `json:"query_time,omitempty" parquet:"query_time,optional,timestamp_millis,timestamp(millisecond)"`
+	QueryTime int64 `json:"query_time,omitempty" parquet:"query_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Unique ID: The unique identifier of the query.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`

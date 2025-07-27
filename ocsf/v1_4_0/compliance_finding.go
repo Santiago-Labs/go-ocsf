@@ -44,13 +44,13 @@ type ComplianceFinding struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The time of the most recent event included in the finding.
-	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,optional,timestamp_millis,timestamp(millisecond)"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Enrichments: The additional information from an external data source, which is associated with the event or a finding. For example add location information for the IP address in the DNS answers:</p><code>[{"name": "answers.ip", "value": "92.24.47.250", "type": "location", "data": {"city": "Socotra", "continent": "Asia", "coordinates": [-25.4153, 17.0743], "country": "YE", "desc": "Yemen"}}]</code>
-	Enrichments []*Enrichment `json:"enrichments,omitempty" parquet:"enrichments,optional,list"`
+	Enrichments []Enrichment `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 
 	// Evidence Artifacts: Describes various evidence artifacts associated with the compliance finding.
-	Evidences []*EvidenceArtifacts `json:"evidences,omitempty" parquet:"evidences,optional,list"`
+	Evidences []EvidenceArtifacts `json:"evidences,omitempty" parquet:"evidences,list,optional"`
 
 	// Finding Information: Describes the supporting information about a generated finding.
 	FindingInfo FindingInformation `json:"finding_info" parquet:"finding_info"`
@@ -62,7 +62,7 @@ type ComplianceFinding struct {
 	Metadata Metadata `json:"metadata" parquet:"metadata"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// OSINT: The OSINT (Open Source Intelligence) object contains details related to an indicator such as the indicator itself, related indicators, geolocation, registrar information, subdomains, analyst commentary, and other contextual information. This information can be used to further enrich a detection or finding by providing decisioning support to other analysts and engineers.
 	Osint []OSINT `json:"osint" parquet:"osint,list"`
@@ -77,7 +77,7 @@ type ComplianceFinding struct {
 	Remediation *Remediation `json:"remediation,omitempty" parquet:"remediation,optional"`
 
 	// Resources Array: Describes details about the resource/resouces that are the subject of the compliance check.
-	Resources []*ResourceDetails `json:"resources,omitempty" parquet:"resources,optional,list"`
+	Resources []ResourceDetails `json:"resources,omitempty" parquet:"resources,list,optional"`
 
 	// Severity: The event/finding severity, normalized to the caption of the severity_id value. In the case of 'Other', it is defined by the source.
 	Severity *string `json:"severity,omitempty" parquet:"severity,optional"`
@@ -86,7 +86,7 @@ type ComplianceFinding struct {
 	SeverityId int32 `json:"severity_id" parquet:"severity_id"`
 
 	// Start Time: The time of the least recent event included in the finding.
-	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,optional,timestamp_millis,timestamp(millisecond)"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Status: The normalized status of the Finding set by the consumer normalized to the caption of the status_id value. In the case of 'Other', it is defined by the source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`

@@ -8,19 +8,19 @@ import (
 type Device struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Autoscale UID: The unique identifier of the cloud autoscale configuration.
 	AutoscaleUid *string `json:"autoscale_uid,omitempty" parquet:"autoscale_uid,optional"`
 
 	// Boot Time: The time the system was booted.
-	BootTime int64 `json:"boot_time,omitempty" parquet:"boot_time,optional,timestamp_millis,timestamp(millisecond)"`
+	BootTime int64 `json:"boot_time,omitempty" parquet:"boot_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Container: The information describing an instance of a container. A container is a prepackaged, portable system image that runs isolated on an existing system using a container runtime like containerd.
 	Container *Container `json:"container,omitempty" parquet:"container,optional"`
 
 	// Created Time: The time when the device was known to have been created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: The description of the device, ordinarily as reported by the operating system.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -29,10 +29,10 @@ type Device struct {
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
 
 	// First Seen: The initial discovery time of the device.
-	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Groups: The group names to which the device belongs. For example: <code>["Windows Laptops", "Engineering"]</code>.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Hostname: The device hostname.
 	Hostname *string `json:"hostname,omitempty" parquet:"hostname,optional"`
@@ -47,7 +47,7 @@ type Device struct {
 	Image *Image `json:"image,omitempty" parquet:"image,optional"`
 
 	// IMEI List: The International Mobile Equipment Identity values that are associated with the device.
-	ImeiList []string `json:"imei_list,omitempty" parquet:"imei_list,optional,list"`
+	ImeiList []string `json:"imei_list,omitempty" parquet:"imei_list,list,optional"`
 
 	// Instance ID: The unique identifier of a VM instance.
 	InstanceUid *string `json:"instance_uid,omitempty" parquet:"instance_uid,optional"`
@@ -74,7 +74,7 @@ type Device struct {
 	IsTrusted *bool `json:"is_trusted,omitempty" parquet:"is_trusted,optional"`
 
 	// Last Seen: The most recent discovery time of the device.
-	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Geo Location: The geographical location of the device.
 	Location *GeoLocation `json:"location,omitempty" parquet:"location,optional"`
@@ -86,7 +86,7 @@ type Device struct {
 	Model *string `json:"model,omitempty" parquet:"model,optional"`
 
 	// Modified Time: The time when the device was last known to have been modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The alternate device name, ordinarily as assigned by an administrator. <p><b>Note:</b> The <b>Name</b> could be any other string that helps to identify the device, such as a phone number; for example <code>310-555-1234</code>.</p>
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -95,7 +95,7 @@ type Device struct {
 	NamespacePid *int32 `json:"namespace_pid,omitempty" parquet:"namespace_pid,optional"`
 
 	// Network Interfaces: The network interfaces that are associated with the device, one for each unique MAC address/IP address/hostname/name combination.<p><b>Note:</b> The first element of the array is the network information that pertains to the event.</p>
-	NetworkInterfaces []*NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,optional,list"`
+	NetworkInterfaces []NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,list,optional"`
 
 	// Organization: Organization and org unit related to the device.
 	Org *Organization `json:"org,omitempty" parquet:"org,optional"`

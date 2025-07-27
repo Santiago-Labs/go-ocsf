@@ -11,7 +11,7 @@ type HTTPCookie struct {
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
 
 	// Expiration Time: The expiration time of the HTTP cookie.
-	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// HTTP Only: This attribute prevents the cookie from being accessed via JavaScript.
 	IsHttpOnly *bool `json:"is_http_only,omitempty" parquet:"is_http_only,optional"`

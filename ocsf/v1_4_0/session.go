@@ -11,7 +11,7 @@ type Session struct {
 	Count *int32 `json:"count,omitempty" parquet:"count,optional"`
 
 	// Created Time: The time when the session was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// User Credential ID: The unique identifier of the user's credential. For example, AWS Access Key ID.
 	CredentialUid *string `json:"credential_uid,omitempty" parquet:"credential_uid,optional"`
@@ -20,7 +20,7 @@ type Session struct {
 	ExpirationReason *string `json:"expiration_reason,omitempty" parquet:"expiration_reason,optional"`
 
 	// Expiration Time: The session expiration time.
-	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Multi Factor Authentication: Indicates whether Multi Factor Authentication was used during authentication.
 	IsMfa *bool `json:"is_mfa,omitempty" parquet:"is_mfa,optional"`

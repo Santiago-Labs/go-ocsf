@@ -8,7 +8,7 @@ import (
 type ResourceDetails struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Cloud Partition: The canonical cloud partition name to which the region is assigned (e.g. AWS Partitions: aws, aws-cn, aws-us-gov).
 	CloudPartition *string `json:"cloud_partition,omitempty" parquet:"cloud_partition,optional"`
@@ -20,7 +20,7 @@ type ResourceDetails struct {
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Group: The name of the related resource group.
 	Group *Group `json:"group,omitempty" parquet:"group,optional"`
@@ -32,7 +32,7 @@ type ResourceDetails struct {
 	Ip *string `json:"ip,omitempty" parquet:"ip,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The name of the resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -47,7 +47,7 @@ type ResourceDetails struct {
 	Region *string `json:"region,omitempty" parquet:"region,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The resource type as defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

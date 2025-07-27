@@ -14,7 +14,7 @@ type SCIM struct {
 	AuthProtocolId *int32 `json:"auth_protocol_id,omitempty" parquet:"auth_protocol_id,optional"`
 
 	// Created Time: When the SCIM resource was added to the service provider.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Last Error Message: Message or code associated with the last encountered error.
 	ErrorMessage *string `json:"error_message,omitempty" parquet:"error_message,optional"`
@@ -26,10 +26,10 @@ type SCIM struct {
 	IsUserProvisioningEnabled *bool `json:"is_user_provisioning_enabled,omitempty" parquet:"is_user_provisioning_enabled,optional"`
 
 	// Last Sync Time: Timestamp of the most recent successful synchronization.
-	LastRunTime int64 `json:"last_run_time,omitempty" parquet:"last_run_time,optional,timestamp_millis,timestamp(millisecond)"`
+	LastRunTime int64 `json:"last_run_time,omitempty" parquet:"last_run_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Modified Time: The most recent time when the SCIM resource was updated at the service provider.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the SCIM resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`

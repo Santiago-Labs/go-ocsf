@@ -47,13 +47,13 @@ type NetworkActivity struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The end time of a time period, or the time of the most recent event included in the aggregate event.
-	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,optional,timestamp_millis,timestamp(millisecond)"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Enrichments: The additional information from an external data source, which is associated with the event or a finding. For example add location information for the IP address in the DNS answers:</p><code>[{"name": "answers.ip", "value": "92.24.47.250", "type": "location", "data": {"city": "Socotra", "continent": "Asia", "coordinates": [-25.4153, 17.0743], "country": "YE", "desc": "Yemen"}}]</code>
-	Enrichments []*Enrichment `json:"enrichments,omitempty" parquet:"enrichments,optional,list"`
+	Enrichments []Enrichment `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 
 	// JA4+ Fingerprints: A list of the JA4+ network fingerprints.
-	Ja4FingerprintList []*JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,optional,list"`
+	Ja4FingerprintList []JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,list,optional"`
 
 	// Message: The description of the event/finding, as defined by the source.
 	Message *string `json:"message,omitempty" parquet:"message,optional"`
@@ -62,7 +62,7 @@ type NetworkActivity struct {
 	Metadata Metadata `json:"metadata" parquet:"metadata"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// OSINT: The OSINT (Open Source Intelligence) object contains details related to an indicator such as the indicator itself, related indicators, geolocation, registrar information, subdomains, analyst commentary, and other contextual information. This information can be used to further enrich a detection or finding by providing decisioning support to other analysts and engineers.
 	Osint []OSINT `json:"osint" parquet:"osint,list"`
@@ -83,7 +83,7 @@ type NetworkActivity struct {
 	SrcEndpoint *NetworkEndpoint `json:"src_endpoint,omitempty" parquet:"src_endpoint,optional"`
 
 	// Start Time: The start time of a time period, or the time of the least recent event included in the aggregate event.
-	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,optional,timestamp_millis,timestamp(millisecond)"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Status: The event status, normalized to the caption of the status_id value. In the case of 'Other', it is defined by the event source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`

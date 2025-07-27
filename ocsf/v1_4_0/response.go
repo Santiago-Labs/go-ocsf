@@ -11,7 +11,7 @@ type ResponseElements struct {
 	Code *int32 `json:"code,omitempty" parquet:"code,optional"`
 
 	// Containers: When working with containerized applications, the set of containers which write to the standard the output of a particular logging driver. For example, this may be the set of containers involved in handling api requests and responses for a containerized application.
-	Containers []*Container `json:"containers,omitempty" parquet:"containers,optional,list"`
+	Containers []Container `json:"containers,omitempty" parquet:"containers,list,optional"`
 
 	// Data: The additional data that is associated with the api response.
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
@@ -23,7 +23,7 @@ type ResponseElements struct {
 	ErrorMessage *string `json:"error_message,omitempty" parquet:"error_message,optional"`
 
 	// Flags: The communication flags that are associated with the api response.
-	Flags []string `json:"flags,omitempty" parquet:"flags,optional,list"`
+	Flags []string `json:"flags,omitempty" parquet:"flags,list,optional"`
 
 	// Message: The description of the event/finding, as defined by the source.
 	Message *string `json:"message,omitempty" parquet:"message,optional"`

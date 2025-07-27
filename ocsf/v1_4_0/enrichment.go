@@ -8,7 +8,7 @@ import (
 type Enrichment struct {
 
 	// Created Time: The time when the enrichment data was generated.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Data: The enrichment data associated with the attribute and value. The meaning of this data depends on the type the enrichment record.
 	Data string `json:"data" parquet:"data"`

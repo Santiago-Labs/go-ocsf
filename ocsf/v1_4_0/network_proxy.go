@@ -8,7 +8,7 @@ import (
 type NetworkProxyEndpoint struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Autonomous System: The Autonomous System details associated with an IP address.
 	AutonomousSystem *AutonomousSystem `json:"autonomous_system,omitempty" parquet:"autonomous_system,optional"`
@@ -35,7 +35,7 @@ type NetworkProxyEndpoint struct {
 	InterfaceUid *string `json:"interface_uid,omitempty" parquet:"interface_uid,optional"`
 
 	// Intermediate IP Addresses: The intermediate IP Addresses. For example, the IP addresses in the HTTP X-Forwarded-For header.
-	IntermediateIps []string `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,optional,list"`
+	IntermediateIps []string `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,list,optional"`
 
 	// IP Address: The IP address of the endpoint, in either IPv4 or IPv6 format.
 	Ip *string `json:"ip,omitempty" parquet:"ip,optional"`
@@ -173,7 +173,7 @@ type NetworkProxyEndpointRef struct {
 	InterfaceUid *string `json:"interface_uid,omitempty" parquet:"interface_uid,optional"`
 
 	// Intermediate IP Addresses: The intermediate IP Addresses. For example, the IP addresses in the HTTP X-Forwarded-For header.
-	IntermediateIps []string `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,optional,list"`
+	IntermediateIps []string `json:"intermediate_ips,omitempty" parquet:"intermediate_ips,list,optional"`
 
 	// IP Address: The IP address of the endpoint, in either IPv4 or IPv6 format.
 	Ip *string `json:"ip,omitempty" parquet:"ip,optional"`

@@ -8,13 +8,13 @@ import (
 type Service struct {
 
 	// Labels: The list of labels associated with the service.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The name of the service.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the service.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Unique ID: The unique identifier of the service.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`

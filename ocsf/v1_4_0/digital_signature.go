@@ -17,7 +17,7 @@ type DigitalSignature struct {
 	Certificate *DigitalCertificate `json:"certificate,omitempty" parquet:"certificate,optional"`
 
 	// Created Time: The time when the digital signature was created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Developer UID: The developer ID on the certificate that signed the file.
 	DeveloperUid *string `json:"developer_uid,omitempty" parquet:"developer_uid,optional"`

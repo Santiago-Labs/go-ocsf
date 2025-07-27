@@ -8,7 +8,7 @@ import (
 type EPSS struct {
 
 	// Created Time: The timestamp indicating when the EPSS score was calculated.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// EPSS Percentile: The EPSS score's percentile representing relative importance and ranking of the score in the larger EPSS dataset.
 	Percentile *float64 `json:"percentile,omitempty" parquet:"percentile,optional"`

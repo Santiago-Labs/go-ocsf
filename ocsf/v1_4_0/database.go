@@ -8,19 +8,19 @@ import (
 type Database struct {
 
 	// Created Time: The time when the database was known to have been created.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: The description of the database.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Groups: The group names to which the database belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the database.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The database name, ordinarily as assigned by a database administrator.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`

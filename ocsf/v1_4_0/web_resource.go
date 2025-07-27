@@ -11,19 +11,19 @@ type WebResource struct {
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: Description of the web resource.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The name of the web resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The web resource type as defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

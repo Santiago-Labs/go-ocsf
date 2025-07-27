@@ -8,10 +8,10 @@ import (
 type CVE struct {
 
 	// Created Time: The Record Creation Date identifies when the CVE ID was issued to a CVE Numbering Authority (CNA) or the CVE Record was published on the CVE List. Note that the Record Creation Date does not necessarily indicate when this vulnerability was discovered, shared with the affected vendor, publicly disclosed, or updated in CVE.
-	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,optional,timestamp_millis,timestamp(millisecond)"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// CVSS Score: The CVSS object details Common Vulnerability Scoring System (<a target='_blank' href='https://www.first.org/cvss/'>CVSS</a>) scores from the advisory that are related to the vulnerability.
-	Cvss []*CVSSScore `json:"cvss,omitempty" parquet:"cvss,optional,list"`
+	Cvss []CVSSScore `json:"cvss,omitempty" parquet:"cvss,list,optional"`
 
 	// Description: A brief description of the CVE Record.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -20,16 +20,16 @@ type CVE struct {
 	Epss *EPSS `json:"epss,omitempty" parquet:"epss,optional"`
 
 	// Modified Time: The Record Modified Date identifies when the CVE record was last updated.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Product: The product where the vulnerability was discovered.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
 
 	// References: A list of reference URLs with additional information about the CVE Record.
-	References []string `json:"references,omitempty" parquet:"references,optional,list"`
+	References []string `json:"references,omitempty" parquet:"references,list,optional"`
 
 	// Related CWEs: Describes the Common Weakness Enumeration <a target='_blank' href='https://cwe.mitre.org/'>(CWE)</a> details related to the CVE Record.
-	RelatedCwes []*CWE `json:"related_cwes,omitempty" parquet:"related_cwes,optional,list"`
+	RelatedCwes []CWE `json:"related_cwes,omitempty" parquet:"related_cwes,list,optional"`
 
 	// Title: A title or a brief phrase summarizing the CVE record.
 	Title *string `json:"title,omitempty" parquet:"title,optional"`

@@ -11,7 +11,7 @@ type Agent struct {
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Agent Policies: Describes the various policies that may be applied or enforced by an agent or sensor. E.g., Conditional Access, prevention, auto-update, tamper protection, destination configuration, etc.
-	Policies []*Policy `json:"policies,omitempty" parquet:"policies,optional,list"`
+	Policies []Policy `json:"policies,omitempty" parquet:"policies,list,optional"`
 
 	// Agent Type: The normalized caption of the type_id value for the agent or sensor. In the case of 'Other' or 'Unknown', it is defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`

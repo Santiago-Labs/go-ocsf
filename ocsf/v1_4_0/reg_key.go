@@ -11,7 +11,7 @@ type RegistryKey struct {
 	IsSystem *bool `json:"is_system,omitempty" parquet:"is_system,optional"`
 
 	// Modified Time: The time when the registry key was last modified.
-	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,optional,timestamp_millis,timestamp(millisecond)"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Path: The full path to the registry key.
 	Path string `json:"path" parquet:"path"`
