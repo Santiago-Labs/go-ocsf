@@ -150,8 +150,15 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		}
 	}
 
-	createdTimeInt := createdAt.UnixMilli()
-	lastSeenTimeInt := lastSeenTime.UnixMilli()
+	var createdTimeInt int64
+	if createdAt != nil {
+		createdTimeInt = createdAt.UnixMilli()
+	}
+
+	var lastSeenTimeInt int64
+	if lastSeenTime != nil {
+		lastSeenTimeInt = lastSeenTime.UnixMilli()
+	}
 
 	vulnerabilities := []ocsf.VulnerabilityDetails{
 		{
@@ -221,8 +228,15 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		}
 	}
 
-	modifiedTimeInt := modifiedTime.UnixMilli()
-	endTimeInt := endTime.UnixMilli()
+	var modifiedTimeInt int64
+	if modifiedTime != nil {
+		modifiedTimeInt = modifiedTime.UnixMilli()
+	}
+
+	var endTimeInt int64
+	if endTime != nil {
+		endTimeInt = endTime.UnixMilli()
+	}
 
 	findingInfo := ocsf.FindingInformation{
 		Uid:           *securityHubFinding.Id,
@@ -248,6 +262,8 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		ClassName:       &className,
 		Message:         securityHubFinding.Description,
 		Metadata:        metadata,
+		Region:          regionFromArn(*securityHubFinding.Id),
+		AccountId:       *securityHubFinding.AwsAccountId,
 		Resources:       mapSecurityHubResources(securityHubFinding),
 		Status:          &status,
 		StatusId:        &statusID,
@@ -256,6 +272,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
 		SeverityId:      int32(severityID),
+		Severity:        &severity,
 	}
 
 	return finding, nil
@@ -267,49 +284,53 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 
 func mapSecurityHubSeverity(severity *types.Severity) (string, int) {
 	if severity == nil {
-		return "Unknown", 0
+		return "unknown", 0
 	}
 
 	// SeverityLabel is an enum, not a pointer
 	switch severity.Label {
 	case types.SeverityLabelInformational:
-		return "Informational", 1
+		return "informational", 1
 	case types.SeverityLabelLow:
-		return "Low", 2
+		return "low", 2
 	case types.SeverityLabelMedium:
-		return "Medium", 3
+		return "medium", 3
 	case types.SeverityLabelHigh:
-		return "High", 4
+		return "high", 4
 	case types.SeverityLabelCritical:
-		return "Critical", 5
+		return "critical", 5
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
 func mapSecurityHubStatus(workflow *types.Workflow) (string, int32) {
 	if workflow == nil {
-		return "Open", 1
+		return "open", 1
 	}
 
 	// WorkflowStatus is an enum, not a pointer
 	switch workflow.Status {
 	case types.WorkflowStatusNew, types.WorkflowStatusNotified:
-		return "Open", 1
+		return "open", 1
 	case types.WorkflowStatusSuppressed:
-		return "Suppressed", 3
+		return "suppressed", 3
 	case types.WorkflowStatusResolved:
-		return "Closed", 4
+		return "closed", 4
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
-func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceDetails {
-	var resources []*ocsf.ResourceDetails
+func mapSecurityHubResources(finding types.AwsSecurityFinding) []ocsf.ResourceDetails {
+	var resources []ocsf.ResourceDetails
 	for _, resource := range finding.Resources {
 		resourceType := *resource.Type
-		resources = append(resources, &ocsf.ResourceDetails{
+		if resource.Id == nil || *resource.Id == "" {
+			continue
+		}
+
+		resources = append(resources, ocsf.ResourceDetails{
 			Uid:  resource.Id,
 			Type: &resourceType,
 		})
@@ -319,14 +340,14 @@ func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceD
 }
 
 func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
-	if finding.Vulnerabilities != nil && len(finding.Vulnerabilities) > 0 {
+	if len(finding.Vulnerabilities) > 0 {
 		for _, vuln := range finding.Vulnerabilities {
 			if vuln.Id != nil && vuln.Cvss != nil && len(vuln.Cvss) > 0 {
-				var cvss []*ocsf.CVSSScore
+				var cvss []ocsf.CVSSScore
 				for _, c := range vuln.Cvss {
 					if c.BaseScore != nil && c.Version != nil {
 						// The field is VectorString, not Vector
-						cvss = append(cvss, &ocsf.CVSSScore{
+						cvss = append(cvss, ocsf.CVSSScore{
 							BaseScore:    *c.BaseScore,
 							VectorString: c.BaseVector,
 							Version:      *c.Version,

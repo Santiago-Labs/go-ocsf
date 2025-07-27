@@ -462,51 +462,51 @@ func (s *Syncer) ToOCSF(ctx context.Context, event CloudtrailEvent) (ocsf.APIAct
 	if strings.HasPrefix(eventName, "Create") || strings.HasPrefix(eventName, "Add") ||
 		strings.HasPrefix(eventName, "Put") || strings.HasPrefix(eventName, "Insert") {
 		activityID = 1
-		activityName = "Create"
+		activityName = "create"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Create"
 	} else if strings.HasPrefix(eventName, "Get") || strings.HasPrefix(eventName, "Describe") ||
 		strings.HasPrefix(eventName, "List") || strings.HasPrefix(eventName, "Search") {
 		activityID = 2
-		activityName = "Read"
+		activityName = "read"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Read"
 	} else if strings.HasPrefix(eventName, "Update") || strings.HasPrefix(eventName, "Modify") ||
 		strings.HasPrefix(eventName, "Set") {
 		activityID = 3
-		activityName = "Update"
+		activityName = "update"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Update"
 	} else if strings.HasPrefix(eventName, "Delete") || strings.HasPrefix(eventName, "Remove") {
 		activityID = 4
-		activityName = "Delete"
+		activityName = "delete"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Delete"
 	} else {
 		activityID = 0
-		activityName = "Unknown"
+		activityName = "unknown"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Unknown"
 	}
 
 	// Map event success to OCSF status
-	status := "Unknown"
+	status := "unknown"
 	statusID := 0
 	// TODO: each response type is different depending on the event source
 
 	if event.ErrorCode == nil || *event.ErrorCode == "" {
-		status = "Success"
+		status = "success"
 		statusID = 1
 	} else {
-		status = "Failure"
+		status = "failure"
 		statusID = 2
 	}
 
 	// Set severity based on error information
-	severity := "Informational"
+	severity := "informational"
 	severityID := 1
 	if event.ErrorCode != nil {
-		severity = "Medium"
+		severity = "medium"
 		severityID = 3
 	}
 
@@ -543,10 +543,10 @@ func (s *Syncer) ToOCSF(ctx context.Context, event CloudtrailEvent) (ocsf.APIAct
 	}
 
 	// Parse resource information
-	var resources []*ocsf.ResourceDetails
+	var resources []ocsf.ResourceDetails
 	if event.Resources != nil {
 		for _, resource := range event.Resources {
-			resources = append(resources, &ocsf.ResourceDetails{
+			resources = append(resources, ocsf.ResourceDetails{
 				Name: stringPtr(resource.ARN),
 				Type: stringPtr(resource.Type),
 				Uid:  stringPtr(resource.ARN),
@@ -624,25 +624,4 @@ func stringPtr(s string) *string {
 
 func int32Ptr(i int32) *int32 {
 	return &i
-}
-
-func toString(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func toInt32(i *int32) int32 {
-	if i == nil {
-		return 0
-	}
-	return *i
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

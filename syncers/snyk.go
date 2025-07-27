@@ -131,7 +131,11 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	cwe := snykIssueCWE(issue)
 
 	createdTimeInt := createdAt.UnixMilli()
-	lastSeenTimeInt := lastSeenTime.UnixMilli()
+
+	var lastSeenTimeInt int64
+	if lastSeenTime != nil {
+		lastSeenTimeInt = lastSeenTime.UnixMilli()
+	}
 
 	if len(issue.Attributes.Problems) == 0 {
 		vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
@@ -192,7 +196,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if createdAt == updatedAt {
+	if createdAt.Equal(updatedAt) {
 		activityID = int32(1)
 		activityName = "Create"
 		typeUID = int64(classUID)*100 + int64(activityID)
@@ -222,8 +226,15 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		Version: "1.4.0",
 	}
 
-	modifiedTimeInt := updatedAt.UnixMilli()
-	endTimeInt := endTime.UnixMilli()
+	var modifiedTimeInt int64
+	if !updatedAt.Equal(createdAt) {
+		modifiedTimeInt = updatedAt.UnixMilli()
+	}
+
+	var endTimeInt int64
+	if endTime != nil {
+		endTimeInt = endTime.UnixMilli()
+	}
 
 	findingInfo := ocsf.FindingInformation{
 		Uid:           issue.ID,
@@ -249,7 +260,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		ClassName:       &className,
 		Message:         &issue.Attributes.Description,
 		Metadata:        metadata,
-		Resources:       []*ocsf.ResourceDetails{&resource},
+		Resources:       []ocsf.ResourceDetails{resource},
 		Status:          &status,
 		StatusId:        &statusID,
 		TypeUid:         typeUID,
@@ -257,6 +268,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
 		SeverityId:      int32(severityID),
+		Severity:        &severity,
 	}
 
 	return finding, nil
@@ -269,26 +281,26 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 func mapSnykSeverity(snykSeverity string) (string, int) {
 	switch snykSeverity {
 	case "info":
-		return "Informational", 1
+		return "informational", 1
 	case "low":
-		return "Low", 2
+		return "low", 2
 	case "medium":
-		return "Medium", 3
+		return "medium", 3
 	case "high":
-		return "High", 4
+		return "high", 4
 	case "critical":
-		return "Critical", 5
+		return "critical", 5
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
 func mapSnykStatus(snykStatus string) (string, int32) {
 	switch snykStatus {
 	case "resolved":
-		return "Closed", 4
+		return "closed", 4
 	default:
-		return "Open", 1
+		return "open", 1
 	}
 }
 
@@ -320,8 +332,8 @@ func snykIssueCWE(issue snyk.Issue) *ocsf.CWE {
 	return nil
 }
 
-func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedCode {
-	var affectedCode []*ocsf.AffectedCode
+func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []ocsf.AffectedCode {
+	var affectedCode []ocsf.AffectedCode
 	for _, coordinate := range issue.Attributes.Coordinates {
 		for _, representation := range coordinate.Representations {
 			fileName := project.Attributes.TargetFile
@@ -343,7 +355,7 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedC
 				Path: &fileName,
 			}
 
-			affectedCode = append(affectedCode, &ocsf.AffectedCode{
+			affectedCode = append(affectedCode, ocsf.AffectedCode{
 				File:      fileObj,
 				StartLine: &lineNumber,
 				EndLine:   &endLine,
@@ -354,15 +366,15 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedC
 	return affectedCode
 }
 
-func snykAffectedPackages(issue snyk.Issue) []*ocsf.AffectedSoftwarePackage {
-	var affectedPackage []*ocsf.AffectedSoftwarePackage
+func snykAffectedPackages(issue snyk.Issue) []ocsf.AffectedSoftwarePackage {
+	var affectedPackage []ocsf.AffectedSoftwarePackage
 	for _, coordinate := range issue.Attributes.Coordinates {
 		for _, representation := range coordinate.Representations {
 			if representation.Dependency == nil {
 				continue
 			}
 
-			affectedPackage = append(affectedPackage, &ocsf.AffectedSoftwarePackage{
+			affectedPackage = append(affectedPackage, ocsf.AffectedSoftwarePackage{
 				Name:    representation.Dependency.PackageName,
 				Version: representation.Dependency.PackageVersion,
 			})
