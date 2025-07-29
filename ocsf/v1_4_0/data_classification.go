@@ -23,7 +23,7 @@ type DataClassification struct {
 	ConfidentialityId *int32 `json:"confidentiality_id,omitempty" parquet:"confidentiality_id,optional"`
 
 	// Discovery Details: Details about the data discovered by classification job.
-	DiscoveryDetails []*DiscoveryDetails `json:"discovery_details,omitempty" parquet:"discovery_details,optional,list"`
+	DiscoveryDetails []DiscoveryDetails `json:"discovery_details,omitempty" parquet:"discovery_details,list,optional"`
 
 	// Policy: Details about the data policy that governs data handling and security measures related to classification.
 	Policy *Policy `json:"policy,omitempty" parquet:"policy,optional"`
@@ -38,7 +38,7 @@ type DataClassification struct {
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
 
 	// Status Details: The contextual description of the <code>status, status_id</code> value.
-	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,optional,list"`
+	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,list,optional"`
 
 	// Status ID: The normalized status identifier of the classification job.
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
@@ -70,3 +70,4 @@ var DataClassificationFields = []arrow.Field{
 var DataClassificationStruct = arrow.StructOf(DataClassificationFields...)
 
 var DataClassificationSchema = arrow.NewSchema(DataClassificationFields, nil)
+var DataClassificationClassname = "data_classification"

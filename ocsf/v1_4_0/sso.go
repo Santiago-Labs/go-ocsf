@@ -17,7 +17,7 @@ type SSO struct {
 	Certificate *DigitalCertificate `json:"certificate,omitempty" parquet:"certificate,optional"`
 
 	// Created Time: When the SSO resource was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// SSO Session Duration: The duration (in minutes) for an SSO session, after which re-authentication is required.
 	DurationMins *int32 `json:"duration_mins,omitempty" parquet:"duration_mins,optional"`
@@ -35,7 +35,7 @@ type SSO struct {
 	MetadataEndpoint *string `json:"metadata_endpoint,omitempty" parquet:"metadata_endpoint,optional"`
 
 	// Modified Time: The most recent time when the SSO resource was updated.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the SSO resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -44,7 +44,7 @@ type SSO struct {
 	ProtocolName *string `json:"protocol_name,omitempty" parquet:"protocol_name,optional"`
 
 	// Scopes: Scopes define the specific permissions or actions that the client is allowed to perform on behalf of the user. Each scope represents a different set of permissions, and the user can selectively grant or deny access to specific scopes during the authorization process.
-	Scopes []string `json:"scopes,omitempty" parquet:"scopes,optional,list"`
+	Scopes []string `json:"scopes,omitempty" parquet:"scopes,list,optional"`
 
 	// Unique ID: A unique identifier for a SSO resource.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
@@ -57,13 +57,13 @@ var SSOFields = []arrow.Field{
 	{Name: "auth_protocol", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "auth_protocol_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "certificate", Type: DigitalCertificateStruct, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "duration_mins", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "idle_timeout", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "login_endpoint", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "logout_endpoint", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "metadata_endpoint", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "protocol_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "scopes", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
@@ -74,3 +74,4 @@ var SSOFields = []arrow.Field{
 var SSOStruct = arrow.StructOf(SSOFields...)
 
 var SSOSchema = arrow.NewSchema(SSOFields, nil)
+var SSOClassname = "sso"

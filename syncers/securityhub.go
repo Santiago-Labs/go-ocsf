@@ -90,22 +90,20 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	severity, severityID := mapSecurityHubSeverity(securityHubFinding.Severity)
 	status, statusID := mapSecurityHubStatus(securityHubFinding.Workflow)
 
-	var createdAt *int64
+	var createdAt *time.Time
 	if securityHubFinding.CreatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.CreatedAt)
 		if err == nil {
-			createdAtUnix := parsedTime.UnixMilli()
-			createdAt = &createdAtUnix
+			createdAt = &parsedTime
 		}
 	}
 
-	var endTime *int64
+	var endTime *time.Time
 	if status == "Closed" {
 		if securityHubFinding.UpdatedAt != nil {
 			parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 			if err == nil {
-				endTimeUnix := parsedTime.UnixMilli()
-				endTime = &endTimeUnix
+				endTime = &parsedTime
 			}
 		}
 	}
@@ -144,13 +142,22 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	}
 
 	// Convert UpdatedAt string to time.Time for LastSeenTime
-	var lastSeenTime *int64
+	var lastSeenTime *time.Time
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			lastSeenTimeUnix := parsedTime.UnixMilli()
-			lastSeenTime = &lastSeenTimeUnix
+			lastSeenTime = &parsedTime
 		}
+	}
+
+	var createdTimeInt int64
+	if createdAt != nil {
+		createdTimeInt = createdAt.UnixMilli()
+	}
+
+	var lastSeenTimeInt int64
+	if lastSeenTime != nil {
+		lastSeenTimeInt = lastSeenTime.UnixMilli()
 	}
 
 	vulnerabilities := []ocsf.VulnerabilityDetails{
@@ -161,9 +168,9 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 			Title:              &title,
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
-			FirstSeenTime:      createdAt,
+			FirstSeenTime:      createdTimeInt,
 			IsFixAvailable:     &fixAvailable,
-			LastSeenTime:       lastSeenTime,
+			LastSeenTime:       lastSeenTimeInt,
 			VendorName:         &vendorName,
 			Remediation:        remediation,
 		},
@@ -173,7 +180,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 	var activityName string
 	var typeUID int64
 	var typeName string
-	var eventTime int64
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
@@ -200,7 +207,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		if err != nil {
 			return ocsf.VulnerabilityFinding{}, oops.Wrapf(err, "failed to parse time")
 		}
-		eventTime = parsedTime.UnixMilli()
+		eventTime = parsedTime
 	}
 
 	productName := "SecurityHub"
@@ -213,32 +220,40 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Version: "1.4.0",
 	}
 
-	var modifiedTime *int64
+	var modifiedTime *time.Time
 	if securityHubFinding.UpdatedAt != nil {
 		parsedTime, err := time.Parse(time.RFC3339, *securityHubFinding.UpdatedAt)
 		if err == nil {
-			modifiedTimeUnix := parsedTime.UnixMilli()
-			modifiedTime = &modifiedTimeUnix
+			modifiedTime = &parsedTime
 		}
+	}
+
+	var modifiedTimeInt int64
+	if modifiedTime != nil {
+		modifiedTimeInt = modifiedTime.UnixMilli()
+	}
+
+	var endTimeInt int64
+	if endTime != nil {
+		endTimeInt = endTime.UnixMilli()
 	}
 
 	findingInfo := ocsf.FindingInformation{
 		Uid:           *securityHubFinding.Id,
 		Title:         securityHubFinding.Title,
 		Desc:          securityHubFinding.Description,
-		CreatedTime:   createdAt,
-		FirstSeenTime: createdAt,
-		LastSeenTime:  lastSeenTime,
-		ModifiedTime:  modifiedTime,
+		CreatedTime:   createdTimeInt,
+		FirstSeenTime: createdTimeInt,
+		LastSeenTime:  lastSeenTimeInt,
+		ModifiedTime:  modifiedTimeInt,
 		DataSources:   []string{"securityhub"},
 		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            eventTime,
-		StartTime:       createdAt,
-		EventDay:        int32(eventTime),
-		EndTime:         endTime,
+		Time:            eventTime.UnixMilli(),
+		StartTime:       createdTimeInt,
+		EndTime:         endTimeInt,
 		ActivityId:      activityID,
 		ActivityName:    &activityName,
 		CategoryUid:     categoryUID,
@@ -247,6 +262,8 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		ClassName:       &className,
 		Message:         securityHubFinding.Description,
 		Metadata:        metadata,
+		Region:          regionFromArn(*securityHubFinding.Id),
+		AccountId:       *securityHubFinding.AwsAccountId,
 		Resources:       mapSecurityHubResources(securityHubFinding),
 		Status:          &status,
 		StatusId:        &statusID,
@@ -255,6 +272,7 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
 		SeverityId:      int32(severityID),
+		Severity:        &severity,
 	}
 
 	return finding, nil
@@ -266,49 +284,53 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 
 func mapSecurityHubSeverity(severity *types.Severity) (string, int) {
 	if severity == nil {
-		return "Unknown", 0
+		return "unknown", 0
 	}
 
 	// SeverityLabel is an enum, not a pointer
 	switch severity.Label {
 	case types.SeverityLabelInformational:
-		return "Informational", 1
+		return "informational", 1
 	case types.SeverityLabelLow:
-		return "Low", 2
+		return "low", 2
 	case types.SeverityLabelMedium:
-		return "Medium", 3
+		return "medium", 3
 	case types.SeverityLabelHigh:
-		return "High", 4
+		return "high", 4
 	case types.SeverityLabelCritical:
-		return "Critical", 5
+		return "critical", 5
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
 func mapSecurityHubStatus(workflow *types.Workflow) (string, int32) {
 	if workflow == nil {
-		return "Open", 1
+		return "open", 1
 	}
 
 	// WorkflowStatus is an enum, not a pointer
 	switch workflow.Status {
 	case types.WorkflowStatusNew, types.WorkflowStatusNotified:
-		return "Open", 1
+		return "open", 1
 	case types.WorkflowStatusSuppressed:
-		return "Suppressed", 3
+		return "suppressed", 3
 	case types.WorkflowStatusResolved:
-		return "Closed", 4
+		return "closed", 4
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
-func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceDetails {
-	var resources []*ocsf.ResourceDetails
+func mapSecurityHubResources(finding types.AwsSecurityFinding) []ocsf.ResourceDetails {
+	var resources []ocsf.ResourceDetails
 	for _, resource := range finding.Resources {
 		resourceType := *resource.Type
-		resources = append(resources, &ocsf.ResourceDetails{
+		if resource.Id == nil || *resource.Id == "" {
+			continue
+		}
+
+		resources = append(resources, ocsf.ResourceDetails{
 			Uid:  resource.Id,
 			Type: &resourceType,
 		})
@@ -318,14 +340,14 @@ func mapSecurityHubResources(finding types.AwsSecurityFinding) []*ocsf.ResourceD
 }
 
 func mapSecurityHubCVE(finding types.AwsSecurityFinding) *ocsf.CVE {
-	if finding.Vulnerabilities != nil && len(finding.Vulnerabilities) > 0 {
+	if len(finding.Vulnerabilities) > 0 {
 		for _, vuln := range finding.Vulnerabilities {
 			if vuln.Id != nil && vuln.Cvss != nil && len(vuln.Cvss) > 0 {
-				var cvss []*ocsf.CVSSScore
+				var cvss []ocsf.CVSSScore
 				for _, c := range vuln.Cvss {
 					if c.BaseScore != nil && c.Version != nil {
 						// The field is VectorString, not Vector
-						cvss = append(cvss, &ocsf.CVSSScore{
+						cvss = append(cvss, ocsf.CVSSScore{
 							BaseScore:    *c.BaseScore,
 							VectorString: c.BaseVector,
 							Version:      *c.Version,

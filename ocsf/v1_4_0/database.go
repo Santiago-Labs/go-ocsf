@@ -8,19 +8,19 @@ import (
 type Database struct {
 
 	// Created Time: The time when the database was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: The description of the database.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Groups: The group names to which the database belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the database.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The database name, ordinarily as assigned by a database administrator.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -39,11 +39,11 @@ type Database struct {
 }
 
 var DatabaseFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "groups", Type: arrow.ListOf(GroupStruct), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "size", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -54,3 +54,4 @@ var DatabaseFields = []arrow.Field{
 var DatabaseStruct = arrow.StructOf(DatabaseFields...)
 
 var DatabaseSchema = arrow.NewSchema(DatabaseFields, nil)
+var DatabaseClassname = "database"

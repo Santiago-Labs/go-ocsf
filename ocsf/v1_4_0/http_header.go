@@ -22,3 +22,4 @@ var HTTPHeaderFields = []arrow.Field{
 var HTTPHeaderStruct = arrow.StructOf(HTTPHeaderFields...)
 
 var HTTPHeaderSchema = arrow.NewSchema(HTTPHeaderFields, nil)
+var HTTPHeaderClassname = "http_header"

@@ -22,3 +22,4 @@ var HASSHFields = []arrow.Field{
 var HASSHStruct = arrow.StructOf(HASSHFields...)
 
 var HASSHSchema = arrow.NewSchema(HASSHFields, nil)
+var HASSHClassname = "hassh"

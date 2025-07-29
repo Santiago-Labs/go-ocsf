@@ -11,7 +11,7 @@ type Job struct {
 	CmdLine *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 
 	// Created Time: The time when the job was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: The description of the job.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -20,13 +20,13 @@ type Job struct {
 	File File `json:"file" parquet:"file"`
 
 	// Last Run: The time when the job was last run.
-	LastRunTime *int64 `json:"last_run_time,omitempty" parquet:"last_run_time,optional"`
+	LastRunTime int64 `json:"last_run_time,omitempty" parquet:"last_run_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the job.
 	Name string `json:"name" parquet:"name"`
 
 	// Next Run: The time when the job will next be run.
-	NextRunTime *int64 `json:"next_run_time,omitempty" parquet:"next_run_time,optional"`
+	NextRunTime int64 `json:"next_run_time,omitempty" parquet:"next_run_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Run State: The run state of the job.
 	RunState *string `json:"run_state,omitempty" parquet:"run_state,optional"`
@@ -40,12 +40,12 @@ type Job struct {
 
 var JobFields = []arrow.Field{
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "file", Type: FileStruct, Nullable: false},
-	{Name: "last_run_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_run_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
-	{Name: "next_run_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "next_run_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "run_state", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "run_state_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "user", Type: UserStruct, Nullable: true},
@@ -54,3 +54,4 @@ var JobFields = []arrow.Field{
 var JobStruct = arrow.StructOf(JobFields...)
 
 var JobSchema = arrow.NewSchema(JobFields, nil)
+var JobClassname = "job"

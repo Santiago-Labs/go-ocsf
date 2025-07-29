@@ -11,10 +11,10 @@ type Trace struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The end timestamp of the trace, essential for identifying latency and performance bottlenecks. Like the start time, this timestamp is normalized across the trace system to ensure consistency, even when events are recorded across distributed services with unsynchronized clocks. Normalized time allows for accurate trace duration calculations and helps observability tools track overall performance across services, regardless of the individual system time settings.
-	EndTime *int64 `json:"end_time,omitempty" parquet:"end_time,optional"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Flags: The flags associated with the trace, used to indicate specific properties or behaviors, such as whether the trace is sampled or if it has special handling. Flags help control how traces are processed, logged, and analyzed, providing valuable context for tracing and observability tools in identifying trace characteristics or specific tracking requirements.
-	Flags []string `json:"flags,omitempty" parquet:"flags,optional,list"`
+	Flags []string `json:"flags,omitempty" parquet:"flags,list,optional"`
 
 	// Service: Identifies the service or component generating the trace, helping to track and correlate the flow of requests through various parts of a distributed system. This information is essential for understanding the role and performance of specific services within the broader context of system operations and for diagnosing issues across different components.
 	Service *Service `json:"service,omitempty" parquet:"service,optional"`
@@ -23,7 +23,7 @@ type Trace struct {
 	Span *Span `json:"span,omitempty" parquet:"span,optional"`
 
 	// Start Time: The start timestamp of the trace, essential for identifying latency and performance bottlenecks. Like the end time, this timestamp is normalized across the trace system to ensure consistency, even when events are recorded across distributed services with unsynchronized clocks. Normalized time enables accurate trace duration calculations and helps observability tools track performance across services, regardless of the individual system time settings.
-	StartTime *int64 `json:"start_time,omitempty" parquet:"start_time,optional"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Unique ID: The unique identifier of the trace used in distributed systems and microservices architecture to track and correlate requests across various components of an application.
 	Uid string `json:"uid" parquet:"uid"`
@@ -31,14 +31,15 @@ type Trace struct {
 
 var TraceFields = []arrow.Field{
 	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "flags", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "service", Type: ServiceStruct, Nullable: true},
 	{Name: "span", Type: SpanStruct, Nullable: true},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
 }
 
 var TraceStruct = arrow.StructOf(TraceFields...)
 
 var TraceSchema = arrow.NewSchema(TraceFields, nil)
+var TraceClassname = "trace"

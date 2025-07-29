@@ -54,3 +54,4 @@ var AircraftFields = []arrow.Field{
 var AircraftStruct = arrow.StructOf(AircraftFields...)
 
 var AircraftSchema = arrow.NewSchema(AircraftFields, nil)
+var AircraftClassname = "aircraft"

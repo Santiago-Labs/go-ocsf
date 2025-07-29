@@ -8,7 +8,7 @@ import (
 type SoftwareBillofMaterials struct {
 
 	// Created Time: The time when the SBOM was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Software Package: The device software that is being discovered by an inventory process.
 	Package SoftwarePackage `json:"package" parquet:"package"`
@@ -21,7 +21,7 @@ type SoftwareBillofMaterials struct {
 }
 
 var SoftwareBillofMaterialsFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "package", Type: SoftwarePackageStruct, Nullable: false},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "software_components", Type: arrow.ListOf(SoftwareComponentStruct), Nullable: false},
@@ -30,3 +30,4 @@ var SoftwareBillofMaterialsFields = []arrow.Field{
 var SoftwareBillofMaterialsStruct = arrow.StructOf(SoftwareBillofMaterialsFields...)
 
 var SoftwareBillofMaterialsSchema = arrow.NewSchema(SoftwareBillofMaterialsFields, nil)
+var SoftwareBillofMaterialsClassname = "sbom"

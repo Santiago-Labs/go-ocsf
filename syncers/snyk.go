@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/Santiago-Labs/go-ocsf/clients/snyk"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
@@ -86,21 +87,20 @@ func (s *SnykOCSFSyncer) Sync(ctx context.Context) error {
 func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *snyk.Project) (ocsf.VulnerabilityFinding, error) {
 	severity, severityID := mapSnykSeverity(issue.Attributes.EffectiveSeverityLevel)
 	status, statusID := mapSnykStatus(issue.Attributes.Status)
-	createdAt := issue.Attributes.CreatedAt.UnixMilli()
-	updatedAt := issue.Attributes.UpdatedAt.UnixMilli()
-	var endTime *int64
+	createdAt := issue.Attributes.CreatedAt
+	updatedAt := issue.Attributes.UpdatedAt
+	var endTime *time.Time
 	if status == "Closed" {
-		endTimeUnix := updatedAt
-		endTime = &endTimeUnix
+		endTime = &updatedAt
 	}
 
-	var lastSeenTime int64
+	var lastSeenTime *time.Time
 	if status == "Open" {
-		lastSeenTime = issue.Attributes.UpdatedAt.UnixMilli()
+		lastSeenTime = &updatedAt
 	} else {
 		// This technically isn't correct because its when the issue was closed,
 		// but we don't have a way to know when the issue was last seen.
-		lastSeenTime = issue.Attributes.UpdatedAt.UnixMilli()
+		lastSeenTime = &updatedAt
 	}
 
 	projectName := project.Attributes.Name
@@ -129,6 +129,14 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 
 	issueURL := fmt.Sprintf("https://app.snyk.io/org/%s/project/%s#issue-%s", s.org.Attributes.Slug, project.ID, issue.Attributes.Key)
 	cwe := snykIssueCWE(issue)
+
+	createdTimeInt := createdAt.UnixMilli()
+
+	var lastSeenTimeInt int64
+	if lastSeenTime != nil {
+		lastSeenTimeInt = lastSeenTime.UnixMilli()
+	}
+
 	if len(issue.Attributes.Problems) == 0 {
 		vulnerabilities = append(vulnerabilities, ocsf.VulnerabilityDetails{
 			Cwe:                cwe,
@@ -136,9 +144,9 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 			Title:              &issue.Attributes.Title,
 			Severity:           &severity,
 			IsExploitAvailable: &exploitAvailable,
-			FirstSeenTime:      &createdAt,
+			FirstSeenTime:      createdTimeInt,
 			IsFixAvailable:     &fixAvailable,
-			LastSeenTime:       &lastSeenTime,
+			LastSeenTime:       lastSeenTimeInt,
 			VendorName:         &vendorName,
 			AffectedCode:       snykAffectedCode(issue, project),
 			AffectedPackages:   snykAffectedPackages(issue),
@@ -161,9 +169,9 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 				Title:              &issue.Attributes.Title,
 				Severity:           &severity,
 				IsExploitAvailable: &exploitAvailable,
-				FirstSeenTime:      &createdAt,
+				FirstSeenTime:      createdTimeInt,
 				IsFixAvailable:     &fixAvailable,
-				LastSeenTime:       &lastSeenTime,
+				LastSeenTime:       lastSeenTimeInt,
 				VendorName:         &vendorName,
 				Remediation:        remediation,
 				References:         []string{reference},
@@ -182,13 +190,13 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 	var activityName string
 	var typeUID int64
 	var typeName string
-	var eventTime int64
+	var eventTime time.Time
 	className := "Vulnerability Finding"
 	categoryUID := int32(2)
 	categoryName := "Findings"
 	classUID := int32(2002)
 
-	if createdAt == issue.Attributes.UpdatedAt.UnixMilli() {
+	if createdAt.Equal(updatedAt) {
 		activityID = int32(1)
 		activityName = "Create"
 		typeUID = int64(classUID)*100 + int64(activityID)
@@ -205,7 +213,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		activityName = "Update"
 		typeUID = int64(classUID)*100 + int64(activityID)
 		typeName = "Vulnerability Finding: Update"
-		eventTime = lastSeenTime
+		eventTime = *lastSeenTime
 	}
 
 	productName := "Snyk"
@@ -218,23 +226,32 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		Version: "1.4.0",
 	}
 
+	var modifiedTimeInt int64
+	if !updatedAt.Equal(createdAt) {
+		modifiedTimeInt = updatedAt.UnixMilli()
+	}
+
+	var endTimeInt int64
+	if endTime != nil {
+		endTimeInt = endTime.UnixMilli()
+	}
+
 	findingInfo := ocsf.FindingInformation{
 		Uid:           issue.ID,
 		Title:         &issue.Attributes.Title,
 		Desc:          &issue.Attributes.Description,
-		CreatedTime:   &createdAt,
-		FirstSeenTime: &createdAt,
-		LastSeenTime:  &lastSeenTime,
-		ModifiedTime:  &updatedAt,
+		CreatedTime:   createdTimeInt,
+		FirstSeenTime: createdTimeInt,
+		LastSeenTime:  lastSeenTimeInt,
+		ModifiedTime:  modifiedTimeInt,
 		DataSources:   []string{"snyk"},
 		Types:         []string{"Vulnerability"},
 	}
 
 	finding := ocsf.VulnerabilityFinding{
-		Time:            eventTime,
-		EventDay:        int32(eventTime / 86400000),
-		StartTime:       &createdAt,
-		EndTime:         endTime,
+		Time:            eventTime.UnixMilli(),
+		StartTime:       createdTimeInt,
+		EndTime:         endTimeInt,
 		ActivityId:      activityID,
 		ActivityName:    &activityName,
 		CategoryUid:     categoryUID,
@@ -243,7 +260,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		ClassName:       &className,
 		Message:         &issue.Attributes.Description,
 		Metadata:        metadata,
-		Resources:       []*ocsf.ResourceDetails{&resource},
+		Resources:       []ocsf.ResourceDetails{resource},
 		Status:          &status,
 		StatusId:        &statusID,
 		TypeUid:         typeUID,
@@ -251,6 +268,7 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 		Vulnerabilities: vulnerabilities,
 		FindingInfo:     findingInfo,
 		SeverityId:      int32(severityID),
+		Severity:        &severity,
 	}
 
 	return finding, nil
@@ -263,26 +281,26 @@ func (s *SnykOCSFSyncer) ToOCSF(ctx context.Context, issue snyk.Issue, project *
 func mapSnykSeverity(snykSeverity string) (string, int) {
 	switch snykSeverity {
 	case "info":
-		return "Informational", 1
+		return "informational", 1
 	case "low":
-		return "Low", 2
+		return "low", 2
 	case "medium":
-		return "Medium", 3
+		return "medium", 3
 	case "high":
-		return "High", 4
+		return "high", 4
 	case "critical":
-		return "Critical", 5
+		return "critical", 5
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
 func mapSnykStatus(snykStatus string) (string, int32) {
 	switch snykStatus {
 	case "resolved":
-		return "Closed", 4
+		return "closed", 4
 	default:
-		return "Open", 1
+		return "open", 1
 	}
 }
 
@@ -314,8 +332,8 @@ func snykIssueCWE(issue snyk.Issue) *ocsf.CWE {
 	return nil
 }
 
-func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedCode {
-	var affectedCode []*ocsf.AffectedCode
+func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []ocsf.AffectedCode {
+	var affectedCode []ocsf.AffectedCode
 	for _, coordinate := range issue.Attributes.Coordinates {
 		for _, representation := range coordinate.Representations {
 			fileName := project.Attributes.TargetFile
@@ -337,7 +355,7 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedC
 				Path: &fileName,
 			}
 
-			affectedCode = append(affectedCode, &ocsf.AffectedCode{
+			affectedCode = append(affectedCode, ocsf.AffectedCode{
 				File:      fileObj,
 				StartLine: &lineNumber,
 				EndLine:   &endLine,
@@ -348,15 +366,15 @@ func snykAffectedCode(issue snyk.Issue, project *snyk.Project) []*ocsf.AffectedC
 	return affectedCode
 }
 
-func snykAffectedPackages(issue snyk.Issue) []*ocsf.AffectedSoftwarePackage {
-	var affectedPackage []*ocsf.AffectedSoftwarePackage
+func snykAffectedPackages(issue snyk.Issue) []ocsf.AffectedSoftwarePackage {
+	var affectedPackage []ocsf.AffectedSoftwarePackage
 	for _, coordinate := range issue.Attributes.Coordinates {
 		for _, representation := range coordinate.Representations {
 			if representation.Dependency == nil {
 				continue
 			}
 
-			affectedPackage = append(affectedPackage, &ocsf.AffectedSoftwarePackage{
+			affectedPackage = append(affectedPackage, ocsf.AffectedSoftwarePackage{
 				Name:    representation.Dependency.PackageName,
 				Version: representation.Dependency.PackageVersion,
 			})

@@ -22,3 +22,4 @@ var CISCSCFields = []arrow.Field{
 var CISCSCStruct = arrow.StructOf(CISCSCFields...)
 
 var CISCSCSchema = arrow.NewSchema(CISCSCFields, nil)
+var CISCSCClassname = "cis_csc"

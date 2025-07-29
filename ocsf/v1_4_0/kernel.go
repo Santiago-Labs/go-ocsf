@@ -38,3 +38,4 @@ var KernelResourceFields = []arrow.Field{
 var KernelResourceStruct = arrow.StructOf(KernelResourceFields...)
 
 var KernelResourceSchema = arrow.NewSchema(KernelResourceFields, nil)
+var KernelResourceClassname = "kernel"

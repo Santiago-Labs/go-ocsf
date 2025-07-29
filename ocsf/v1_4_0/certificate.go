@@ -8,13 +8,13 @@ import (
 type DigitalCertificate struct {
 
 	// Created Time: The time when the certificate was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Expiration Time: The expiration time of the certificate.
-	ExpirationTime *int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Fingerprints: The fingerprint list of the certificate.
-	Fingerprints []*Fingerprint `json:"fingerprints,omitempty" parquet:"fingerprints,optional,list"`
+	Fingerprints []Fingerprint `json:"fingerprints,omitempty" parquet:"fingerprints,list,optional"`
 
 	// Certificate Self-Signed: Denotes whether a digital certificate is self-signed or signed by a known certificate authority (CA).
 	IsSelfSigned *bool `json:"is_self_signed,omitempty" parquet:"is_self_signed,optional"`
@@ -23,7 +23,7 @@ type DigitalCertificate struct {
 	Issuer string `json:"issuer" parquet:"issuer"`
 
 	// Subject Alternative Names: The list of subject alternative names that are secured by a specific certificate.
-	Sans []*SubjectAlternativeName `json:"sans,omitempty" parquet:"sans,optional,list"`
+	Sans []SubjectAlternativeName `json:"sans,omitempty" parquet:"sans,list,optional"`
 
 	// Certificate Serial Number: The serial number of the certificate used to create the digital signature.
 	SerialNumber string `json:"serial_number" parquet:"serial_number"`
@@ -39,8 +39,8 @@ type DigitalCertificate struct {
 }
 
 var DigitalCertificateFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "fingerprints", Type: arrow.ListOf(FingerprintStruct), Nullable: true},
 	{Name: "is_self_signed", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "issuer", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -54,3 +54,4 @@ var DigitalCertificateFields = []arrow.Field{
 var DigitalCertificateStruct = arrow.StructOf(DigitalCertificateFields...)
 
 var DigitalCertificateSchema = arrow.NewSchema(DigitalCertificateFields, nil)
+var DigitalCertificateClassname = "certificate"

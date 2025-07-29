@@ -11,7 +11,7 @@ type WindowsService struct {
 	CmdLine *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 
 	// Labels: The list of labels associated with the service.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Load Order Group: The name of the load ordering group of which this service is a member.
 	LoadOrderGroup *string `json:"load_order_group,omitempty" parquet:"load_order_group,optional"`
@@ -26,7 +26,7 @@ type WindowsService struct {
 	ServiceCategoryId *int32 `json:"service_category_id,omitempty" parquet:"service_category_id,optional"`
 
 	// Service Dependencies: The names of other services upon which this service has a dependency.
-	ServiceDependencies []string `json:"service_dependencies,omitempty" parquet:"service_dependencies,optional,list"`
+	ServiceDependencies []string `json:"service_dependencies,omitempty" parquet:"service_dependencies,list,optional"`
 
 	// Service Error Control: The service error control, normalized to the caption of the <code>service_error_control_id</code> value. In the case of 'Other', it is defined by the event source.
 	ServiceErrorControl *string `json:"service_error_control,omitempty" parquet:"service_error_control,optional"`
@@ -50,7 +50,7 @@ type WindowsService struct {
 	ServiceTypeId *int32 `json:"service_type_id,omitempty" parquet:"service_type_id,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the service.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Unique ID: The unique identifier of the service.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
@@ -82,3 +82,4 @@ var WindowsServiceFields = []arrow.Field{
 var WindowsServiceStruct = arrow.StructOf(WindowsServiceFields...)
 
 var WindowsServiceSchema = arrow.NewSchema(WindowsServiceFields, nil)
+var WindowsServiceClassname = "win_service"

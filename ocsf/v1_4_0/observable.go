@@ -34,3 +34,4 @@ var ObservableFields = []arrow.Field{
 var ObservableStruct = arrow.StructOf(ObservableFields...)
 
 var ObservableSchema = arrow.NewSchema(ObservableFields, nil)
+var ObservableClassname = "observable"

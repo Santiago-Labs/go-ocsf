@@ -20,7 +20,7 @@ type FirewallRule struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// Match Details: The data in a request that rule matched. For example: '["10","and","1"]'.
-	MatchDetails []string `json:"match_details,omitempty" parquet:"match_details,optional,list"`
+	MatchDetails []string `json:"match_details,omitempty" parquet:"match_details,list,optional"`
 
 	// Match Location: The location of the matched data in the source which resulted in the triggered firewall rule. For example: HEADER.
 	MatchLocation *string `json:"match_location,omitempty" parquet:"match_location,optional"`
@@ -62,3 +62,4 @@ var FirewallRuleFields = []arrow.Field{
 var FirewallRuleStruct = arrow.StructOf(FirewallRuleFields...)
 
 var FirewallRuleSchema = arrow.NewSchema(FirewallRuleFields, nil)
+var FirewallRuleClassname = "firewall_rule"

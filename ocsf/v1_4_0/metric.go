@@ -22,3 +22,4 @@ var MetricFields = []arrow.Field{
 var MetricStruct = arrow.StructOf(MetricFields...)
 
 var MetricSchema = arrow.NewSchema(MetricFields, nil)
+var MetricClassname = "metric"

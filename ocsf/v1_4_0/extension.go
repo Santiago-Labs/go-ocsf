@@ -26,3 +26,4 @@ var SchemaExtensionFields = []arrow.Field{
 var SchemaExtensionStruct = arrow.StructOf(SchemaExtensionFields...)
 
 var SchemaExtensionSchema = arrow.NewSchema(SchemaExtensionFields, nil)
+var SchemaExtensionClassname = "extension"

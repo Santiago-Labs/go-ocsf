@@ -8,25 +8,25 @@ import (
 type Finding struct {
 
 	// Created Time: The time when the finding was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: The description of the reported finding.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed.
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Last Seen: The time when the finding was most recently observed.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Modified Time: The time when the finding was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Product: Details about the product that reported the finding.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
 
 	// Related Events/Findings: Describes events and/or other findings related to the finding as identified by the security product. Note that these events may or may not be in OCSF.
-	RelatedEvents []*RelatedEventFinding `json:"related_events,omitempty" parquet:"related_events,optional,list"`
+	RelatedEvents []RelatedEventFinding `json:"related_events,omitempty" parquet:"related_events,list,optional"`
 
 	// Remediation Guidance: Describes the recommended remediation steps to address identified issue(s).
 	Remediation *Remediation `json:"remediation,omitempty" parquet:"remediation,optional"`
@@ -41,18 +41,18 @@ type Finding struct {
 	Title string `json:"title" parquet:"title"`
 
 	// Types: One or more types of the reported finding.
-	Types []string `json:"types,omitempty" parquet:"types,optional,list"`
+	Types []string `json:"types,omitempty" parquet:"types,list,optional"`
 
 	// Unique ID: The unique identifier of the reported finding.
 	Uid string `json:"uid" parquet:"uid"`
 }
 
 var FindingFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "related_events", Type: arrow.ListOf(RelatedEventFindingStruct), Nullable: true},
 	{Name: "remediation", Type: RemediationStruct, Nullable: true},
@@ -66,3 +66,4 @@ var FindingFields = []arrow.Field{
 var FindingStruct = arrow.StructOf(FindingFields...)
 
 var FindingSchema = arrow.NewSchema(FindingFields, nil)
+var FindingClassname = "finding"

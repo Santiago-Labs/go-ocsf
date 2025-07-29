@@ -7,6 +7,9 @@ import (
 
 type ScanActivity struct {
 
+	// Account ID: The account ID of the event. Used for partitioning.
+	AccountId string `json:"account_id" parquet:"account_id"`
+
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
 
@@ -38,13 +41,10 @@ type ScanActivity struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The end time of the scan job.
-	EndTime *int64 `json:"end_time,omitempty" parquet:"end_time,optional"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Enrichments: The additional information from an external data source, which is associated with the event or a finding. For example add location information for the IP address in the DNS answers:</p><code>[{"name": "answers.ip", "value": "92.24.47.250", "type": "location", "data": {"city": "Socotra", "continent": "Asia", "coordinates": [-25.4153, 17.0743], "country": "YE", "desc": "Yemen"}}]</code>
-	Enrichments []*Enrichment `json:"enrichments,omitempty" parquet:"enrichments,optional,list"`
-
-	// Event Day: The day of the event. Used for partitioning.
-	EventDay int32 `json:"event_day" parquet:"event_day"`
+	Enrichments []Enrichment `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 
 	// Message: The description of the event/finding, as defined by the source.
 	Message *string `json:"message,omitempty" parquet:"message,optional"`
@@ -80,13 +80,16 @@ type ScanActivity struct {
 	NumTrustedItems *int32 `json:"num_trusted_items,omitempty" parquet:"num_trusted_items,optional"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// OSINT: The OSINT (Open Source Intelligence) object contains details related to an indicator such as the indicator itself, related indicators, geolocation, registrar information, subdomains, analyst commentary, and other contextual information. This information can be used to further enrich a detection or finding by providing decisioning support to other analysts and engineers.
 	Osint []OSINT `json:"osint" parquet:"osint,list"`
 
 	// Raw Data: The raw event/finding data as received from the source.
 	RawData *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
+
+	// Region: The region of the event. Used for partitioning.
+	Region string `json:"region" parquet:"region"`
 
 	// Scan: The Scan object describes characteristics of the scan job.
 	Scan Scan `json:"scan" parquet:"scan"`
@@ -101,7 +104,7 @@ type ScanActivity struct {
 	SeverityId int32 `json:"severity_id" parquet:"severity_id"`
 
 	// Start Time: The start time of the scan job.
-	StartTime *int64 `json:"start_time,omitempty" parquet:"start_time,optional"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Status: The event status, normalized to the caption of the status_id value. In the case of 'Other', it is defined by the event source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
@@ -116,7 +119,7 @@ type ScanActivity struct {
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
 
 	// Event Time: The normalized event occurrence time or the finding creation time.
-	Time int64 `json:"time" parquet:"time"`
+	Time int64 `json:"time" parquet:"time,timestamp_millis,timestamp(millisecond)"`
 
 	// Timezone Offset: The number of minutes that the reported event <code>time</code> is ahead or behind UTC, in the range -1,080 to +1,080.
 	TimezoneOffset *int32 `json:"timezone_offset,omitempty" parquet:"timezone_offset,optional"`
@@ -135,6 +138,7 @@ type ScanActivity struct {
 }
 
 var ScanActivityFields = []arrow.Field{
+	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -145,9 +149,8 @@ var ScanActivityFields = []arrow.Field{
 	{Name: "command_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "enrichments", Type: arrow.ListOf(EnrichmentStruct), Nullable: true},
-	{Name: "event_day", Type: arrow.FixedWidthTypes.Date32, Nullable: false},
 	{Name: "message", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "metadata", Type: MetadataStruct, Nullable: false},
 	{Name: "num_detections", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -162,16 +165,17 @@ var ScanActivityFields = []arrow.Field{
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "osint", Type: arrow.ListOf(OSINTStruct), Nullable: false},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
+	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "scan", Type: ScanStruct, Nullable: false},
 	{Name: "schedule_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "status", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_code", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_detail", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "time", Type: arrow.PrimitiveTypes.Int64, Nullable: false},
+	{Name: "time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: false},
 	{Name: "timezone_offset", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "total", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "type_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -182,3 +186,4 @@ var ScanActivityFields = []arrow.Field{
 var ScanActivityStruct = arrow.StructOf(ScanActivityFields...)
 
 var ScanActivitySchema = arrow.NewSchema(ScanActivityFields, nil)
+var ScanActivityClassname = "scan_activity"

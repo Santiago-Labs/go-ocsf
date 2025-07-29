@@ -14,7 +14,7 @@ type HTTPRequest struct {
 	BodyLength *int32 `json:"body_length,omitempty" parquet:"body_length,optional"`
 
 	// HTTP Headers: Additional HTTP headers of an HTTP request or response.
-	HttpHeaders []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,optional,list"`
+	HttpHeaders []HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional"`
 
 	// HTTP Method: The <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods'>HTTP request method</a> indicates the desired action to be performed for a given resource.
 	HttpMethod *string `json:"http_method,omitempty" parquet:"http_method,optional"`
@@ -38,7 +38,7 @@ type HTTPRequest struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 
 	// X-Forwarded-For: The X-Forwarded-For header identifying the originating IP address(es) of a client connecting to a web server through an HTTP proxy or a load balancer.
-	XForwardedFor []string `json:"x_forwarded_for,omitempty" parquet:"x_forwarded_for,optional,list"`
+	XForwardedFor []string `json:"x_forwarded_for,omitempty" parquet:"x_forwarded_for,list,optional"`
 }
 
 var HTTPRequestFields = []arrow.Field{
@@ -58,3 +58,4 @@ var HTTPRequestFields = []arrow.Field{
 var HTTPRequestStruct = arrow.StructOf(HTTPRequestFields...)
 
 var HTTPRequestSchema = arrow.NewSchema(HTTPRequestFields, nil)
+var HTTPRequestClassname = "http_request"

@@ -8,19 +8,19 @@ import (
 type Email struct {
 
 	// Cc: The machine-readable email header Cc values, as defined by RFC 5322. For example <code>example.user@usersdomain.com</code>.
-	Cc []string `json:"cc,omitempty" parquet:"cc,optional,list"`
+	Cc []string `json:"cc,omitempty" parquet:"cc,list,optional"`
 
 	// Cc Mailboxes: The human-readable email header Cc Mailbox values. For example <code>'Example User &lt;example.user@usersdomain.com&gt;'</code>.
-	CcMailboxes []string `json:"cc_mailboxes,omitempty" parquet:"cc_mailboxes,optional,list"`
+	CcMailboxes []string `json:"cc_mailboxes,omitempty" parquet:"cc_mailboxes,list,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Delivered To: The machine-readable <strong>Delivered-To</strong> email header values. For example <code>example.user@usersdomain.com</code>
-	DeliveredToList []string `json:"delivered_to_list,omitempty" parquet:"delivered_to_list,optional,list"`
+	DeliveredToList []string `json:"delivered_to_list,omitempty" parquet:"delivered_to_list,list,optional"`
 
 	// Files: The files embedded or attached to the email.
-	Files []*File `json:"files,omitempty" parquet:"files,optional,list"`
+	Files []File `json:"files,omitempty" parquet:"files,list,optional"`
 
 	// From: The machine-readable email header From values, as defined by RFC 5322. For example <code>example.user@usersdomain.com</code>
 	From *string `json:"from,omitempty" parquet:"from,optional"`
@@ -29,7 +29,7 @@ type Email struct {
 	FromMailbox *string `json:"from_mailbox,omitempty" parquet:"from_mailbox,optional"`
 
 	// HTTP Headers: Additional HTTP headers of an HTTP request or response.
-	HttpHeaders []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,optional,list"`
+	HttpHeaders []HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional"`
 
 	// Message UID: The email header Message-ID value, as defined by RFC 5322.
 	MessageUid *string `json:"message_uid,omitempty" parquet:"message_uid,optional"`
@@ -38,7 +38,7 @@ type Email struct {
 	RawHeader *string `json:"raw_header,omitempty" parquet:"raw_header,optional"`
 
 	// Reply To Mailboxes: The human-readable email header Reply To Mailbox values. For example <code>'Example User &lt;example.user@usersdomain.com&gt;'</code>.
-	ReplyToMailboxes []string `json:"reply_to_mailboxes,omitempty" parquet:"reply_to_mailboxes,optional,list"`
+	ReplyToMailboxes []string `json:"reply_to_mailboxes,omitempty" parquet:"reply_to_mailboxes,list,optional"`
 
 	// Size: The size in bytes of the email, including attachments.
 	Size *int64 `json:"size,omitempty" parquet:"size,optional"`
@@ -47,19 +47,19 @@ type Email struct {
 	Subject *string `json:"subject,omitempty" parquet:"subject,optional"`
 
 	// To: The machine-readable email header To values, as defined by RFC 5322. For example <code>example.user@usersdomain.com</code>
-	To []string `json:"to,omitempty" parquet:"to,optional,list"`
+	To []string `json:"to,omitempty" parquet:"to,list,optional"`
 
 	// To Mailboxes: The human-readable email header To Mailbox values. For example <code>'Example User &lt;example.user@usersdomain.com&gt;'</code>.
-	ToMailboxes []string `json:"to_mailboxes,omitempty" parquet:"to_mailboxes,optional,list"`
+	ToMailboxes []string `json:"to_mailboxes,omitempty" parquet:"to_mailboxes,list,optional"`
 
 	// Email Thread UID: The unique identifier of the email thread.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 
 	// URLs: The URLs embedded in the email.
-	Urls []*UniformResourceLocator `json:"urls,omitempty" parquet:"urls,optional,list"`
+	Urls []UniformResourceLocator `json:"urls,omitempty" parquet:"urls,list,optional"`
 
 	// X-Originating-IP: The X-Originating-IP header identifying the emails originating IP address(es).
-	XOriginatingIp []string `json:"x_originating_ip,omitempty" parquet:"x_originating_ip,optional,list"`
+	XOriginatingIp []string `json:"x_originating_ip,omitempty" parquet:"x_originating_ip,list,optional"`
 }
 
 var EmailFields = []arrow.Field{
@@ -86,3 +86,4 @@ var EmailFields = []arrow.Field{
 var EmailStruct = arrow.StructOf(EmailFields...)
 
 var EmailSchema = arrow.NewSchema(EmailFields, nil)
+var EmailClassname = "email"

@@ -26,3 +26,4 @@ var FingerprintFields = []arrow.Field{
 var FingerprintStruct = arrow.StructOf(FingerprintFields...)
 
 var FingerprintSchema = arrow.NewSchema(FingerprintFields, nil)
+var FingerprintClassname = "fingerprint"

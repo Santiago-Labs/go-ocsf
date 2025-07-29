@@ -26,3 +26,4 @@ var FeatureFields = []arrow.Field{
 var FeatureStruct = arrow.StructOf(FeatureFields...)
 
 var FeatureSchema = arrow.NewSchema(FeatureFields, nil)
+var FeatureClassname = "feature"

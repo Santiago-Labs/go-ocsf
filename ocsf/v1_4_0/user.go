@@ -26,7 +26,7 @@ type User struct {
 	FullName *string `json:"full_name,omitempty" parquet:"full_name,optional"`
 
 	// Groups: The administrative groups to which the user belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// MFA Assigned: The user has a multi-factor or secondary-factor device assigned.
 	HasMfa *bool `json:"has_mfa,omitempty" parquet:"has_mfa,optional"`
@@ -90,3 +90,4 @@ var UserFields = []arrow.Field{
 var UserStruct = arrow.StructOf(UserFields...)
 
 var UserSchema = arrow.NewSchema(UserFields, nil)
+var UserClassname = "user"

@@ -26,7 +26,7 @@ type Logger struct {
 	LogVersion *string `json:"log_version,omitempty" parquet:"log_version,optional"`
 
 	// Logged Time: <p>The time when the logging system collected and logged the event.</p>This attribute is distinct from the event time in that event time typically contain the time extracted from the original event. Most of the time, these two times will be different.
-	LoggedTime *int64 `json:"logged_time,omitempty" parquet:"logged_time,optional"`
+	LoggedTime int64 `json:"logged_time,omitempty" parquet:"logged_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the logging product instance.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -35,7 +35,7 @@ type Logger struct {
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
 
 	// Transmission Time: The time when the event was transmitted from the logging device to it's next destination.
-	TransmitTime *int64 `json:"transmit_time,omitempty" parquet:"transmit_time,optional"`
+	TransmitTime int64 `json:"transmit_time,omitempty" parquet:"transmit_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Unique ID: The unique identifier of the logging product instance.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
@@ -51,10 +51,10 @@ var LoggerFields = []arrow.Field{
 	{Name: "log_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "log_provider", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "log_version", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "logged_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "logged_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
-	{Name: "transmit_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "transmit_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
 }
@@ -62,3 +62,4 @@ var LoggerFields = []arrow.Field{
 var LoggerStruct = arrow.StructOf(LoggerFields...)
 
 var LoggerSchema = arrow.NewSchema(LoggerFields, nil)
+var LoggerClassname = "logger"

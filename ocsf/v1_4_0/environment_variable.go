@@ -22,3 +22,4 @@ var EnvironmentVariableFields = []arrow.Field{
 var EnvironmentVariableStruct = arrow.StructOf(EnvironmentVariableFields...)
 
 var EnvironmentVariableSchema = arrow.NewSchema(EnvironmentVariableFields, nil)
+var EnvironmentVariableClassname = "environment_variable"

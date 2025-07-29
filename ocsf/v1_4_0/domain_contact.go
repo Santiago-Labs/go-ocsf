@@ -42,3 +42,4 @@ var DomainContactFields = []arrow.Field{
 var DomainContactStruct = arrow.StructOf(DomainContactFields...)
 
 var DomainContactSchema = arrow.NewSchema(DomainContactFields, nil)
+var DomainContactClassname = "domain_contact"

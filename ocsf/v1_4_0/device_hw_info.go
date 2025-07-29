@@ -82,3 +82,4 @@ var DeviceHardwareInfoFields = []arrow.Field{
 var DeviceHardwareInfoStruct = arrow.StructOf(DeviceHardwareInfoFields...)
 
 var DeviceHardwareInfoSchema = arrow.NewSchema(DeviceHardwareInfoFields, nil)
+var DeviceHardwareInfoClassname = "device_hw_info"

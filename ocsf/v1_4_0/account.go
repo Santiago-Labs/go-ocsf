@@ -8,13 +8,13 @@ import (
 type Account struct {
 
 	// Labels: The list of labels associated to the account.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The name of the account (e.g. <code> GCP Project name </code>, <code> Linux Account name </code> or <code> AWS Account name</code>).
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the account.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The account type, normalized to the caption of 'account_type_id'. In the case of 'Other', it is defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -38,3 +38,4 @@ var AccountFields = []arrow.Field{
 var AccountStruct = arrow.StructOf(AccountFields...)
 
 var AccountSchema = arrow.NewSchema(AccountFields, nil)
+var AccountClassname = "account"

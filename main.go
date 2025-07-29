@@ -11,11 +11,13 @@ import (
 	"github.com/Santiago-Labs/go-ocsf/clients/tenable"
 	"github.com/Santiago-Labs/go-ocsf/datastore"
 	"github.com/Santiago-Labs/go-ocsf/syncers"
+	"github.com/Santiago-Labs/go-ocsf/syncers/cloudtrail"
 	"github.com/Santiago-Labs/go-ocsf/syncers/gcpauditlog"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/inspector2"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub"
 )
 
@@ -30,6 +32,8 @@ func main() {
 	syncSecurityHubOption := flag.Bool("sync-security-hub", false, "Sync SecurityHub data.")
 	syncInspectorOption := flag.Bool("sync-inspector", false, "Sync Inspector data.")
 	syncGCPAuditLogOption := flag.Bool("sync-gcp-audit-log", false, "Sync GCP AuditLog data.")
+	syncCloudTrailOption := flag.Bool("sync-cloudtrail", false, "Sync CloudTrail data.")
+	cloudtrailBucketName := flag.String("cloudtrail-bucket-name", "", "CloudTrail bucket name")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -87,6 +91,12 @@ func main() {
 	if *syncInspectorOption {
 		if err := inspectorSync(ctx, storageOpts, cfg); err != nil {
 			log.Fatalf("Failed to sync Inspector data: %v", err)
+		}
+	}
+
+	if *syncCloudTrailOption {
+		if err := syncCloudTrail(ctx, *cloudtrailBucketName, storageOpts, cfg); err != nil {
+			log.Fatalf("Failed to sync CloudTrail data: %v", err)
 		}
 	}
 }
@@ -153,4 +163,15 @@ func syncGCPAuditLog(ctx context.Context, storageOpts datastore.StorageOpts) err
 	}
 
 	return gcpauditlogSyncer.Sync(ctx)
+}
+
+func syncCloudTrail(ctx context.Context, bucketName string, storageOpts datastore.StorageOpts, cfg aws.Config) error {
+	s3Client := s3.NewFromConfig(cfg)
+
+	cloudtrailSyncer, err := cloudtrail.NewSyncer(ctx, s3Client, bucketName, storageOpts)
+	if err != nil {
+		return fmt.Errorf("failed to create CloudTrail syncer: %v", err)
+	}
+
+	return cloudtrailSyncer.Sync(ctx)
 }

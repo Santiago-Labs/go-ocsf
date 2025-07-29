@@ -11,7 +11,7 @@ type ProcessEntity struct {
 	CmdLine *string `json:"cmd_line,omitempty" parquet:"cmd_line,optional"`
 
 	// Created Time: The time when the process was created/started.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The friendly name of the process, for example: <code>Notepad++</code>.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -28,7 +28,7 @@ type ProcessEntity struct {
 
 var ProcessEntityFields = []arrow.Field{
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "pid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -38,3 +38,4 @@ var ProcessEntityFields = []arrow.Field{
 var ProcessEntityStruct = arrow.StructOf(ProcessEntityFields...)
 
 var ProcessEntitySchema = arrow.NewSchema(ProcessEntityFields, nil)
+var ProcessEntityClassname = "process_entity"

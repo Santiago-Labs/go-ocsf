@@ -8,13 +8,13 @@ import (
 type RequestElements struct {
 
 	// Containers: When working with containerized applications, the set of containers which write to the standard the output of a particular logging driver. For example, this may be the set of containers involved in handling api requests and responses for a containerized application.
-	Containers []*Container `json:"containers,omitempty" parquet:"containers,optional,list"`
+	Containers []Container `json:"containers,omitempty" parquet:"containers,list,optional"`
 
 	// Data: The additional data that is associated with the api request.
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Flags: The communication flags that are associated with the api request.
-	Flags []string `json:"flags,omitempty" parquet:"flags,optional,list"`
+	Flags []string `json:"flags,omitempty" parquet:"flags,list,optional"`
 
 	// Unique ID: The unique request identifier.
 	Uid string `json:"uid" parquet:"uid"`
@@ -30,3 +30,4 @@ var RequestElementsFields = []arrow.Field{
 var RequestElementsStruct = arrow.StructOf(RequestElementsFields...)
 
 var RequestElementsSchema = arrow.NewSchema(RequestElementsFields, nil)
+var RequestElementsClassname = "request"

@@ -11,13 +11,13 @@ type WindowsResource struct {
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Details: The string detailing the attributes of the resource object.
 	Details *string `json:"details,omitempty" parquet:"details,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The name of the resource object.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -26,7 +26,7 @@ type WindowsResource struct {
 	SvcName *string `json:"svc_name,omitempty" parquet:"svc_name,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The type of the Windows resource object.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -54,3 +54,4 @@ var WindowsResourceFields = []arrow.Field{
 var WindowsResourceStruct = arrow.StructOf(WindowsResourceFields...)
 
 var WindowsResourceSchema = arrow.NewSchema(WindowsResourceFields, nil)
+var WindowsResourceClassname = "win_resource"

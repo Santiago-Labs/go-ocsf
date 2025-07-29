@@ -54,3 +54,4 @@ var TimeSpanFields = []arrow.Field{
 var TimeSpanStruct = arrow.StructOf(TimeSpanFields...)
 
 var TimeSpanSchema = arrow.NewSchema(TimeSpanFields, nil)
+var TimeSpanClassname = "timespan"

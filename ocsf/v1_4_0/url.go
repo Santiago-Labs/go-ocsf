@@ -8,10 +8,10 @@ import (
 type UniformResourceLocator struct {
 
 	// Website Categorization: The Website categorization names, as defined by <code>category_ids</code> enum values.
-	Categories []string `json:"categories,omitempty" parquet:"categories,optional,list"`
+	Categories []string `json:"categories,omitempty" parquet:"categories,list,optional"`
 
 	// Website Categorization IDs: The Website categorization identifiers.
-	CategoryIds []int32 `json:"category_ids,omitempty" parquet:"category_ids,optional,list"`
+	CategoryIds []int32 `json:"category_ids,omitempty" parquet:"category_ids,list,optional"`
 
 	// Domain: The domain portion of the URL. For example: <code>example.com</code> in <code>https://sub.example.com</code>.
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
@@ -58,3 +58,4 @@ var UniformResourceLocatorFields = []arrow.Field{
 var UniformResourceLocatorStruct = arrow.StructOf(UniformResourceLocatorFields...)
 
 var UniformResourceLocatorSchema = arrow.NewSchema(UniformResourceLocatorFields, nil)
+var UniformResourceLocatorClassname = "url"

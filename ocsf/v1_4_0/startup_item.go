@@ -20,10 +20,10 @@ type StartupItem struct {
 	Process *Process `json:"process,omitempty" parquet:"process,optional"`
 
 	// Run Mode IDs: The list of normalized identifiers that describe the startup items' properties when it is running.  Use this field to capture extended information about the process, which may depend on the type of startup item.  E.g., A Windows service that interacts with the desktop.
-	RunModeIds []int32 `json:"run_mode_ids,omitempty" parquet:"run_mode_ids,optional,list"`
+	RunModeIds []int32 `json:"run_mode_ids,omitempty" parquet:"run_mode_ids,list,optional"`
 
 	// Run Modes: The list of run_modes, normalized to the captions of the run_mode_id values.  In the case of 'Other', they are defined by the event source.
-	RunModes []string `json:"run_modes,omitempty" parquet:"run_modes,optional,list"`
+	RunModes []string `json:"run_modes,omitempty" parquet:"run_modes,list,optional"`
 
 	// Run State: The run state of the startup item.
 	RunState *string `json:"run_state,omitempty" parquet:"run_state,optional"`
@@ -66,3 +66,4 @@ var StartupItemFields = []arrow.Field{
 var StartupItemStruct = arrow.StructOf(StartupItemFields...)
 
 var StartupItemSchema = arrow.NewSchema(StartupItemFields, nil)
+var StartupItemClassname = "startup_item"

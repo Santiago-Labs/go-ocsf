@@ -17,7 +17,7 @@ type HTTPResponse struct {
 	ContentType *string `json:"content_type,omitempty" parquet:"content_type,optional"`
 
 	// HTTP Headers: Additional HTTP headers of an HTTP request or response.
-	HttpHeaders []*HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,optional,list"`
+	HttpHeaders []HTTPHeader `json:"http_headers,omitempty" parquet:"http_headers,list,optional"`
 
 	// Latency: The HTTP response latency measured in milliseconds.
 	Latency *int32 `json:"latency,omitempty" parquet:"latency,optional"`
@@ -46,3 +46,4 @@ var HTTPResponseFields = []arrow.Field{
 var HTTPResponseStruct = arrow.StructOf(HTTPResponseFields...)
 
 var HTTPResponseSchema = arrow.NewSchema(HTTPResponseFields, nil)
+var HTTPResponseClassname = "http_response"

@@ -22,3 +22,4 @@ var VendorAttributesFields = []arrow.Field{
 var VendorAttributesStruct = arrow.StructOf(VendorAttributesFields...)
 
 var VendorAttributesSchema = arrow.NewSchema(VendorAttributesFields, nil)
+var VendorAttributesClassname = "vendor_attributes"

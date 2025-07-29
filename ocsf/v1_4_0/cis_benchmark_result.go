@@ -30,3 +30,4 @@ var CISBenchmarkResultFields = []arrow.Field{
 var CISBenchmarkResultStruct = arrow.StructOf(CISBenchmarkResultFields...)
 
 var CISBenchmarkResultSchema = arrow.NewSchema(CISBenchmarkResultFields, nil)
+var CISBenchmarkResultClassname = "cis_benchmark_result"

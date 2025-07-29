@@ -118,29 +118,29 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 		strings.Contains(methodName, "insert") || strings.Contains(methodName, "Insert") ||
 		strings.Contains(methodName, "cloudsql.instances.automatedBackup") {
 		activityID = 1
-		activityName = "Create"
+		activityName = "create"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Create"
 	} else if strings.Contains(methodName, "get") || strings.Contains(methodName, "Get") ||
 		strings.Contains(methodName, "list") || strings.Contains(methodName, "List") {
 		activityID = 2
-		activityName = "Read"
+		activityName = "read"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Read"
 	} else if strings.Contains(methodName, "update") || strings.Contains(methodName, "Update") ||
 		strings.Contains(methodName, "modify") || strings.Contains(methodName, "Modify") {
 		activityID = 3
-		activityName = "Update"
+		activityName = "update"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Update"
 	} else if strings.Contains(methodName, "delete") || strings.Contains(methodName, "Delete") {
 		activityID = 4
-		activityName = "Delete"
+		activityName = "delete"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Delete"
 	} else {
 		activityID = 0
-		activityName = "Unknown"
+		activityName = "unknown"
 		typeUID = classUID*100 + activityID
 		typeName = "API Activity: Unknown"
 	}
@@ -184,7 +184,7 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 		} else if log.AuditLog.MethodName != "" {
 			operation = log.AuditLog.MethodName
 		} else {
-			operation = "Unknown"
+			operation = "unknown"
 		}
 
 		api = ocsf.API{
@@ -195,9 +195,9 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 		}
 	}
 
-	var resources []*ocsf.ResourceDetails
+	var resources []ocsf.ResourceDetails
 	if log.AuditLog.GetResourceName() != "" {
-		resources = append(resources, &ocsf.ResourceDetails{
+		resources = append(resources, ocsf.ResourceDetails{
 			Name: stringPtr(log.AuditLog.GetResourceName()),
 			Type: stringPtr(log.Log.Resource.Type),
 		})
@@ -243,7 +243,6 @@ func (s *GCPAuditLogSyncer) ToOCSF(ctx context.Context, log *gcp.AuditLog) (ocsf
 
 		SrcEndpoint:    srcEndpoint,
 		Time:           ts.UnixMilli(),
-		EventDay:       int32(ts.UnixMilli() / 86400000),
 		TypeName:       &typeName,
 		TypeUid:        int64(typeUID),
 		TimezoneOffset: int32Ptr(0),
@@ -269,33 +268,33 @@ func projectIDFromLogName(logName string) string {
 func mapGCPSeverityToOCSFStatus(severity int32) (string, int) {
 	switch severity {
 	case 0: // DEFAULT
-		return "Unknown", 0
+		return "unknown", 0
 	case 100, 200: // DEBUG, INFO
-		return "Informational", 1
+		return "informational", 1
 	case 300, 400: // NOTICE, WARNING
-		return "Low", 2
+		return "low", 2
 	case 500: // ERROR
-		return "Medium", 3
+		return "medium", 3
 	case 600: // CRITICAL
-		return "High", 4
+		return "high", 4
 	case 700: // ALERT
-		return "Critical", 5
+		return "critical", 5
 	case 800: // EMERGENCY
-		return "Fatal", 6
+		return "fatal", 6
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
 
 func mapGCPStatusToOCSFStatus(severity int32) (string, int) {
 	switch severity {
 	case 0: // DEFAULT
-		return "Unknown", 0
+		return "unknown", 0
 	case 100, 200: // DEBUG, INFO
-		return "Success", 1
+		return "success", 1
 	case 300, 400, 500, 600, 700, 800: // NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY
-		return "Failure", 2
+		return "failure", 2
 	default:
-		return "Unknown", 0
+		return "unknown", 0
 	}
 }
