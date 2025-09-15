@@ -17,7 +17,7 @@ type KBArticle struct {
 	Classification *string `json:"classification,omitempty" parquet:"classification,optional"`
 
 	// Created Time: The date the kb article was released by the vendor.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Install State: The install state of the kb article.
 	InstallState *string `json:"install_state,omitempty" parquet:"install_state,optional"`
@@ -50,11 +50,15 @@ type KBArticle struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *KBArticle) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KBArticleFields = []arrow.Field{
 	{Name: "avg_timespan", Type: TimeSpanStruct, Nullable: true},
 	{Name: "bulletin", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "classification", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "install_state", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "install_state_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "is_superseded", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
@@ -70,3 +74,4 @@ var KBArticleFields = []arrow.Field{
 var KBArticleStruct = arrow.StructOf(KBArticleFields...)
 
 var KBArticleSchema = arrow.NewSchema(KBArticleFields, nil)
+var KBArticleClassname = "kb_article"

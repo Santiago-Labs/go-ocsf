@@ -50,6 +50,10 @@ type KBArticle struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *KBArticle) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KBArticleFields = []arrow.Field{
 	{Name: "avg_timespan", Type: TimeSpanStruct, Nullable: true},
 	{Name: "bulletin", Type: arrow.BinaryTypes.String, Nullable: true},

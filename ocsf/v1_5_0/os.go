@@ -47,6 +47,10 @@ type OperatingSystemOS struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *OperatingSystemOS) Observable() (*int, string) {
+	return nil, ""
+}
+
 var OperatingSystemOSFields = []arrow.Field{
 	{Name: "build", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "country", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -66,3 +70,4 @@ var OperatingSystemOSFields = []arrow.Field{
 var OperatingSystemOSStruct = arrow.StructOf(OperatingSystemOSFields...)
 
 var OperatingSystemOSSchema = arrow.NewSchema(OperatingSystemOSFields, nil)
+var OperatingSystemOSClassname = "os"

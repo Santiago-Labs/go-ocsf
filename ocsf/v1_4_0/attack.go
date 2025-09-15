@@ -20,6 +20,10 @@ type MITREATTCK struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *MITREATTCK) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITREATTCKFields = []arrow.Field{
 	{Name: "sub_technique", Type: MITREATTCKSubTechniqueStruct, Nullable: true},
 	{Name: "tactic", Type: MITREATTCKTacticStruct, Nullable: true},

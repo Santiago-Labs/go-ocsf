@@ -41,6 +41,10 @@ type HTTPRequest struct {
 	XForwardedFor []string `json:"x_forwarded_for,omitempty" parquet:"x_forwarded_for,list,optional"`
 }
 
+func (v *HTTPRequest) Observable() (*int, string) {
+	return nil, ""
+}
+
 var HTTPRequestFields = []arrow.Field{
 	{Name: "args", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "body_length", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

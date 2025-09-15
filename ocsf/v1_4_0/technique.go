@@ -17,6 +17,10 @@ type MITREATTCKTechnique struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *MITREATTCKTechnique) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITREATTCKTechniqueFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},

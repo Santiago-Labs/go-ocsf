@@ -14,6 +14,10 @@ type AuthorizationResult struct {
 	Policy *Policy `json:"policy,omitempty" parquet:"policy,optional"`
 }
 
+func (v *AuthorizationResult) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AuthorizationResultFields = []arrow.Field{
 	{Name: "decision", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "policy", Type: PolicyStruct, Nullable: true},

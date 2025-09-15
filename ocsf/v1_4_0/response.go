@@ -29,6 +29,10 @@ type ResponseElements struct {
 	Message *string `json:"message,omitempty" parquet:"message,optional"`
 }
 
+func (v *ResponseElements) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ResponseElementsFields = []arrow.Field{
 	{Name: "code", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "containers", Type: arrow.ListOf(ContainerStruct), Nullable: true},

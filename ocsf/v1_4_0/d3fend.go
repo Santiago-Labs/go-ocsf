@@ -17,6 +17,10 @@ type MITRED3FEND struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *MITRED3FEND) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITRED3FENDFields = []arrow.Field{
 	{Name: "d3f_tactic", Type: MITRED3FENDTacticStruct, Nullable: true},
 	{Name: "d3f_technique", Type: MITREDEFENDTechniqueStruct, Nullable: true},

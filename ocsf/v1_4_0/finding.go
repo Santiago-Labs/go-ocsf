@@ -47,6 +47,10 @@ type Finding struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *Finding) Observable() (*int, string) {
+	return nil, ""
+}
+
 var FindingFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},

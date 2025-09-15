@@ -23,6 +23,10 @@ type Node struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *Node) Observable() (*int, string) {
+	return nil, ""
+}
+
 var NodeFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -34,3 +38,4 @@ var NodeFields = []arrow.Field{
 var NodeStruct = arrow.StructOf(NodeFields...)
 
 var NodeSchema = arrow.NewSchema(NodeFields, nil)
+var NodeClassname = "node"

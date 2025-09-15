@@ -35,6 +35,10 @@ type WebResource struct {
 	UrlString *string `json:"url_string,omitempty" parquet:"url_string,optional"`
 }
 
+func (v *WebResource) Observable() (*int, string) {
+	return nil, ""
+}
+
 var WebResourceFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},

@@ -38,6 +38,10 @@ type DigitalCertificate struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *DigitalCertificate) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DigitalCertificateFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

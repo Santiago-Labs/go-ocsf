@@ -74,6 +74,11 @@ type Endpoint struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *Endpoint) Observable() (*int, string) {
+	typeId := 20
+	return &typeId, "endpoint"
+}
+
 var EndpointFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "container", Type: ContainerStruct, Nullable: true},

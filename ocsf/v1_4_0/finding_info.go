@@ -65,6 +65,10 @@ type FindingInformation struct {
 	UidAlt *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
 }
 
+func (v *FindingInformation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var FindingInformationFields = []arrow.Field{
 	{Name: "analytic", Type: AnalyticStruct, Nullable: true},
 	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct), Nullable: true},

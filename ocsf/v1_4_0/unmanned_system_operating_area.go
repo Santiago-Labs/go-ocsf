@@ -86,6 +86,11 @@ type UnmannedSystemOperatingArea struct {
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
 }
 
+func (v *UnmannedSystemOperatingArea) Observable() (*int, string) {
+	typeId := 26
+	return &typeId, "unmanned_system_operating_area"
+}
+
 var UnmannedSystemOperatingAreaFields = []arrow.Field{
 	{Name: "aerial_height", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "altitude_ceiling", Type: arrow.BinaryTypes.String, Nullable: true},

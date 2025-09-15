@@ -2,6 +2,9 @@
 package v1_5_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
@@ -17,7 +20,7 @@ type RDPActivity struct {
 	AppName *string `json:"app_name,omitempty" parquet:"app_name,optional"`
 
 	// Capabilities: A list of RDP capabilities.
-	Capabilities []string `json:"capabilities,omitempty" parquet:"capabilities,optional,list"`
+	Capabilities []string `json:"capabilities,omitempty" parquet:"capabilities,list,optional"`
 
 	// Category: The event category name, as defined by category_uid value: <code>Network Activity</code>.
 	CategoryName *string `json:"category_name,omitempty" parquet:"category_name,optional"`
@@ -26,7 +29,7 @@ type RDPActivity struct {
 	CategoryUid int32 `json:"category_uid" parquet:"category_uid"`
 
 	// Certificate Chain: The list of observed certificates in an RDP TLS connection.
-	CertificateChain []string `json:"certificate_chain,omitempty" parquet:"certificate_chain,optional,list"`
+	CertificateChain []string `json:"certificate_chain,omitempty" parquet:"certificate_chain,list,optional"`
 
 	// Class: The event class name, as defined by class_uid value: <code>RDP Activity</code>.
 	ClassName *string `json:"class_name,omitempty" parquet:"class_name,optional"`
@@ -50,13 +53,10 @@ type RDPActivity struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The end time of a time period, or the time of the most recent event included in the aggregate event.
-	EndTime *int64 `json:"end_time,omitempty" parquet:"end_time,optional"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Enrichments: The additional information from an external data source, which is associated with the event or a finding. For example add location information for the IP address in the DNS answers:</p><code>[{"name": "answers.ip", "value": "92.24.47.250", "type": "location", "data": {"city": "Socotra", "continent": "Asia", "coordinates": [-25.4153, 17.0743], "country": "YE", "desc": "Yemen"}}]</code>
-	Enrichments []*Enrichment `json:"enrichments,omitempty" parquet:"enrichments,optional,list"`
-
-	// Event Day: The day of the event. Used for partitioning.
-	EventDay int32 `json:"event_day" parquet:"event_day"`
+	Enrichments []Enrichment `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 
 	// File: The file that is the target of the RDP activity.
 	File *File `json:"file,omitempty" parquet:"file,optional"`
@@ -65,7 +65,7 @@ type RDPActivity struct {
 	IdentifierCookie *string `json:"identifier_cookie,omitempty" parquet:"identifier_cookie,optional"`
 
 	// JA4+ Fingerprints: A list of the JA4+ network fingerprints.
-	Ja4FingerprintList []*JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,optional,list"`
+	Ja4FingerprintList []JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,list,optional"`
 
 	// Keyboard Information: The keyboard detailed information.
 	KeyboardInfo *KeyboardInformation `json:"keyboard_info,omitempty" parquet:"keyboard_info,optional"`
@@ -77,7 +77,7 @@ type RDPActivity struct {
 	Metadata Metadata `json:"metadata" parquet:"metadata"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// OSINT: The OSINT (Open Source Intelligence) object contains details related to an indicator such as the indicator itself, related indicators, geolocation, registrar information, subdomains, analyst commentary, and other contextual information. This information can be used to further enrich a detection or finding by providing decisioning support to other analysts and engineers.
 	Osint []OSINT `json:"osint" parquet:"osint,list"`
@@ -110,7 +110,7 @@ type RDPActivity struct {
 	SrcEndpoint *NetworkEndpoint `json:"src_endpoint,omitempty" parquet:"src_endpoint,optional"`
 
 	// Start Time: The start time of a time period, or the time of the least recent event included in the aggregate event.
-	StartTime *int64 `json:"start_time,omitempty" parquet:"start_time,optional"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Status: The event status, normalized to the caption of the status_id value. In the case of 'Other', it is defined by the event source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
@@ -125,7 +125,7 @@ type RDPActivity struct {
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
 
 	// Event Time: The normalized event occurrence time or the finding creation time.
-	Time int64 `json:"time" parquet:"time"`
+	Time int64 `json:"time" parquet:"time,timestamp_millis,timestamp(millisecond)"`
 
 	// Timezone Offset: The number of minutes that the reported event <code>time</code> is ahead or behind UTC, in the range -1,080 to +1,080.
 	TimezoneOffset *int32 `json:"timezone_offset,omitempty" parquet:"timezone_offset,optional"`
@@ -146,6 +146,29 @@ type RDPActivity struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *RDPActivity) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *RDPActivity) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var RDPActivityFields = []arrow.Field{
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -161,9 +184,8 @@ var RDPActivityFields = []arrow.Field{
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "dst_endpoint", Type: NetworkEndpointStruct, Nullable: true},
 	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "enrichments", Type: arrow.ListOf(EnrichmentStruct), Nullable: true},
-	{Name: "event_day", Type: arrow.FixedWidthTypes.Date32, Nullable: false},
 	{Name: "file", Type: FileStruct, Nullable: true},
 	{Name: "identifier_cookie", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "ja4_fingerprint_list", Type: arrow.ListOf(JA4FingerprintStruct), Nullable: true},
@@ -181,12 +203,12 @@ var RDPActivityFields = []arrow.Field{
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "src_endpoint", Type: NetworkEndpointStruct, Nullable: true},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "status", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_code", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_detail", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "time", Type: arrow.PrimitiveTypes.Int64, Nullable: false},
+	{Name: "time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: false},
 	{Name: "timezone_offset", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "tls", Type: TransportLayerSecurityTLSStruct, Nullable: true},
 	{Name: "traffic", Type: NetworkTrafficStruct, Nullable: true},
@@ -198,3 +220,4 @@ var RDPActivityFields = []arrow.Field{
 var RDPActivityStruct = arrow.StructOf(RDPActivityFields...)
 
 var RDPActivitySchema = arrow.NewSchema(RDPActivityFields, nil)
+var RDPActivityClassname = "rdp_activity"

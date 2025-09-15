@@ -26,6 +26,10 @@ type KernelResource struct {
 	TypeId int32 `json:"type_id" parquet:"type_id"`
 }
 
+func (v *KernelResource) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KernelResourceFields = []arrow.Field{
 	{Name: "is_system", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -38,3 +42,4 @@ var KernelResourceFields = []arrow.Field{
 var KernelResourceStruct = arrow.StructOf(KernelResourceFields...)
 
 var KernelResourceSchema = arrow.NewSchema(KernelResourceFields, nil)
+var KernelResourceClassname = "kernel"

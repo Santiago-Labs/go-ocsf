@@ -11,13 +11,17 @@ type DiscoveryDetails struct {
 	Count *int32 `json:"count,omitempty" parquet:"count,optional"`
 
 	// Occurrences: Details about where in the target entity, specified information was discovered. Only the attributes, relevant to the target entity type should be populuated.
-	Occurrences []*OccurrenceDetails `json:"occurrences,omitempty" parquet:"occurrences,optional,list"`
+	Occurrences []OccurrenceDetails `json:"occurrences,omitempty" parquet:"occurrences,list,optional"`
 
 	// Type: The specific type of information that was discovered. e.g.<code> name, phone_number, etc.</code>
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 
 	// Value: Optionally, the specific value of discovered information.
 	Value *string `json:"value,omitempty" parquet:"value,optional"`
+}
+
+func (v *DiscoveryDetails) Observable() (*int, string) {
+	return nil, ""
 }
 
 var DiscoveryDetailsFields = []arrow.Field{
@@ -30,3 +34,4 @@ var DiscoveryDetailsFields = []arrow.Field{
 var DiscoveryDetailsStruct = arrow.StructOf(DiscoveryDetailsFields...)
 
 var DiscoveryDetailsSchema = arrow.NewSchema(DiscoveryDetailsFields, nil)
+var DiscoveryDetailsClassname = "discovery_details"

@@ -20,6 +20,10 @@ type RequestElements struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *RequestElements) Observable() (*int, string) {
+	return nil, ""
+}
+
 var RequestElementsFields = []arrow.Field{
 	{Name: "containers", Type: arrow.ListOf(ContainerStruct), Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},

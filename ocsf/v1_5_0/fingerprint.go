@@ -17,6 +17,11 @@ type Fingerprint struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *Fingerprint) Observable() (*int, string) {
+	typeId := 30
+	return &typeId, "fingerprint"
+}
+
 var FingerprintFields = []arrow.Field{
 	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "algorithm_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
@@ -26,3 +31,4 @@ var FingerprintFields = []arrow.Field{
 var FingerprintStruct = arrow.StructOf(FingerprintFields...)
 
 var FingerprintSchema = arrow.NewSchema(FingerprintFields, nil)
+var FingerprintClassname = "fingerprint"

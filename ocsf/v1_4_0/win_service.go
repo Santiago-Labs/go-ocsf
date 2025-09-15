@@ -59,6 +59,10 @@ type WindowsService struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *WindowsService) Observable() (*int, string) {
+	return nil, ""
+}
+
 var WindowsServiceFields = []arrow.Field{
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},

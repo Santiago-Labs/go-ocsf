@@ -44,6 +44,10 @@ type FirewallRule struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *FirewallRule) Observable() (*int, string) {
+	return nil, ""
+}
+
 var FirewallRuleFields = []arrow.Field{
 	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "condition", Type: arrow.BinaryTypes.String, Nullable: true},

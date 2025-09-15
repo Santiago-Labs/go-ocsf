@@ -20,6 +20,10 @@ type Organization struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Organization) Observable() (*int, string) {
+	return nil, ""
+}
+
 var OrganizationFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "ou_name", Type: arrow.BinaryTypes.String, Nullable: true},

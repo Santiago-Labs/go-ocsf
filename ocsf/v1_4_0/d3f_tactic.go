@@ -17,6 +17,10 @@ type MITRED3FENDTactic struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *MITRED3FENDTactic) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITRED3FENDTacticFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},

@@ -35,6 +35,10 @@ type CVSSScore struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *CVSSScore) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CVSSScoreFields = []arrow.Field{
 	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64, Nullable: false},
 	{Name: "depth", Type: arrow.BinaryTypes.String, Nullable: true},

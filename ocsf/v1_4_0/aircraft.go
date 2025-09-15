@@ -38,6 +38,10 @@ type Aircraft struct {
 	VerticalSpeed *string `json:"vertical_speed,omitempty" parquet:"vertical_speed,optional"`
 }
 
+func (v *Aircraft) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AircraftFields = []arrow.Field{
 	{Name: "location", Type: GeoLocationStruct, Nullable: true},
 	{Name: "model", Type: arrow.BinaryTypes.String, Nullable: true},

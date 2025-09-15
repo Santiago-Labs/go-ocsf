@@ -32,6 +32,10 @@ type HTTPCookie struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *HTTPCookie) Observable() (*int, string) {
+	return nil, ""
+}
+
 var HTTPCookieFields = []arrow.Field{
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

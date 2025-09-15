@@ -8,7 +8,7 @@ import (
 type EPSS struct {
 
 	// Created Time: The timestamp indicating when the EPSS score was calculated.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// EPSS Percentile: The EPSS score's percentile representing relative importance and ranking of the score in the larger EPSS dataset.
 	Percentile *float64 `json:"percentile,omitempty" parquet:"percentile,optional"`
@@ -20,8 +20,12 @@ type EPSS struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *EPSS) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EPSSFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "percentile", Type: arrow.PrimitiveTypes.Float64, Nullable: true},
 	{Name: "score", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -30,3 +34,4 @@ var EPSSFields = []arrow.Field{
 var EPSSStruct = arrow.StructOf(EPSSFields...)
 
 var EPSSSchema = arrow.NewSchema(EPSSFields, nil)
+var EPSSClassname = "epss"

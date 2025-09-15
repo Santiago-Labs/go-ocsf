@@ -20,6 +20,10 @@ type Scan struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Scan) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ScanFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},

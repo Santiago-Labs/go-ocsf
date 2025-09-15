@@ -20,7 +20,7 @@ type Check struct {
 	SeverityId *int32 `json:"severity_id,omitempty" parquet:"severity_id,optional"`
 
 	// Compliance Standards: List: The regulatory or industry standard this check is associated with. E.g., <code>PCI DSS 3.2.1</code>, <code>HIPAA Security Rule</code>, <code>NIST SP 800-53 Rev. 5</code>, or <code>ISO/IEC 27001:2013</code>.
-	Standards []string `json:"standards,omitempty" parquet:"standards,optional,list"`
+	Standards []string `json:"standards,omitempty" parquet:"standards,list,optional"`
 
 	// Status: The resultant status of the compliance check normalized to the caption of the <code>status_id</code> value. For example, CIS Benchmark: <code>Pass</code> when all requirements are met, <code>Fail</code> when requirements are not met, or DISA STIG: <code>NotAFinding</code> (maps to status_id 1/Pass), <code>Open</code> (maps to status_id 3/Fail).
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
@@ -33,6 +33,10 @@ type Check struct {
 
 	// Version: The check version. For example, CIS Benchmark: <code>1.1.0</code> for Amazon Linux 2 or DISA STIG: <code>V2R1</code> for Windows 10.
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
+}
+
+func (v *Check) Observable() (*int, string) {
+	return nil, ""
 }
 
 var CheckFields = []arrow.Field{
@@ -50,3 +54,4 @@ var CheckFields = []arrow.Field{
 var CheckStruct = arrow.StructOf(CheckFields...)
 
 var CheckSchema = arrow.NewSchema(CheckFields, nil)
+var CheckClassname = "check"

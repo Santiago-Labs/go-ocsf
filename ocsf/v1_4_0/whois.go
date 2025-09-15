@@ -50,6 +50,10 @@ type WHOIS struct {
 	Subnet *string `json:"subnet,omitempty" parquet:"subnet,optional"`
 }
 
+func (v *WHOIS) Observable() (*int, string) {
+	return nil, ""
+}
+
 var WHOISFields = []arrow.Field{
 	{Name: "autonomous_system", Type: AutonomousSystemStruct, Nullable: true},
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

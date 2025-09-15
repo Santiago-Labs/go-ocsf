@@ -14,6 +14,10 @@ type CISCSC struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *CISCSC) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CISCSCFields = []arrow.Field{
 	{Name: "control", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "version", Type: arrow.BinaryTypes.String, Nullable: true},

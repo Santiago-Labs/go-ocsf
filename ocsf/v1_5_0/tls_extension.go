@@ -17,6 +17,10 @@ type TLSExtension struct {
 	TypeId int32 `json:"type_id" parquet:"type_id"`
 }
 
+func (v *TLSExtension) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TLSExtensionFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -26,3 +30,4 @@ var TLSExtensionFields = []arrow.Field{
 var TLSExtensionStruct = arrow.StructOf(TLSExtensionFields...)
 
 var TLSExtensionSchema = arrow.NewSchema(TLSExtensionFields, nil)
+var TLSExtensionClassname = "tls_extension"

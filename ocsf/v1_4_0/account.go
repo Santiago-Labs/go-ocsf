@@ -26,6 +26,10 @@ type Account struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Account) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AccountFields = []arrow.Field{
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},

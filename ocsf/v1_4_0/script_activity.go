@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type ScriptActivity struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -64,9 +64,6 @@ type ScriptActivity struct {
 	// Raw Data: The raw event/finding data as received from the source.
 	RawData *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
-
 	// Script: The script that was the target of the activity.
 	Script Script `json:"script" parquet:"script"`
 
@@ -107,8 +104,30 @@ type ScriptActivity struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *ScriptActivity) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *ScriptActivity) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var ScriptActivityFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "actor", Type: ActorStruct, Nullable: false},
@@ -127,7 +146,6 @@ var ScriptActivityFields = []arrow.Field{
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "osint", Type: arrow.ListOf(OSINTStruct), Nullable: false},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "script", Type: ScriptStruct, Nullable: false},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},

@@ -2,6 +2,9 @@
 package v1_5_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
@@ -35,13 +38,10 @@ type UserSessionQuery struct {
 	Duration *int64 `json:"duration,omitempty" parquet:"duration,optional"`
 
 	// End Time: The end time of a time period, or the time of the most recent event included in the aggregate event.
-	EndTime *int64 `json:"end_time,omitempty" parquet:"end_time,optional"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Enrichments: The additional information from an external data source, which is associated with the event or a finding. For example add location information for the IP address in the DNS answers:</p><code>[{"name": "answers.ip", "value": "92.24.47.250", "type": "location", "data": {"city": "Socotra", "continent": "Asia", "coordinates": [-25.4153, 17.0743], "country": "YE", "desc": "Yemen"}}]</code>
-	Enrichments []*Enrichment `json:"enrichments,omitempty" parquet:"enrichments,optional,list"`
-
-	// Event Day: The day of the event. Used for partitioning.
-	EventDay int32 `json:"event_day" parquet:"event_day"`
+	Enrichments []Enrichment `json:"enrichments,omitempty" parquet:"enrichments,list,optional"`
 
 	// Message: The description of the event/finding, as defined by the source.
 	Message *string `json:"message,omitempty" parquet:"message,optional"`
@@ -50,7 +50,7 @@ type UserSessionQuery struct {
 	Metadata Metadata `json:"metadata" parquet:"metadata"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// OSINT: The OSINT (Open Source Intelligence) object contains details related to an indicator such as the indicator itself, related indicators, geolocation, registrar information, subdomains, analyst commentary, and other contextual information. This information can be used to further enrich a detection or finding by providing decisioning support to other analysts and engineers.
 	Osint []OSINT `json:"osint" parquet:"osint,list"`
@@ -80,7 +80,7 @@ type UserSessionQuery struct {
 	SeverityId int32 `json:"severity_id" parquet:"severity_id"`
 
 	// Start Time: The start time of a time period, or the time of the least recent event included in the aggregate event.
-	StartTime *int64 `json:"start_time,omitempty" parquet:"start_time,optional"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Status: The event status, normalized to the caption of the status_id value. In the case of 'Other', it is defined by the event source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
@@ -95,7 +95,7 @@ type UserSessionQuery struct {
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
 
 	// Event Time: The normalized event occurrence time or the finding creation time.
-	Time int64 `json:"time" parquet:"time"`
+	Time int64 `json:"time" parquet:"time,timestamp_millis,timestamp(millisecond)"`
 
 	// Timezone Offset: The number of minutes that the reported event <code>time</code> is ahead or behind UTC, in the range -1,080 to +1,080.
 	TimezoneOffset *int32 `json:"timezone_offset,omitempty" parquet:"timezone_offset,optional"`
@@ -110,6 +110,29 @@ type UserSessionQuery struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *UserSessionQuery) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *UserSessionQuery) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var UserSessionQueryFields = []arrow.Field{
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -120,9 +143,8 @@ var UserSessionQueryFields = []arrow.Field{
 	{Name: "cloud", Type: CloudStruct, Nullable: false},
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "enrichments", Type: arrow.ListOf(EnrichmentStruct), Nullable: true},
-	{Name: "event_day", Type: arrow.FixedWidthTypes.Date32, Nullable: false},
 	{Name: "message", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "metadata", Type: MetadataStruct, Nullable: false},
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
@@ -135,12 +157,12 @@ var UserSessionQueryFields = []arrow.Field{
 	{Name: "session", Type: SessionStruct, Nullable: false},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "status", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_code", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_detail", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "time", Type: arrow.PrimitiveTypes.Int64, Nullable: false},
+	{Name: "time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: false},
 	{Name: "timezone_offset", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "type_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type_uid", Type: arrow.PrimitiveTypes.Int64, Nullable: false},
@@ -150,3 +172,4 @@ var UserSessionQueryFields = []arrow.Field{
 var UserSessionQueryStruct = arrow.StructOf(UserSessionQueryFields...)
 
 var UserSessionQuerySchema = arrow.NewSchema(UserSessionQueryFields, nil)
+var UserSessionQueryClassname = "session_query"

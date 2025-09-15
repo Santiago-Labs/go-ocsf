@@ -14,6 +14,10 @@ type EnvironmentVariable struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *EnvironmentVariable) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EnvironmentVariableFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -22,3 +26,4 @@ var EnvironmentVariableFields = []arrow.Field{
 var EnvironmentVariableStruct = arrow.StructOf(EnvironmentVariableFields...)
 
 var EnvironmentVariableSchema = arrow.NewSchema(EnvironmentVariableFields, nil)
+var EnvironmentVariableClassname = "environment_variable"

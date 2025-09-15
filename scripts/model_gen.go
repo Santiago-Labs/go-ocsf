@@ -16,10 +16,14 @@ import (
 )
 
 var (
-	partitionedTypes = make(map[string]bool)
-	refTree          = make(map[string]map[string]bool)
-	refStructsUsed   = make(map[string]bool)
+	refTree        = make(map[string]map[string]bool)
+	refStructsUsed = make(map[string]bool)
 )
+
+type Observable struct {
+	Name   string
+	TypeID int
+}
 
 type GenerationSpec struct {
 	Version string
@@ -60,16 +64,34 @@ func main() {
 
 func generateSchema(packageName, genDir string, classes, objects, types map[string]interface{}) {
 	for _, class := range sortedKeys(classes) {
-		className := classes[class].(map[string]interface{})["name"].(string)
-		partitionedTypes[className] = true
-		err := generateGoStruct(packageName, genDir, classes[class].(map[string]interface{}), objects, types)
+		visited := make(map[string]bool)
+		observables, err := resolveObservables(classes[class].(map[string]interface{}), objects, visited)
+		if err != nil {
+			log.Fatalf("Failed to generate Go struct: %v", err)
+		}
+
+		err = generateGoStruct(
+			packageName,
+			genDir,
+			classes[class].(map[string]interface{}),
+			objects,
+			types,
+			observables,
+		)
 		if err != nil {
 			log.Fatalf("Failed to generate Go struct: %v", err)
 		}
 	}
 
 	for _, object := range sortedKeys(objects) {
-		err := generateGoStruct(packageName, genDir, objects[object].(map[string]interface{}), objects, types)
+		err := generateGoStruct(
+			packageName,
+			genDir,
+			objects[object].(map[string]interface{}),
+			objects,
+			types,
+			[]Observable{}, // observables should only be generated for classes.
+		)
 		if err != nil {
 			log.Fatalf("Failed to generate Go struct: %v", err)
 		}
@@ -113,7 +135,10 @@ func sanitizeSchema(schema map[string]interface{}) (classes, objects, types map[
 	return classes, objects, types
 }
 
-func generateGoStruct(packageName, genDir string, class, objects, types map[string]interface{}) error {
+func generateGoStruct(
+	packageName, genDir string,
+	class, objects, types map[string]interface{},
+	observables []Observable) error {
 	classFields, ok := class["attributes"].(map[string]interface{})
 	if !ok {
 		return nil
@@ -135,24 +160,11 @@ import (
 	arrowFields := fmt.Sprintf("var %sFields = []arrow.Field{\n", sanitizedObjectCaption)
 	goStruct := fmt.Sprintf("type %s struct {\n", sanitizedObjectCaption)
 
-	if partitionedTypes[class["name"].(string)] {
-		classFields["region"] = map[string]interface{}{
-			"caption":     "Region",
-			"description": "The region of the event. Used for partitioning.",
-			"requirement": "required",
-			"type":        "string_t",
-		}
-
-		classFields["account_id"] = map[string]interface{}{
-			"caption":     "Account ID",
-			"description": "The account ID of the event. Used for partitioning.",
-			"requirement": "required",
-			"type":        "string_t",
-		}
-
-	}
-
+	var hasObservablesField bool
 	for _, fieldName := range sortedKeys(classFields) {
+		if fieldName == "observables" {
+			hasObservablesField = true
+		}
 		fieldValue := classFields[fieldName].(map[string]interface{})
 
 		required := fieldValue["requirement"] == "required"
@@ -237,6 +249,44 @@ import (
 	goStruct += "}\n"
 	arrowFields += "}\n"
 
+	isObservFuncBody := "return nil, \"\""
+	if obs_num, ok := class["observable"].(float64); ok {
+		isObservFuncBody = fmt.Sprintf("typeId := %d\nreturn &typeId, \"%s\"", int(obs_num), className)
+	}
+
+	isObservable := fmt.Sprintf(`func (v *%s) Observable() (*int, string) {
+		%s
+	}
+
+	`, sanitizedObjectCaption, isObservFuncBody)
+
+	goStruct += isObservable
+
+	if hasObservablesField {
+		validateObservables := fmt.Sprintf(`func (v *%s) ValidateObservables() error {
+			presentObservables := ocsf.PresentObservablesOf(v)
+			for presObsIdx := range presentObservables {
+				var found bool
+				for obsIdx := range v.Observables {
+					presObsEnum := presentObservables[presObsIdx][0].(*int)
+					if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					obs := presentObservables[presObsIdx]
+					return fmt.Errorf("non-null observable %%s(%%d) not found in observables array", obs[1], *obs[0].(*int))
+				}
+			}
+			return nil
+		}
+
+		`, sanitizedObjectCaption)
+
+		goStruct += validateObservables
+	}
+
 	arrowStruct := fmt.Sprintf("var %sStruct = arrow.StructOf(%sFields...)\n", sanitizedObjectCaption, sanitizedObjectCaption)
 	arrowSchemaDec := fmt.Sprintf("var %sSchema = arrow.NewSchema(%sFields, nil)", sanitizedObjectCaption, sanitizedObjectCaption)
 	arrowClassname := fmt.Sprintf("var %sClassname = \"%s\"\n", sanitizedObjectCaption, className)
@@ -249,8 +299,7 @@ import (
 		return err
 	}
 
-
-	cmd := exec.Command("goimports", "-w", genDir+filename)
+	cmd := exec.Command("goimports", "-w", fmt.Sprintf(genDir+"/%s", filename))
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to gofmt file %s: %v", fmt.Sprintf(genDir+"/%s", filename), err)
 	}
@@ -455,6 +504,47 @@ func resolveOCSFType(targetType string, types map[string]interface{}) (string, e
 	}
 }
 
+func resolveObservables(current, objects map[string]interface{}, visited map[string]bool) ([]Observable, error) {
+	currentName := current["name"].(string)
+	var observables []Observable
+	if current["observable"] != nil {
+		type_id, ok := current["observable"].(float64)
+		if !ok {
+			return nil, fmt.Errorf("Unexpected observable type: %v, name: %s", current["observable"], currentName)
+		}
+		observables = append(observables, Observable{
+			Name:   currentName,
+			TypeID: int(type_id),
+		})
+	}
+	if visited[currentName] {
+		return nil, nil
+	}
+
+	visited[currentName] = true
+
+	if attributes, ok := current["attributes"].(map[string]interface{}); ok {
+		for attr_name := range attributes {
+			attr_def, ok := attributes[attr_name].(map[string]interface{})
+			if !ok {
+				log.Fatalf("Not a map: %s %s", attr_name, attr_def)
+			}
+
+			attr_type := attr_def["type"].(string)
+			if _, ok := objects[attr_type]; ok {
+				child_obj := objects[attr_type].(map[string]interface{})
+				fieldObservables, err := resolveObservables(child_obj, objects, visited)
+				if err != nil {
+					return nil, err
+				}
+				observables = append(observables, fieldObservables...)
+			}
+		}
+	}
+
+	return observables, nil
+}
+
 func goTypeToArrowType(targetType string) string {
 	var isList bool
 
@@ -463,9 +553,7 @@ func goTypeToArrowType(targetType string) string {
 		targetType = strings.TrimPrefix(targetType, "[]")
 	}
 
-	if strings.HasPrefix(targetType, "*") {
-		targetType = strings.TrimPrefix(targetType, "*")
-	}
+	targetType = strings.TrimPrefix(targetType, "*")
 
 	switch targetType {
 	case "string":

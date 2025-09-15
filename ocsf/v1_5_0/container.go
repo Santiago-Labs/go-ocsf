@@ -14,7 +14,7 @@ type Container struct {
 	Image *Image `json:"image,omitempty" parquet:"image,optional"`
 
 	// Labels: The list of labels associated to the container.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The container name.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -35,10 +35,15 @@ type Container struct {
 	Size *int64 `json:"size,omitempty" parquet:"size,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the container.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Unique ID: The full container unique identifier for this instantiation of the container. For example: <code>ac2ea168264a08f9aaca0dfc82ff3551418dfd22d02b713142a6843caa2f61bf</code>.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
+}
+
+func (v *Container) Observable() (*int, string) {
+	typeId := 27
+	return &typeId, "container"
 }
 
 var ContainerFields = []arrow.Field{
@@ -58,3 +63,4 @@ var ContainerFields = []arrow.Field{
 var ContainerStruct = arrow.StructOf(ContainerFields...)
 
 var ContainerSchema = arrow.NewSchema(ContainerFields, nil)
+var ContainerClassname = "container"

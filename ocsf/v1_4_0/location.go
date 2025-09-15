@@ -59,6 +59,11 @@ type GeoLocation struct {
 	Region *string `json:"region,omitempty" parquet:"region,optional"`
 }
 
+func (v *GeoLocation) Observable() (*int, string) {
+	typeId := 26
+	return &typeId, "location"
+}
+
 var GeoLocationFields = []arrow.Field{
 	{Name: "aerial_height", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "city", Type: arrow.BinaryTypes.String, Nullable: true},

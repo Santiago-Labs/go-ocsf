@@ -20,6 +20,10 @@ type Anomaly struct {
 	ObservedPattern *string `json:"observed_pattern,omitempty" parquet:"observed_pattern,optional"`
 }
 
+func (v *Anomaly) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AnomalyFields = []arrow.Field{
 	{Name: "observation_parameter", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "observation_type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -30,3 +34,4 @@ var AnomalyFields = []arrow.Field{
 var AnomalyStruct = arrow.StructOf(AnomalyFields...)
 
 var AnomalySchema = arrow.NewSchema(AnomalyFields, nil)
+var AnomalyClassname = "anomaly"

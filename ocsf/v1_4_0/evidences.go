@@ -83,6 +83,10 @@ type EvidenceArtifacts struct {
 	WinService *WindowsService `json:"win_service,omitempty" parquet:"win_service,optional"`
 }
 
+func (v *EvidenceArtifacts) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EvidenceArtifactsFields = []arrow.Field{
 	{Name: "actor", Type: ActorStruct, Nullable: true},
 	{Name: "api", Type: APIStruct, Nullable: true},

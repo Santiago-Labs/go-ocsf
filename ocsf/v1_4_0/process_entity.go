@@ -26,6 +26,10 @@ type ProcessEntity struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *ProcessEntity) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ProcessEntityFields = []arrow.Field{
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

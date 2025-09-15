@@ -23,6 +23,10 @@ type Observable struct {
 	Value *string `json:"value,omitempty" parquet:"value,optional"`
 }
 
+func (v *Observable) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ObservableFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "reputation", Type: ReputationStruct, Nullable: true},
@@ -34,3 +38,4 @@ var ObservableFields = []arrow.Field{
 var ObservableStruct = arrow.StructOf(ObservableFields...)
 
 var ObservableSchema = arrow.NewSchema(ObservableFields, nil)
+var ObservableClassname = "observable"

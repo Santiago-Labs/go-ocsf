@@ -26,6 +26,10 @@ type API struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *API) Observable() (*int, string) {
+	return nil, ""
+}
+
 var APIFields = []arrow.Field{
 	{Name: "group", Type: GroupStruct, Nullable: true},
 	{Name: "operation", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -38,3 +42,4 @@ var APIFields = []arrow.Field{
 var APIStruct = arrow.StructOf(APIFields...)
 
 var APISchema = arrow.NewSchema(APIFields, nil)
+var APIClassname = "api"

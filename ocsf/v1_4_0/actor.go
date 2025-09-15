@@ -29,6 +29,10 @@ type Actor struct {
 	User *User `json:"user,omitempty" parquet:"user,optional"`
 }
 
+func (v *Actor) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ActorFields = []arrow.Field{
 	{Name: "app_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "app_uid", Type: arrow.BinaryTypes.String, Nullable: true},

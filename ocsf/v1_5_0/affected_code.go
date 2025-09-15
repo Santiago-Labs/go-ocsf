@@ -32,6 +32,10 @@ type AffectedCode struct {
 	StartLine *int32 `json:"start_line,omitempty" parquet:"start_line,optional"`
 }
 
+func (v *AffectedCode) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AffectedCodeFields = []arrow.Field{
 	{Name: "end_column", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "end_line", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -46,3 +50,4 @@ var AffectedCodeFields = []arrow.Field{
 var AffectedCodeStruct = arrow.StructOf(AffectedCodeFields...)
 
 var AffectedCodeSchema = arrow.NewSchema(AffectedCodeFields, nil)
+var AffectedCodeClassname = "affected_code"

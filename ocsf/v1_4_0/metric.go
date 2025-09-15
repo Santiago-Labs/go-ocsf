@@ -14,6 +14,10 @@ type Metric struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *Metric) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MetricFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},

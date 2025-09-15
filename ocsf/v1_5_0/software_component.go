@@ -41,6 +41,10 @@ type SoftwareComponent struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *SoftwareComponent) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SoftwareComponentFields = []arrow.Field{
 	{Name: "author", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "hash", Type: FingerprintStruct, Nullable: true},
@@ -58,3 +62,4 @@ var SoftwareComponentFields = []arrow.Field{
 var SoftwareComponentStruct = arrow.StructOf(SoftwareComponentFields...)
 
 var SoftwareComponentSchema = arrow.NewSchema(SoftwareComponentFields, nil)
+var SoftwareComponentClassname = "software_component"

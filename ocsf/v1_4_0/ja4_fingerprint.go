@@ -29,6 +29,10 @@ type JA4Fingerprint struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *JA4Fingerprint) Observable() (*int, string) {
+	return nil, ""
+}
+
 var JA4FingerprintFields = []arrow.Field{
 	{Name: "section_a", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "section_b", Type: arrow.BinaryTypes.String, Nullable: true},

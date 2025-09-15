@@ -14,13 +14,13 @@ type TransportLayerSecurityTLS struct {
 	Certificate *DigitalCertificate `json:"certificate,omitempty" parquet:"certificate,optional"`
 
 	// Certificate Chain: The Chain of Certificate Serial Numbers field provides a chain of Certificate Issuer Serial Numbers leading to the Root Certificate Issuer.
-	CertificateChain []string `json:"certificate_chain,omitempty" parquet:"certificate_chain,optional,list"`
+	CertificateChain []string `json:"certificate_chain,omitempty" parquet:"certificate_chain,list,optional"`
 
 	// Cipher Suite: The negotiated cipher suite.
 	Cipher *string `json:"cipher,omitempty" parquet:"cipher,optional"`
 
 	// Client Cipher Suites: The client cipher suites that were exchanged during the TLS handshake negotiation.
-	ClientCiphers []string `json:"client_ciphers,omitempty" parquet:"client_ciphers,optional,list"`
+	ClientCiphers []string `json:"client_ciphers,omitempty" parquet:"client_ciphers,list,optional"`
 
 	// Handshake Duration: The amount of total time for the TLS handshake to complete after the TCP connection is established, including client-side delays, in milliseconds.
 	HandshakeDur *int32 `json:"handshake_dur,omitempty" parquet:"handshake_dur,optional"`
@@ -35,16 +35,20 @@ type TransportLayerSecurityTLS struct {
 	KeyLength *int32 `json:"key_length,omitempty" parquet:"key_length,optional"`
 
 	// Server Cipher Suites: The server cipher suites that were exchanged during the TLS handshake negotiation.
-	ServerCiphers []string `json:"server_ciphers,omitempty" parquet:"server_ciphers,optional,list"`
+	ServerCiphers []string `json:"server_ciphers,omitempty" parquet:"server_ciphers,list,optional"`
 
 	// Server Name Indication:  The Server Name Indication (SNI) extension sent by the client.
 	Sni *string `json:"sni,omitempty" parquet:"sni,optional"`
 
 	// TLS Extension List: The list of TLS extensions.
-	TlsExtensionList []*TLSExtension `json:"tls_extension_list,omitempty" parquet:"tls_extension_list,optional,list"`
+	TlsExtensionList []TLSExtension `json:"tls_extension_list,omitempty" parquet:"tls_extension_list,list,optional"`
 
 	// Version: The TLS protocol version.
 	Version string `json:"version" parquet:"version"`
+}
+
+func (v *TransportLayerSecurityTLS) Observable() (*int, string) {
+	return nil, ""
 }
 
 var TransportLayerSecurityTLSFields = []arrow.Field{
@@ -66,3 +70,4 @@ var TransportLayerSecurityTLSFields = []arrow.Field{
 var TransportLayerSecurityTLSStruct = arrow.StructOf(TransportLayerSecurityTLSFields...)
 
 var TransportLayerSecurityTLSSchema = arrow.NewSchema(TransportLayerSecurityTLSFields, nil)
+var TransportLayerSecurityTLSClassname = "tls"

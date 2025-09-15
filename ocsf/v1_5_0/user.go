@@ -29,7 +29,7 @@ type User struct {
 	FullName *string `json:"full_name,omitempty" parquet:"full_name,optional"`
 
 	// Groups: The administrative groups to which the user belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// MFA Assigned: The user has a multi-factor or secondary-factor device assigned.
 	HasMfa *bool `json:"has_mfa,omitempty" parquet:"has_mfa,optional"`
@@ -68,6 +68,11 @@ type User struct {
 	UidAlt *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
 }
 
+func (v *User) Observable() (*int, string) {
+	typeId := 21
+	return &typeId, "user"
+}
+
 var UserFields = []arrow.Field{
 	{Name: "account", Type: AccountStruct, Nullable: true},
 	{Name: "credential_uid", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -94,6 +99,7 @@ var UserFields = []arrow.Field{
 var UserStruct = arrow.StructOf(UserFields...)
 
 var UserSchema = arrow.NewSchema(UserFields, nil)
+var UserClassname = "user"
 var UserRefFields = []arrow.Field{
 
 	{Name: "credential_uid", Type: arrow.BinaryTypes.String, Nullable: true},

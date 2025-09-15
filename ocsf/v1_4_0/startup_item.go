@@ -47,6 +47,10 @@ type StartupItem struct {
 	WinService *WindowsService `json:"win_service,omitempty" parquet:"win_service,optional"`
 }
 
+func (v *StartupItem) Observable() (*int, string) {
+	return nil, ""
+}
+
 var StartupItemFields = []arrow.Field{
 	{Name: "driver", Type: KernelExtensionStruct, Nullable: true},
 	{Name: "job", Type: JobStruct, Nullable: true},

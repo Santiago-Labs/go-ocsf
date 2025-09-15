@@ -29,7 +29,7 @@ type QueryEvidence struct {
 	Module *Module `json:"module,omitempty" parquet:"module,optional"`
 
 	// Network Interfaces: The physical or virtual network interfaces that are associated with the device when query_type_id indicates a Network Interfaces query.
-	NetworkInterfaces []*NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,optional,list"`
+	NetworkInterfaces []NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,list,optional"`
 
 	// Peripheral Device: The peripheral device that triggered the event when query_type_id indicates a Peripheral Device query.
 	PeripheralDevice *PeripheralDevice `json:"peripheral_device,omitempty" parquet:"peripheral_device,optional"`
@@ -68,7 +68,11 @@ type QueryEvidence struct {
 	User *User `json:"user,omitempty" parquet:"user,optional"`
 
 	// Users: The users that belong to the administrative group when query_type_id indicates a Users query.
-	Users []*User `json:"users,omitempty" parquet:"users,optional,list"`
+	Users []User `json:"users,omitempty" parquet:"users,list,optional"`
+}
+
+func (v *QueryEvidence) Observable() (*int, string) {
+	return nil, ""
 }
 
 var QueryEvidenceFields = []arrow.Field{
@@ -98,3 +102,4 @@ var QueryEvidenceFields = []arrow.Field{
 var QueryEvidenceStruct = arrow.StructOf(QueryEvidenceFields...)
 
 var QueryEvidenceSchema = arrow.NewSchema(QueryEvidenceFields, nil)
+var QueryEvidenceClassname = "query_evidence"

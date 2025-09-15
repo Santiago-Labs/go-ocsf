@@ -14,6 +14,10 @@ type VendorAttributes struct {
 	SeverityId *int32 `json:"severity_id,omitempty" parquet:"severity_id,optional"`
 }
 
+func (v *VendorAttributes) Observable() (*int, string) {
+	return nil, ""
+}
+
 var VendorAttributesFields = []arrow.Field{
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

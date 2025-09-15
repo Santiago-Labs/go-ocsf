@@ -89,6 +89,11 @@ type NetworkEndpoint struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *NetworkEndpoint) Observable() (*int, string) {
+	typeId := 20
+	return &typeId, "network_endpoint"
+}
+
 var NetworkEndpointFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "autonomous_system", Type: AutonomousSystemStruct, Nullable: true},

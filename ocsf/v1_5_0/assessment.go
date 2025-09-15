@@ -26,6 +26,10 @@ type Assessment struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Assessment) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AssessmentFields = []arrow.Field{
 	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -38,3 +42,4 @@ var AssessmentFields = []arrow.Field{
 var AssessmentStruct = arrow.StructOf(AssessmentFields...)
 
 var AssessmentSchema = arrow.NewSchema(AssessmentFields, nil)
+var AssessmentClassname = "assessment"

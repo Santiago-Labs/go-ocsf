@@ -14,6 +14,10 @@ type HASSH struct {
 	Fingerprint Fingerprint `json:"fingerprint" parquet:"fingerprint"`
 }
 
+func (v *HASSH) Observable() (*int, string) {
+	return nil, ""
+}
+
 var HASSHFields = []arrow.Field{
 	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "fingerprint", Type: FingerprintStruct, Nullable: false},
@@ -22,3 +26,4 @@ var HASSHFields = []arrow.Field{
 var HASSHStruct = arrow.StructOf(HASSHFields...)
 
 var HASSHSchema = arrow.NewSchema(HASSHFields, nil)
+var HASSHClassname = "hassh"

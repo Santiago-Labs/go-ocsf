@@ -38,6 +38,10 @@ type Compliance struct {
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
 }
 
+func (v *Compliance) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ComplianceFields = []arrow.Field{
 	{Name: "compliance_references", Type: arrow.ListOf(KBArticleStruct), Nullable: true},
 	{Name: "compliance_standards", Type: arrow.ListOf(KBArticleStruct), Nullable: true},

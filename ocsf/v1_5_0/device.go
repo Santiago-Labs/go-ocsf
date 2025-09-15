@@ -8,13 +8,13 @@ import (
 type Device struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Autoscale UID: The unique identifier of the cloud autoscale configuration.
 	AutoscaleUid *string `json:"autoscale_uid,omitempty" parquet:"autoscale_uid,optional"`
 
 	// Boot Time: The time the system was booted.
-	BootTime *int64 `json:"boot_time,omitempty" parquet:"boot_time,optional"`
+	BootTime int64 `json:"boot_time,omitempty" parquet:"boot_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Boot UID: A unique identifier of the device that changes after every reboot. For example, the value of <code>/proc/sys/kernel/random/boot_id</code> from Linux's procfs.
 	BootUid *string `json:"boot_uid,omitempty" parquet:"boot_uid,optional"`
@@ -23,7 +23,7 @@ type Device struct {
 	Container *Container `json:"container,omitempty" parquet:"container,optional"`
 
 	// Created Time: The time when the device was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: The description of the device, ordinarily as reported by the operating system.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -35,10 +35,10 @@ type Device struct {
 	Eid *string `json:"eid,omitempty" parquet:"eid,optional"`
 
 	// First Seen: The initial discovery time of the device.
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Groups: The group names to which the device belongs. For example: <code>["Windows Laptops", "Engineering"]</code>.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Hostname: The device hostname.
 	Hostname *string `json:"hostname,omitempty" parquet:"hostname,optional"`
@@ -56,7 +56,7 @@ type Device struct {
 	Image *Image `json:"image,omitempty" parquet:"image,optional"`
 
 	// IMEI List: The International Mobile Equipment Identity values that are associated with the device.
-	ImeiList []string `json:"imei_list,omitempty" parquet:"imei_list,optional,list"`
+	ImeiList []string `json:"imei_list,omitempty" parquet:"imei_list,list,optional"`
 
 	// Instance ID: The unique identifier of a VM instance.
 	InstanceUid *string `json:"instance_uid,omitempty" parquet:"instance_uid,optional"`
@@ -95,7 +95,7 @@ type Device struct {
 	IsTrusted *bool `json:"is_trusted,omitempty" parquet:"is_trusted,optional"`
 
 	// Last Seen: The most recent discovery time of the device.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Geo Location: The geographical location of the device.
 	Location *GeoLocation `json:"location,omitempty" parquet:"location,optional"`
@@ -110,7 +110,7 @@ type Device struct {
 	Model *string `json:"model,omitempty" parquet:"model,optional"`
 
 	// Modified Time: The time when the device was last known to have been modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The alternate device name, ordinarily as assigned by an administrator. <p><b>Note:</b> The <b>Name</b> could be any other string that helps to identify the device, such as a phone number; for example <code>310-555-1234</code>.</p>
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -119,7 +119,7 @@ type Device struct {
 	NamespacePid *int32 `json:"namespace_pid,omitempty" parquet:"namespace_pid,optional"`
 
 	// Network Interfaces: The physical or virtual network interfaces that are associated with the device, one for each unique MAC address/IP address/hostname/name combination.<p><b>Note:</b> The first element of the array is the network information that pertains to the event.</p>
-	NetworkInterfaces []*NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,optional,list"`
+	NetworkInterfaces []NetworkInterface `json:"network_interfaces,omitempty" parquet:"network_interfaces,list,optional"`
 
 	// Organization: Organization and org unit related to the device.
 	Org *Organization `json:"org,omitempty" parquet:"org,optional"`
@@ -179,17 +179,22 @@ type Device struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *Device) Observable() (*int, string) {
+	typeId := 20
+	return &typeId, "device"
+}
+
 var DeviceFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "autoscale_uid", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "boot_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "boot_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "boot_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "container", Type: ContainerStruct, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "eid", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "groups", Type: arrow.ListOf(GroupStruct), Nullable: true},
 	{Name: "hostname", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "hw_info", Type: DeviceHardwareInfoStruct, Nullable: true},
@@ -209,12 +214,12 @@ var DeviceFields = []arrow.Field{
 	{Name: "is_shared", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_supervised", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_trusted", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "location", Type: GeoLocationStruct, Nullable: true},
 	{Name: "mac", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "meid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "model", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "namespace_pid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "network_interfaces", Type: arrow.ListOf(NetworkInterfaceStruct), Nullable: true},
@@ -242,3 +247,4 @@ var DeviceFields = []arrow.Field{
 var DeviceStruct = arrow.StructOf(DeviceFields...)
 
 var DeviceSchema = arrow.NewSchema(DeviceFields, nil)
+var DeviceClassname = "device"

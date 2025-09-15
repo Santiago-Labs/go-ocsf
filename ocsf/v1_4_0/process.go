@@ -86,6 +86,11 @@ type Process struct {
 	Xattributes *string `json:"xattributes,omitempty" parquet:"xattributes,optional"`
 }
 
+func (v *Process) Observable() (*int, string) {
+	typeId := 25
+	return &typeId, "process"
+}
+
 var ProcessFields = []arrow.Field{
 	{Name: "ancestry", Type: arrow.ListOf(ProcessEntityStruct), Nullable: true},
 	{Name: "auid", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

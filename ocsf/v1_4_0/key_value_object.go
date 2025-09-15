@@ -17,6 +17,10 @@ type KeyValueobject struct {
 	Values []string `json:"values,omitempty" parquet:"values,list,optional"`
 }
 
+func (v *KeyValueobject) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KeyValueobjectFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: true},

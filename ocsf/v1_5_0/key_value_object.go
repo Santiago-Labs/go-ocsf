@@ -14,7 +14,11 @@ type KeyValueobject struct {
 	Value *string `json:"value,omitempty" parquet:"value,optional"`
 
 	// Values: Optional, the values associated to the key. You can populate this attribute, when you have multiple values for the same key.
-	Values []string `json:"values,omitempty" parquet:"values,optional,list"`
+	Values []string `json:"values,omitempty" parquet:"values,list,optional"`
+}
+
+func (v *KeyValueobject) Observable() (*int, string) {
+	return nil, ""
 }
 
 var KeyValueobjectFields = []arrow.Field{
@@ -26,3 +30,4 @@ var KeyValueobjectFields = []arrow.Field{
 var KeyValueobjectStruct = arrow.StructOf(KeyValueobjectFields...)
 
 var KeyValueobjectSchema = arrow.NewSchema(KeyValueobjectFields, nil)
+var KeyValueobjectClassname = "key_value_object"

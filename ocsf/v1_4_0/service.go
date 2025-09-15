@@ -23,6 +23,10 @@ type Service struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Service) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ServiceFields = []arrow.Field{
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},

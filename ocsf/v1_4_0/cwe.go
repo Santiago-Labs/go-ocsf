@@ -17,6 +17,10 @@ type CWE struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *CWE) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CWEFields = []arrow.Field{
 	{Name: "caption", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},

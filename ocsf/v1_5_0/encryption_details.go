@@ -23,6 +23,10 @@ type EncryptionDetails struct {
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 }
 
+func (v *EncryptionDetails) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EncryptionDetailsFields = []arrow.Field{
 	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "algorithm_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -34,3 +38,4 @@ var EncryptionDetailsFields = []arrow.Field{
 var EncryptionDetailsStruct = arrow.StructOf(EncryptionDetailsFields...)
 
 var EncryptionDetailsSchema = arrow.NewSchema(EncryptionDetailsFields, nil)
+var EncryptionDetailsClassname = "encryption_details"

@@ -8,28 +8,28 @@ import (
 type Compliance struct {
 
 	// Assessments: A list of assessments associated with the compliance requirements evaluation.
-	Assessments []*Assessment `json:"assessments,omitempty" parquet:"assessments,optional,list"`
+	Assessments []Assessment `json:"assessments,omitempty" parquet:"assessments,list,optional"`
 
 	// Category: The category a control framework pertains to, as reported by the source tool, such as <code>Asset Management</code> or <code>Risk Assessment</code>.
 	Category *string `json:"category,omitempty" parquet:"category,optional"`
 
 	// Compliance Checks: A list of compliance checks associated with specific industry standards or frameworks. Each check represents an individual rule or requirement that has been evaluated against a target device. Checks typically include details such as the check name (e.g., CIS: 'Ensure mounting of cramfs filesystems is disabled' or DISA STIG descriptive titles), unique identifiers (such as CIS identifier '1.1.1.1' or DISA STIG identifier 'V-230234'), descriptions (detailed explanations of security requirements or vulnerability discussions), and version information.
-	Checks []*Check `json:"checks,omitempty" parquet:"checks,optional,list"`
+	Checks []Check `json:"checks,omitempty" parquet:"checks,list,optional"`
 
 	// Security Control: A Control is a prescriptive, actionable set of specifications that strengthens device posture. The control specifies required security measures, while the specific implementation values are defined in control_parameters. E.g., CIS AWS Foundations Benchmark 1.2.0 - Control 2.1 - Ensure CloudTrail is enabled in all regions
 	Control *string `json:"control,omitempty" parquet:"control,optional"`
 
 	// Control Parameters: The list of control parameters evaluated in a Compliance check. E.g., parameters for CloudTrail configuration might include <code>multiRegionTrailEnabled: true</code>, <code>logFileValidationEnabled: true</code>, and <code>requiredRegions: [us-east-1, us-west-2]</code>
-	ControlParameters []*KeyValueobject `json:"control_parameters,omitempty" parquet:"control_parameters,optional,list"`
+	ControlParameters []KeyValueobject `json:"control_parameters,omitempty" parquet:"control_parameters,list,optional"`
 
 	// Description: The description or criteria of a control.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Compliance Requirements: The specific compliance requirements being evaluated. E.g., <code>PCI DSS Requirement 8.2.3 - Passwords must meet minimum complexity requirements</code> or <code>HIPAA Security Rule 164.312(a)(2)(iv) - Implement encryption and decryption mechanisms</code>
-	Requirements []string `json:"requirements,omitempty" parquet:"requirements,optional,list"`
+	Requirements []string `json:"requirements,omitempty" parquet:"requirements,list,optional"`
 
 	// Compliance Standards: List: The regulatory or industry standards being evaluated for compliance.
-	Standards []string `json:"standards,omitempty" parquet:"standards,optional,list"`
+	Standards []string `json:"standards,omitempty" parquet:"standards,list,optional"`
 
 	// Status: The resultant status of the compliance check normalized to the caption of the <code>status_id</code> value. In the case of 'Other', it is defined by the event source.
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
@@ -38,10 +38,14 @@ type Compliance struct {
 	StatusCode *string `json:"status_code,omitempty" parquet:"status_code,optional"`
 
 	// Status Details: A list of contextual descriptions of the <code>status, status_code</code> values.
-	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,optional,list"`
+	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,list,optional"`
 
 	// Status ID: The normalized status identifier of the compliance check.
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
+}
+
+func (v *Compliance) Observable() (*int, string) {
+	return nil, ""
 }
 
 var ComplianceFields = []arrow.Field{
@@ -62,3 +66,4 @@ var ComplianceFields = []arrow.Field{
 var ComplianceStruct = arrow.StructOf(ComplianceFields...)
 
 var ComplianceSchema = arrow.NewSchema(ComplianceFields, nil)
+var ComplianceClassname = "compliance"

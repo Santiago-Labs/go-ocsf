@@ -17,6 +17,10 @@ type Observation struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *Observation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ObservationFields = []arrow.Field{
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "timespan", Type: TimeSpanStruct, Nullable: true},
@@ -26,3 +30,4 @@ var ObservationFields = []arrow.Field{
 var ObservationStruct = arrow.StructOf(ObservationFields...)
 
 var ObservationSchema = arrow.NewSchema(ObservationFields, nil)
+var ObservationClassname = "observation"

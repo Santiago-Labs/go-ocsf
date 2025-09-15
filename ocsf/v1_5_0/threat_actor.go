@@ -17,6 +17,10 @@ type ThreatActor struct {
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
 }
 
+func (v *ThreatActor) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ThreatActorFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -26,3 +30,4 @@ var ThreatActorFields = []arrow.Field{
 var ThreatActorStruct = arrow.StructOf(ThreatActorFields...)
 
 var ThreatActorSchema = arrow.NewSchema(ThreatActorFields, nil)
+var ThreatActorClassname = "threat_actor"

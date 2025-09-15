@@ -23,6 +23,10 @@ type Image struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *Image) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ImageFields = []arrow.Field{
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},

@@ -8,28 +8,28 @@ import (
 type WebResource struct {
 
 	// Created Time: The time when the resource was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Data: Details of the web resource, e.g, <code>file</code> details, <code>search</code> results or application-defined resource.
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: Description of the web resource.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Modified Time: The time when the resource was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the web resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The web resource type as defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -44,13 +44,17 @@ type WebResource struct {
 	UrlString *string `json:"url_string,omitempty" parquet:"url_string,optional"`
 }
 
+func (v *WebResource) Observable() (*int, string) {
+	return nil, ""
+}
+
 var WebResourceFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "tags", Type: arrow.ListOf(KeyValueobjectStruct), Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -62,3 +66,4 @@ var WebResourceFields = []arrow.Field{
 var WebResourceStruct = arrow.StructOf(WebResourceFields...)
 
 var WebResourceSchema = arrow.NewSchema(WebResourceFields, nil)
+var WebResourceClassname = "web_resource"

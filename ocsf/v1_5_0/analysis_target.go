@@ -14,6 +14,10 @@ type AnalysisTarget struct {
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 }
 
+func (v *AnalysisTarget) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AnalysisTargetFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -22,3 +26,4 @@ var AnalysisTargetFields = []arrow.Field{
 var AnalysisTargetStruct = arrow.StructOf(AnalysisTargetFields...)
 
 var AnalysisTargetSchema = arrow.NewSchema(AnalysisTargetFields, nil)
+var AnalysisTargetClassname = "analysis_target"

@@ -38,6 +38,10 @@ type Job struct {
 	User *User `json:"user,omitempty" parquet:"user,optional"`
 }
 
+func (v *Job) Observable() (*int, string) {
+	return nil, ""
+}
+
 var JobFields = []arrow.Field{
 	{Name: "cmd_line", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

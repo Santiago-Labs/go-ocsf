@@ -26,6 +26,10 @@ type QueryInformation struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *QueryInformation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var QueryInformationFields = []arrow.Field{
 	{Name: "bytes", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},

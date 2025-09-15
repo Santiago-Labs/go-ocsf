@@ -8,7 +8,7 @@ import (
 type Enrichment struct {
 
 	// Created Time: The time when the enrichment data was generated.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Data: The enrichment data associated with the attribute and value. The meaning of this data depends on the type the enrichment record.
 	Data string `json:"data" parquet:"data"`
@@ -38,8 +38,12 @@ type Enrichment struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *Enrichment) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EnrichmentFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -54,3 +58,4 @@ var EnrichmentFields = []arrow.Field{
 var EnrichmentStruct = arrow.StructOf(EnrichmentFields...)
 
 var EnrichmentSchema = arrow.NewSchema(EnrichmentFields, nil)
+var EnrichmentClassname = "enrichment"

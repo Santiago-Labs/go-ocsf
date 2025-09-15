@@ -38,6 +38,10 @@ type WindowsResource struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *WindowsResource) Observable() (*int, string) {
+	return nil, ""
+}
+
 var WindowsResourceFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},

@@ -35,6 +35,10 @@ type Span struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *Span) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SpanFields = []arrow.Field{
 	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: false},

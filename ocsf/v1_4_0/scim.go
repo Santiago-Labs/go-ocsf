@@ -68,6 +68,10 @@ type SCIM struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *SCIM) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SCIMFields = []arrow.Field{
 	{Name: "auth_protocol", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "auth_protocol_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

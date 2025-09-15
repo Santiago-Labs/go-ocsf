@@ -20,6 +20,11 @@ type RegistryKey struct {
 	SecurityDescriptor *string `json:"security_descriptor,omitempty" parquet:"security_descriptor,optional"`
 }
 
+func (v *RegistryKey) Observable() (*int, string) {
+	typeId := 28
+	return &typeId, "reg_key"
+}
+
 var RegistryKeyFields = []arrow.Field{
 	{Name: "is_system", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

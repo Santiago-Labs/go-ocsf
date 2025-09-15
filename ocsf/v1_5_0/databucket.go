@@ -8,13 +8,13 @@ import (
 type Databucket struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Cloud Partition: The canonical cloud partition name to which the region is assigned (e.g. AWS Partitions: aws, aws-cn, aws-us-gov).
 	CloudPartition *string `json:"cloud_partition,omitempty" parquet:"cloud_partition,optional"`
 
 	// Created Time: The time when the databucket was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Criticality: The criticality of the resource as defined by the event source.
 	Criticality *string `json:"criticality,omitempty" parquet:"criticality,optional"`
@@ -23,7 +23,7 @@ type Databucket struct {
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Description: The description of the databucket.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -38,7 +38,7 @@ type Databucket struct {
 	Group *Group `json:"group,omitempty" parquet:"group,optional"`
 
 	// Groups: The group names to which the databucket belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Hostname: The fully qualified name of the resource.
 	Hostname *string `json:"hostname,omitempty" parquet:"hostname,optional"`
@@ -56,10 +56,10 @@ type Databucket struct {
 	IsPublic *bool `json:"is_public,omitempty" parquet:"is_public,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the databucket.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The databucket name.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -80,7 +80,7 @@ type Databucket struct {
 	Size *int64 `json:"size,omitempty" parquet:"size,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The databucket type.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -101,10 +101,14 @@ type Databucket struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *Databucket) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DatabucketFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "cloud_partition", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "criticality", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
@@ -119,7 +123,7 @@ var DatabucketFields = []arrow.Field{
 	{Name: "is_encrypted", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_public", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "namespace", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "owner", Type: UserStruct, Nullable: true},
@@ -138,3 +142,4 @@ var DatabucketFields = []arrow.Field{
 var DatabucketStruct = arrow.StructOf(DatabucketFields...)
 
 var DatabucketSchema = arrow.NewSchema(DatabucketFields, nil)
+var DatabucketClassname = "databucket"

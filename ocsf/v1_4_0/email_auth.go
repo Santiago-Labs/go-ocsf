@@ -29,6 +29,10 @@ type EmailAuthentication struct {
 	Spf *string `json:"spf,omitempty" parquet:"spf,optional"`
 }
 
+func (v *EmailAuthentication) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EmailAuthenticationFields = []arrow.Field{
 	{Name: "dkim", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "dkim_domain", Type: arrow.BinaryTypes.String, Nullable: true},

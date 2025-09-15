@@ -8,7 +8,7 @@ import (
 type Endpoint struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Container: The information describing an instance of a container. A container is a prepackaged, portable system image that runs isolated on an existing system using a container runtime like containerd.
 	Container *Container `json:"container,omitempty" parquet:"container,optional"`
@@ -74,6 +74,11 @@ type Endpoint struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *Endpoint) Observable() (*int, string) {
+	typeId := 20
+	return &typeId, "endpoint"
+}
+
 var EndpointFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "container", Type: ContainerStruct, Nullable: true},
@@ -102,3 +107,4 @@ var EndpointFields = []arrow.Field{
 var EndpointStruct = arrow.StructOf(EndpointFields...)
 
 var EndpointSchema = arrow.NewSchema(EndpointFields, nil)
+var EndpointClassname = "endpoint"

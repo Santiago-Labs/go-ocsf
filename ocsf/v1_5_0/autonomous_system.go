@@ -14,6 +14,10 @@ type AutonomousSystem struct {
 	Number *int32 `json:"number,omitempty" parquet:"number,optional"`
 }
 
+func (v *AutonomousSystem) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AutonomousSystemFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "number", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -22,3 +26,4 @@ var AutonomousSystemFields = []arrow.Field{
 var AutonomousSystemStruct = arrow.StructOf(AutonomousSystemFields...)
 
 var AutonomousSystemSchema = arrow.NewSchema(AutonomousSystemFields, nil)
+var AutonomousSystemClassname = "autonomous_system"

@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type ComplianceFinding struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the finding activity.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -70,9 +70,6 @@ type ComplianceFinding struct {
 	// Raw Data: The raw event/finding data as received from the source.
 	RawData *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
-
 	// Remediation Guidance: Describes the recommended remediation steps to address identified issue(s).
 	Remediation *Remediation `json:"remediation,omitempty" parquet:"remediation,optional"`
 
@@ -119,8 +116,30 @@ type ComplianceFinding struct {
 	VendorAttributes *VendorAttributes `json:"vendor_attributes,omitempty" parquet:"vendor_attributes,optional"`
 }
 
+func (v *ComplianceFinding) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *ComplianceFinding) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var ComplianceFindingFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -141,7 +160,6 @@ var ComplianceFindingFields = []arrow.Field{
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "osint", Type: arrow.ListOf(OSINTStruct), Nullable: false},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "remediation", Type: RemediationStruct, Nullable: true},
 	{Name: "resources", Type: arrow.ListOf(ResourceDetailsStruct), Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},

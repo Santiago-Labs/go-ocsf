@@ -29,6 +29,10 @@ type Module struct {
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 }
 
+func (v *Module) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ModuleFields = []arrow.Field{
 	{Name: "base_address", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "file", Type: FileStruct, Nullable: true},
@@ -42,3 +46,4 @@ var ModuleFields = []arrow.Field{
 var ModuleStruct = arrow.StructOf(ModuleFields...)
 
 var ModuleSchema = arrow.NewSchema(ModuleFields, nil)
+var ModuleClassname = "module"

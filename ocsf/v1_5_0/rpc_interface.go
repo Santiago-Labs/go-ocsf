@@ -20,6 +20,10 @@ type RPCInterface struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *RPCInterface) Observable() (*int, string) {
+	return nil, ""
+}
+
 var RPCInterfaceFields = []arrow.Field{
 	{Name: "ack_reason", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "ack_result", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -30,3 +34,4 @@ var RPCInterfaceFields = []arrow.Field{
 var RPCInterfaceStruct = arrow.StructOf(RPCInterfaceFields...)
 
 var RPCInterfaceSchema = arrow.NewSchema(RPCInterfaceFields, nil)
+var RPCInterfaceClassname = "rpc_interface"

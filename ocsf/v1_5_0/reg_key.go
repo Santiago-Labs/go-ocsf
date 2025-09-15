@@ -11,7 +11,7 @@ type RegistryKey struct {
 	IsSystem *bool `json:"is_system,omitempty" parquet:"is_system,optional"`
 
 	// Modified Time: The time when the registry key was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Path: The full path to the registry key.
 	Path string `json:"path" parquet:"path"`
@@ -20,9 +20,14 @@ type RegistryKey struct {
 	SecurityDescriptor *string `json:"security_descriptor,omitempty" parquet:"security_descriptor,optional"`
 }
 
+func (v *RegistryKey) Observable() (*int, string) {
+	typeId := 28
+	return &typeId, "reg_key"
+}
+
 var RegistryKeyFields = []arrow.Field{
 	{Name: "is_system", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "security_descriptor", Type: arrow.BinaryTypes.String, Nullable: true},
 }
@@ -30,3 +35,4 @@ var RegistryKeyFields = []arrow.Field{
 var RegistryKeyStruct = arrow.StructOf(RegistryKeyFields...)
 
 var RegistryKeySchema = arrow.NewSchema(RegistryKeyFields, nil)
+var RegistryKeyClassname = "reg_key"

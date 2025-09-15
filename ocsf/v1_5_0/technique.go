@@ -17,6 +17,10 @@ type MITRETechnique struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *MITRETechnique) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITRETechniqueFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -26,3 +30,4 @@ var MITRETechniqueFields = []arrow.Field{
 var MITRETechniqueStruct = arrow.StructOf(MITRETechniqueFields...)
 
 var MITRETechniqueSchema = arrow.NewSchema(MITRETechniqueFields, nil)
+var MITRETechniqueClassname = "technique"

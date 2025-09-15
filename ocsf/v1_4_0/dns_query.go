@@ -26,6 +26,10 @@ type DNSQuery struct {
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 }
 
+func (v *DNSQuery) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DNSQueryFields = []arrow.Field{
 	{Name: "class", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "hostname", Type: arrow.BinaryTypes.String, Nullable: false},

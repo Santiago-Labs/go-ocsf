@@ -41,6 +41,11 @@ type UniformResourceLocator struct {
 	UrlString *string `json:"url_string,omitempty" parquet:"url_string,optional"`
 }
 
+func (v *UniformResourceLocator) Observable() (*int, string) {
+	typeId := 23
+	return &typeId, "url"
+}
+
 var UniformResourceLocatorFields = []arrow.Field{
 	{Name: "categories", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "category_ids", Type: arrow.ListOf(arrow.PrimitiveTypes.Int32), Nullable: true},

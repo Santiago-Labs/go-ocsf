@@ -2,37 +2,40 @@
 package v1_5_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type RelatedEventFinding struct {
 
 	// MITRE ATT&CK® and ATLAS™ Details: An array of MITRE ATT&CK® objects describing identified tactics, techniques & sub-techniques. The objects are compatible with MITRE ATLAS™ tactics, techniques & sub-techniques.
-	Attacks []*MITREATTCKATLAS `json:"attacks,omitempty" parquet:"attacks,optional,list"`
+	Attacks []MITREATTCKATLAS `json:"attacks,omitempty" parquet:"attacks,list,optional"`
 
 	// Count: The number of times that activity in the same logical group occurred, as reported by the related Finding.
 	Count *int32 `json:"count,omitempty" parquet:"count,optional"`
 
 	// Created Time: The time when the related event/finding was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: A description of the related event/finding.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// First Seen: The time when the finding was first observed. e.g. The time when a vulnerability was first observed.<br>It can differ from the <code>created_time</code> timestamp, which reflects the time this finding was created.
-	FirstSeenTime *int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,optional"`
+	FirstSeenTime int64 `json:"first_seen_time,omitempty" parquet:"first_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Kill Chain: The <a target='_blank' href='https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html'>Cyber Kill Chain®</a> provides a detailed description of each phase and its associated activities within the broader context of a cyber attack.
-	KillChain []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,optional,list"`
+	KillChain []KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
 
 	// Last Seen: The time when the finding was most recently observed. e.g. The time when a vulnerability was most recently observed.<br>It can differ from the <code>modified_time</code> timestamp, which reflects the time this finding was last modified.
-	LastSeenTime *int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,optional"`
+	LastSeenTime int64 `json:"last_seen_time,omitempty" parquet:"last_seen_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Modified Time: The time when the related event/finding was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Observables: The observables associated with the event or a finding.
-	Observables []*Observable `json:"observables,omitempty" parquet:"observables,optional,list"`
+	Observables []Observable `json:"observables,omitempty" parquet:"observables,list,optional"`
 
 	// Product: Details about the product that reported the related event/finding.
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
@@ -44,13 +47,13 @@ type RelatedEventFinding struct {
 	SeverityId *int32 `json:"severity_id,omitempty" parquet:"severity_id,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated with the related event/finding.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Title: A title or a brief phrase summarizing the related event/finding.
 	Title *string `json:"title,omitempty" parquet:"title,optional"`
 
 	// Traits: The list of key traits or characteristics extracted from the related event/finding that influenced or contributed to the overall finding's outcome.
-	Traits []*Trait `json:"traits,omitempty" parquet:"traits,optional,list"`
+	Traits []Trait `json:"traits,omitempty" parquet:"traits,list,optional"`
 
 	// Type: The type of the related event/finding.</p>Populate if the related event/finding is <code>NOT</code> in OCSF. If it is in OCSF, then utilize <code>type_name, type_uid</code> instead.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -65,15 +68,38 @@ type RelatedEventFinding struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *RelatedEventFinding) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *RelatedEventFinding) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var RelatedEventFindingFields = []arrow.Field{
 	{Name: "attacks", Type: arrow.ListOf(MITREATTCKATLASStruct), Nullable: true},
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "first_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "first_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "kill_chain", Type: arrow.ListOf(KillChainPhaseStruct), Nullable: true},
-	{Name: "last_seen_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "last_seen_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -90,3 +116,4 @@ var RelatedEventFindingFields = []arrow.Field{
 var RelatedEventFindingStruct = arrow.StructOf(RelatedEventFindingFields...)
 
 var RelatedEventFindingSchema = arrow.NewSchema(RelatedEventFindingFields, nil)
+var RelatedEventFindingClassname = "related_event"

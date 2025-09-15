@@ -17,6 +17,10 @@ type MITRED3FENDTactic struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *MITRED3FENDTactic) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITRED3FENDTacticFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -26,3 +30,4 @@ var MITRED3FENDTacticFields = []arrow.Field{
 var MITRED3FENDTacticStruct = arrow.StructOf(MITRED3FENDTacticFields...)
 
 var MITRED3FENDTacticSchema = arrow.NewSchema(MITRED3FENDTacticFields, nil)
+var MITRED3FENDTacticClassname = "d3f_tactic"

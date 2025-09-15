@@ -8,13 +8,13 @@ import (
 type AuthenticationToken struct {
 
 	// Created Time: The time that the authentication token was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Encryption Details: The encryption details of the authentication token.
 	EncryptionDetails *EncryptionDetails `json:"encryption_details,omitempty" parquet:"encryption_details,optional"`
 
 	// Expiration Time: The expiration time of the authentication token.
-	ExpirationTime *int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Renewable: Indicates whether the authentication token is renewable.
 	IsRenewable *bool `json:"is_renewable,omitempty" parquet:"is_renewable,optional"`
@@ -29,10 +29,14 @@ type AuthenticationToken struct {
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
 }
 
+func (v *AuthenticationToken) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AuthenticationTokenFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "encryption_details", Type: EncryptionDetailsStruct, Nullable: true},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "is_renewable", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "kerberos_flags", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -42,3 +46,4 @@ var AuthenticationTokenFields = []arrow.Field{
 var AuthenticationTokenStruct = arrow.StructOf(AuthenticationTokenFields...)
 
 var AuthenticationTokenSchema = arrow.NewSchema(AuthenticationTokenFields, nil)
+var AuthenticationTokenClassname = "authentication_token"

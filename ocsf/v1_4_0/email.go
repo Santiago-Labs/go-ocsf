@@ -62,6 +62,11 @@ type Email struct {
 	XOriginatingIp []string `json:"x_originating_ip,omitempty" parquet:"x_originating_ip,list,optional"`
 }
 
+func (v *Email) Observable() (*int, string) {
+	typeId := 22
+	return &typeId, "email"
+}
+
 var EmailFields = []arrow.Field{
 	{Name: "cc", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "cc_mailboxes", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},

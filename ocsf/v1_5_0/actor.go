@@ -14,7 +14,7 @@ type Actor struct {
 	AppUid *string `json:"app_uid,omitempty" parquet:"app_uid,optional"`
 
 	// Authorization Information: Provides details about an authorization, such as authorization outcome, and any associated policies related to the activity/event.
-	Authorizations []*AuthorizationResult `json:"authorizations,omitempty" parquet:"authorizations,optional,list"`
+	Authorizations []AuthorizationResult `json:"authorizations,omitempty" parquet:"authorizations,list,optional"`
 
 	// Identity Provider: This object describes details about the Identity Provider used.
 	Idp *IdentityProvider `json:"idp,omitempty" parquet:"idp,optional"`
@@ -27,6 +27,10 @@ type Actor struct {
 
 	// User: The user that initiated the activity or the user context from which the activity was initiated.
 	User *User `json:"user,omitempty" parquet:"user,optional"`
+}
+
+func (v *Actor) Observable() (*int, string) {
+	return nil, ""
 }
 
 var ActorFields = []arrow.Field{
@@ -42,3 +46,4 @@ var ActorFields = []arrow.Field{
 var ActorStruct = arrow.StructOf(ActorFields...)
 
 var ActorSchema = arrow.NewSchema(ActorFields, nil)
+var ActorClassname = "actor"

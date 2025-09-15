@@ -17,6 +17,10 @@ type SchemaExtension struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *SchemaExtension) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SchemaExtensionFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -26,3 +30,4 @@ var SchemaExtensionFields = []arrow.Field{
 var SchemaExtensionStruct = arrow.StructOf(SchemaExtensionFields...)
 
 var SchemaExtensionSchema = arrow.NewSchema(SchemaExtensionFields, nil)
+var SchemaExtensionClassname = "extension"

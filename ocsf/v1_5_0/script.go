@@ -11,7 +11,7 @@ type Script struct {
 	File *File `json:"file,omitempty" parquet:"file,optional"`
 
 	// Hashes: An array of the script's cryptographic hashes. Note that these hashes are calculated on the script in its original encoding, and not on the normalized UTF-8 encoding found in the <code>script_content</code> attribute.
-	Hashes []*Fingerprint `json:"hashes,omitempty" parquet:"hashes,optional,list"`
+	Hashes []Fingerprint `json:"hashes,omitempty" parquet:"hashes,list,optional"`
 
 	// Name: Unique identifier for the script or macro, independent of the containing file, used for tracking, auditing, and security analysis.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -32,6 +32,10 @@ type Script struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Script) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ScriptFields = []arrow.Field{
 	{Name: "file", Type: FileStruct, Nullable: true},
 	{Name: "hashes", Type: arrow.ListOf(FingerprintStruct), Nullable: true},
@@ -46,3 +50,4 @@ var ScriptFields = []arrow.Field{
 var ScriptStruct = arrow.StructOf(ScriptFields...)
 
 var ScriptSchema = arrow.NewSchema(ScriptFields, nil)
+var ScriptClassname = "script"

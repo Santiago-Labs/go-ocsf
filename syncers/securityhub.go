@@ -262,8 +262,6 @@ func (s *SecurityHubOCSFSyncer) ToOCSF(ctx context.Context, securityHubFinding t
 		ClassName:       &className,
 		Message:         securityHubFinding.Description,
 		Metadata:        metadata,
-		Region:          regionFromArn(*securityHubFinding.Id),
-		AccountId:       *securityHubFinding.AwsAccountId,
 		Resources:       mapSecurityHubResources(securityHubFinding),
 		Status:          &status,
 		StatusId:        &statusID,

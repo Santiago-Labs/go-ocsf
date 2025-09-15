@@ -14,6 +14,10 @@ type KillChainPhase struct {
 	PhaseId int32 `json:"phase_id" parquet:"phase_id"`
 }
 
+func (v *KillChainPhase) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KillChainPhaseFields = []arrow.Field{
 	{Name: "phase", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "phase_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
@@ -22,3 +26,4 @@ var KillChainPhaseFields = []arrow.Field{
 var KillChainPhaseStruct = arrow.StructOf(KillChainPhaseFields...)
 
 var KillChainPhaseSchema = arrow.NewSchema(KillChainPhaseFields, nil)
+var KillChainPhaseClassname = "kill_chain_phase"

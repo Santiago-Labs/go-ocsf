@@ -23,6 +23,10 @@ type Display struct {
 	ScaleFactor *int32 `json:"scale_factor,omitempty" parquet:"scale_factor,optional"`
 }
 
+func (v *Display) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DisplayFields = []arrow.Field{
 	{Name: "color_depth", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "physical_height", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

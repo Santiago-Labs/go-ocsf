@@ -17,7 +17,7 @@ type LoadBalancer struct {
 	DstEndpoint *NetworkEndpoint `json:"dst_endpoint,omitempty" parquet:"dst_endpoint,optional"`
 
 	// Endpoint Connections: An object detailing the load balancer connection attempts and responses.
-	EndpointConnections []*EndpointConnection `json:"endpoint_connections,omitempty" parquet:"endpoint_connections,optional,list"`
+	EndpointConnections []EndpointConnection `json:"endpoint_connections,omitempty" parquet:"endpoint_connections,list,optional"`
 
 	// Error Message: The load balancer error message.
 	ErrorMessage *string `json:"error_message,omitempty" parquet:"error_message,optional"`
@@ -29,7 +29,7 @@ type LoadBalancer struct {
 	Message *string `json:"message,omitempty" parquet:"message,optional"`
 
 	// Metrics: General purpose metrics associated with the load balancer.
-	Metrics []*Metric `json:"metrics,omitempty" parquet:"metrics,optional,list"`
+	Metrics []Metric `json:"metrics,omitempty" parquet:"metrics,list,optional"`
 
 	// Name: The name of the load balancer.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -39,6 +39,10 @@ type LoadBalancer struct {
 
 	// Unique ID: The unique identifier for the load balancer.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
+}
+
+func (v *LoadBalancer) Observable() (*int, string) {
+	return nil, ""
 }
 
 var LoadBalancerFields = []arrow.Field{
@@ -58,3 +62,4 @@ var LoadBalancerFields = []arrow.Field{
 var LoadBalancerStruct = arrow.StructOf(LoadBalancerFields...)
 
 var LoadBalancerSchema = arrow.NewSchema(LoadBalancerFields, nil)
+var LoadBalancerClassname = "load_balancer"

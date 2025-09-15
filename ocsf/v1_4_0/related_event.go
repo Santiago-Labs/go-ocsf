@@ -2,6 +2,9 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
@@ -60,6 +63,29 @@ type RelatedEventFinding struct {
 
 	// Unique ID: The unique identifier of the related event/finding.</p> If the related event/finding is in OCSF, then this value must be equal to <code>metadata.uid</code> in the corresponding event.
 	Uid string `json:"uid" parquet:"uid"`
+}
+
+func (v *RelatedEventFinding) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *RelatedEventFinding) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
 }
 
 var RelatedEventFindingFields = []arrow.Field{

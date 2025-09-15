@@ -14,6 +14,10 @@ type SecurityState struct {
 	StateId *int32 `json:"state_id,omitempty" parquet:"state_id,optional"`
 }
 
+func (v *SecurityState) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SecurityStateFields = []arrow.Field{
 	{Name: "state", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "state_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

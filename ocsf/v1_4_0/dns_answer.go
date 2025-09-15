@@ -29,6 +29,10 @@ type DNSAnswer struct {
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 }
 
+func (v *DNSAnswer) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DNSAnswerFields = []arrow.Field{
 	{Name: "class", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "flag_ids", Type: arrow.ListOf(arrow.PrimitiveTypes.Int32), Nullable: true},

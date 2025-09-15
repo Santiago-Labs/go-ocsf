@@ -62,6 +62,10 @@ type Advisory struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *Advisory) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AdvisoryFields = []arrow.Field{
 	{Name: "avg_timespan", Type: TimeSpanStruct, Nullable: true},
 	{Name: "bulletin", Type: arrow.BinaryTypes.String, Nullable: true},

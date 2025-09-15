@@ -74,6 +74,10 @@ type Metadata struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *Metadata) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MetadataFields = []arrow.Field{
 	{Name: "correlation_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},

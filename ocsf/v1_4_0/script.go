@@ -32,6 +32,10 @@ type Script struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Script) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ScriptFields = []arrow.Field{
 	{Name: "file", Type: FileStruct, Nullable: true},
 	{Name: "hashes", Type: arrow.ListOf(FingerprintStruct), Nullable: true},

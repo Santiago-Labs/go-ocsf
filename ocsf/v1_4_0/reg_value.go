@@ -32,6 +32,11 @@ type RegistryValue struct {
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
 }
 
+func (v *RegistryValue) Observable() (*int, string) {
+	typeId := 29
+	return &typeId, "reg_value"
+}
+
 var RegistryValueFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "is_default", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},

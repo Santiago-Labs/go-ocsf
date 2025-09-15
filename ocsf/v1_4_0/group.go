@@ -26,6 +26,10 @@ type Group struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Group) Observable() (*int, string) {
+	return nil, ""
+}
+
 var GroupFields = []arrow.Field{
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},

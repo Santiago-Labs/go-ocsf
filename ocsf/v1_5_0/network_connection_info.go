@@ -47,6 +47,10 @@ type NetworkConnectionInformation struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *NetworkConnectionInformation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var NetworkConnectionInformationFields = []arrow.Field{
 	{Name: "boundary", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "boundary_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -66,3 +70,4 @@ var NetworkConnectionInformationFields = []arrow.Field{
 var NetworkConnectionInformationStruct = arrow.StructOf(NetworkConnectionInformationFields...)
 
 var NetworkConnectionInformationSchema = arrow.NewSchema(NetworkConnectionInformationFields, nil)
+var NetworkConnectionInformationClassname = "network_connection_info"

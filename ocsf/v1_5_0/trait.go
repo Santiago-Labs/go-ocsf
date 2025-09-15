@@ -20,7 +20,11 @@ type Trait struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 
 	// Values: The values of the trait.
-	Values []string `json:"values,omitempty" parquet:"values,optional,list"`
+	Values []string `json:"values,omitempty" parquet:"values,list,optional"`
+}
+
+func (v *Trait) Observable() (*int, string) {
+	return nil, ""
 }
 
 var TraitFields = []arrow.Field{
@@ -34,3 +38,4 @@ var TraitFields = []arrow.Field{
 var TraitStruct = arrow.StructOf(TraitFields...)
 
 var TraitSchema = arrow.NewSchema(TraitFields, nil)
+var TraitClassname = "trait"

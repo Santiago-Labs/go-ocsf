@@ -17,6 +17,10 @@ type LongString struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *LongString) Observable() (*int, string) {
+	return nil, ""
+}
+
 var LongStringFields = []arrow.Field{
 	{Name: "is_truncated", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "untruncated_size", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

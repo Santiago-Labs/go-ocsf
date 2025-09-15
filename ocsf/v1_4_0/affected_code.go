@@ -23,6 +23,10 @@ type AffectedCode struct {
 	StartLine *int32 `json:"start_line,omitempty" parquet:"start_line,optional"`
 }
 
+func (v *AffectedCode) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AffectedCodeFields = []arrow.Field{
 	{Name: "end_line", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "file", Type: FileStruct, Nullable: false},
