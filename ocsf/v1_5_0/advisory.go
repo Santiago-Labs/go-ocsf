@@ -17,7 +17,7 @@ type Advisory struct {
 	Classification *string `json:"classification,omitempty" parquet:"classification,optional"`
 
 	// Created Time: The time when the Advisory record was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: A brief description of the Advisory Record.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
@@ -32,7 +32,7 @@ type Advisory struct {
 	IsSuperseded *bool `json:"is_superseded,omitempty" parquet:"is_superseded,optional"`
 
 	// Modified Time: The time when the Advisory record was last updated.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// OS: The operating system the Advisory applies to.
 	Os *OperatingSystemOS `json:"os,omitempty" parquet:"os,optional"`
@@ -41,13 +41,13 @@ type Advisory struct {
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
 
 	// References: A list of reference URLs with additional information about the vulnerabilities disclosed in the Advisory.
-	References []string `json:"references,omitempty" parquet:"references,optional,list"`
+	References []string `json:"references,omitempty" parquet:"references,list,optional"`
 
 	// Related CVEs: A list of Common Vulnerabilities and Exposures <a target='_blank' href='https://cve.mitre.org/'>(CVE)</a> identifiers related to the vulnerabilities disclosed in the Advisory.
-	RelatedCves []*CVE `json:"related_cves,omitempty" parquet:"related_cves,optional,list"`
+	RelatedCves []CVE `json:"related_cves,omitempty" parquet:"related_cves,list,optional"`
 
 	// Related CWEs: A list of Common Weakness Enumeration <a target='_blank' href='https://cwe.mitre.org/'>(CWE)</a> identifiers related to the vulnerabilities disclosed in the Advisory.
-	RelatedCwes []*CWE `json:"related_cwes,omitempty" parquet:"related_cwes,optional,list"`
+	RelatedCwes []CWE `json:"related_cwes,omitempty" parquet:"related_cwes,list,optional"`
 
 	// Size: The size in bytes for the Advisory. Usually populated for a KB Article patch.
 	Size *int64 `json:"size,omitempty" parquet:"size,optional"`
@@ -62,16 +62,20 @@ type Advisory struct {
 	Uid string `json:"uid" parquet:"uid"`
 }
 
+func (v *Advisory) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AdvisoryFields = []arrow.Field{
 	{Name: "avg_timespan", Type: TimeSpanStruct, Nullable: true},
 	{Name: "bulletin", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "classification", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "install_state", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "install_state_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "is_superseded", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "os", Type: OperatingSystemOSStruct, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
 	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
@@ -86,3 +90,4 @@ var AdvisoryFields = []arrow.Field{
 var AdvisoryStruct = arrow.StructOf(AdvisoryFields...)
 
 var AdvisorySchema = arrow.NewSchema(AdvisoryFields, nil)
+var AdvisoryClassname = "advisory"

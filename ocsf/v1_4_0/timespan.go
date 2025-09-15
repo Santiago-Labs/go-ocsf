@@ -38,6 +38,10 @@ type TimeSpan struct {
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
 }
 
+func (v *TimeSpan) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TimeSpanFields = []arrow.Field{
 	{Name: "duration", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "duration_days", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

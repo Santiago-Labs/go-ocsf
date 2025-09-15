@@ -26,6 +26,10 @@ type Rule struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Rule) Observable() (*int, string) {
+	return nil, ""
+}
+
 var RuleFields = []arrow.Field{
 	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},

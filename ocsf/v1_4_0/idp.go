@@ -50,6 +50,10 @@ type IdentityProvider struct {
 	UrlString *string `json:"url_string,omitempty" parquet:"url_string,optional"`
 }
 
+func (v *IdentityProvider) Observable() (*int, string) {
+	return nil, ""
+}
+
 var IdentityProviderFields = []arrow.Field{
 	{Name: "auth_factors", Type: arrow.ListOf(AuthenticationFactorStruct), Nullable: true},
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},

@@ -89,6 +89,10 @@ type OSINT struct {
 	Whois *WHOIS `json:"whois,omitempty" parquet:"whois,optional"`
 }
 
+func (v *OSINT) Observable() (*int, string) {
+	return nil, ""
+}
+
 var OSINTFields = []arrow.Field{
 	{Name: "answers", Type: arrow.ListOf(DNSAnswerStruct), Nullable: true},
 	{Name: "attacks", Type: arrow.ListOf(MITREATTCKStruct), Nullable: true},

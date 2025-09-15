@@ -20,6 +20,10 @@ type Reputation struct {
 	ScoreId int32 `json:"score_id" parquet:"score_id"`
 }
 
+func (v *Reputation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ReputationFields = []arrow.Field{
 	{Name: "base_score", Type: arrow.PrimitiveTypes.Float64, Nullable: false},
 	{Name: "provider", Type: arrow.BinaryTypes.String, Nullable: true},

@@ -17,13 +17,17 @@ type Group struct {
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Privileges: The group privileges.
-	Privileges []string `json:"privileges,omitempty" parquet:"privileges,optional,list"`
+	Privileges []string `json:"privileges,omitempty" parquet:"privileges,list,optional"`
 
 	// Account Type: The type of the group or account.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 
 	// Unique ID: The unique identifier of the group. For example, for Windows events this is the security identifier (SID) of the group.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
+}
+
+func (v *Group) Observable() (*int, string) {
+	return nil, ""
 }
 
 var GroupFields = []arrow.Field{
@@ -38,3 +42,4 @@ var GroupFields = []arrow.Field{
 var GroupStruct = arrow.StructOf(GroupFields...)
 
 var GroupSchema = arrow.NewSchema(GroupFields, nil)
+var GroupClassname = "group"

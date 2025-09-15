@@ -17,7 +17,7 @@ type RegistryValue struct {
 	IsSystem *bool `json:"is_system,omitempty" parquet:"is_system,optional"`
 
 	// Modified Time: The time when the registry value was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the registry value.
 	Name string `json:"name" parquet:"name"`
@@ -32,11 +32,16 @@ type RegistryValue struct {
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
 }
 
+func (v *RegistryValue) Observable() (*int, string) {
+	typeId := 29
+	return &typeId, "reg_value"
+}
+
 var RegistryValueFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "is_default", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_system", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "path", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -46,3 +51,4 @@ var RegistryValueFields = []arrow.Field{
 var RegistryValueStruct = arrow.StructOf(RegistryValueFields...)
 
 var RegistryValueSchema = arrow.NewSchema(RegistryValueFields, nil)
+var RegistryValueClassname = "reg_value"

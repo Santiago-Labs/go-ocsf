@@ -38,6 +38,10 @@ type Product struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Product) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ProductFields = []arrow.Field{
 	{Name: "cpe_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},

@@ -11,7 +11,7 @@ type Graph struct {
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Edges: The edges/connections between nodes in the graph - contains the collection of <code>edge</code> objects defining relationships between nodes.
-	Edges []*Edge `json:"edges,omitempty" parquet:"edges,optional,list"`
+	Edges []Edge `json:"edges,omitempty" parquet:"edges,list,optional"`
 
 	// Directed: Indicates if the graph is directed (<code>true</code>) or undirected (<code>false</code>).
 	IsDirected *bool `json:"is_directed,omitempty" parquet:"is_directed,optional"`
@@ -35,6 +35,10 @@ type Graph struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Graph) Observable() (*int, string) {
+	return nil, ""
+}
+
 var GraphFields = []arrow.Field{
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "edges", Type: arrow.ListOf(EdgeStruct), Nullable: true},
@@ -50,3 +54,4 @@ var GraphFields = []arrow.Field{
 var GraphStruct = arrow.StructOf(GraphFields...)
 
 var GraphSchema = arrow.NewSchema(GraphFields, nil)
+var GraphClassname = "graph"

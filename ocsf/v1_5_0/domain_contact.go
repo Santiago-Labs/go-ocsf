@@ -29,6 +29,10 @@ type DomainContact struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *DomainContact) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DomainContactFields = []arrow.Field{
 	{Name: "email_addr", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "location", Type: GeoLocationStruct, Nullable: true},
@@ -42,3 +46,4 @@ var DomainContactFields = []arrow.Field{
 var DomainContactStruct = arrow.StructOf(DomainContactFields...)
 
 var DomainContactSchema = arrow.NewSchema(DomainContactFields, nil)
+var DomainContactClassname = "domain_contact"

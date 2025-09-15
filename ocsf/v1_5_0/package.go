@@ -59,6 +59,10 @@ type SoftwarePackage struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *SoftwarePackage) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SoftwarePackageFields = []arrow.Field{
 	{Name: "architecture", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "cpe_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -82,3 +86,4 @@ var SoftwarePackageFields = []arrow.Field{
 var SoftwarePackageStruct = arrow.StructOf(SoftwarePackageFields...)
 
 var SoftwarePackageSchema = arrow.NewSchema(SoftwarePackageFields, nil)
+var SoftwarePackageClassname = "package"

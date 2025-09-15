@@ -38,6 +38,10 @@ type Database struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Database) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DatabaseFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},

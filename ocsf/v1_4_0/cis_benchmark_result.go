@@ -20,6 +20,10 @@ type CISBenchmarkResult struct {
 	Rule *Rule `json:"rule,omitempty" parquet:"rule,optional"`
 }
 
+func (v *CISBenchmarkResult) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CISBenchmarkResultFields = []arrow.Field{
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},

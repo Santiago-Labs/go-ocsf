@@ -17,6 +17,10 @@ type CISControl struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *CISControl) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CISControlFields = []arrow.Field{
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -26,3 +30,4 @@ var CISControlFields = []arrow.Field{
 var CISControlStruct = arrow.StructOf(CISControlFields...)
 
 var CISControlSchema = arrow.NewSchema(CISControlFields, nil)
+var CISControlClassname = "cis_control"

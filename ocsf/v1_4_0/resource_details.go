@@ -59,6 +59,10 @@ type ResourceDetails struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *ResourceDetails) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ResourceDetailsFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "cloud_partition", Type: arrow.BinaryTypes.String, Nullable: true},

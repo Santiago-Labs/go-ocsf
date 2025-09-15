@@ -14,6 +14,10 @@ type SubjectAlternativeName struct {
 	Type string `json:"type" parquet:"type"`
 }
 
+func (v *SubjectAlternativeName) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SubjectAlternativeNameFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -22,3 +26,4 @@ var SubjectAlternativeNameFields = []arrow.Field{
 var SubjectAlternativeNameStruct = arrow.StructOf(SubjectAlternativeNameFields...)
 
 var SubjectAlternativeNameSchema = arrow.NewSchema(SubjectAlternativeNameFields, nil)
+var SubjectAlternativeNameClassname = "san"

@@ -68,6 +68,10 @@ type LDAPPerson struct {
 	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 }
 
+func (v *LDAPPerson) Observable() (*int, string) {
+	return nil, ""
+}
+
 var LDAPPersonFields = []arrow.Field{
 	{Name: "cost_center", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

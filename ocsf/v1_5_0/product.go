@@ -11,7 +11,7 @@ type Product struct {
 	CpeName *string `json:"cpe_name,omitempty" parquet:"cpe_name,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Feature: The feature that reported the event.
 	Feature *Feature `json:"feature,omitempty" parquet:"feature,optional"`
@@ -38,6 +38,10 @@ type Product struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Product) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ProductFields = []arrow.Field{
 	{Name: "cpe_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
@@ -54,3 +58,4 @@ var ProductFields = []arrow.Field{
 var ProductStruct = arrow.StructOf(ProductFields...)
 
 var ProductSchema = arrow.NewSchema(ProductFields, nil)
+var ProductClassname = "product"

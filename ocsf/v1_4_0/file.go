@@ -125,6 +125,11 @@ type File struct {
 	Xattributes *string `json:"xattributes,omitempty" parquet:"xattributes,optional"`
 }
 
+func (v *File) Observable() (*int, string) {
+	typeId := 24
+	return &typeId, "file"
+}
+
 var FileFields = []arrow.Field{
 	{Name: "accessed_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "accessor", Type: UserStruct, Nullable: true},

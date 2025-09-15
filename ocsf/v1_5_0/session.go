@@ -11,7 +11,7 @@ type Session struct {
 	Count *int32 `json:"count,omitempty" parquet:"count,optional"`
 
 	// Created Time: The time when the session was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// User Credential ID: The unique identifier of the user's credential. For example, AWS Access Key ID.
 	CredentialUid *string `json:"credential_uid,omitempty" parquet:"credential_uid,optional"`
@@ -20,7 +20,7 @@ type Session struct {
 	ExpirationReason *string `json:"expiration_reason,omitempty" parquet:"expiration_reason,optional"`
 
 	// Expiration Time: The session expiration time.
-	ExpirationTime *int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Multi Factor Authentication: Indicates whether Multi Factor Authentication was used during authentication.
 	IsMfa *bool `json:"is_mfa,omitempty" parquet:"is_mfa,optional"`
@@ -47,12 +47,16 @@ type Session struct {
 	Uuid *string `json:"uuid,omitempty" parquet:"uuid,optional"`
 }
 
+func (v *Session) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SessionFields = []arrow.Field{
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "credential_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "expiration_reason", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "is_mfa", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_remote", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "is_vpn", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
@@ -66,3 +70,4 @@ var SessionFields = []arrow.Field{
 var SessionStruct = arrow.StructOf(SessionFields...)
 
 var SessionSchema = arrow.NewSchema(SessionFields, nil)
+var SessionClassname = "session"

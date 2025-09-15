@@ -23,6 +23,10 @@ type DCERPC struct {
 	RpcInterface RPCInterface `json:"rpc_interface" parquet:"rpc_interface"`
 }
 
+func (v *DCERPC) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DCERPCFields = []arrow.Field{
 	{Name: "command", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "command_response", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -34,3 +38,4 @@ var DCERPCFields = []arrow.Field{
 var DCERPCStruct = arrow.StructOf(DCERPCFields...)
 
 var DCERPCSchema = arrow.NewSchema(DCERPCFields, nil)
+var DCERPCClassname = "dce_rpc"

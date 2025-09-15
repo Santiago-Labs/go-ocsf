@@ -50,6 +50,10 @@ type UnmannedAerialSystem struct {
 	VerticalSpeed *string `json:"vertical_speed,omitempty" parquet:"vertical_speed,optional"`
 }
 
+func (v *UnmannedAerialSystem) Observable() (*int, string) {
+	return nil, ""
+}
+
 var UnmannedAerialSystemFields = []arrow.Field{
 	{Name: "hw_info", Type: DeviceHardwareInfoStruct, Nullable: true},
 	{Name: "location", Type: GeoLocationStruct, Nullable: true},

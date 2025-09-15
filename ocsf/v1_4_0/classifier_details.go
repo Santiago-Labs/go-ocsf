@@ -17,6 +17,10 @@ type ClassifierDetails struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *ClassifierDetails) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ClassifierDetailsFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: false},

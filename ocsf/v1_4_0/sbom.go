@@ -20,6 +20,10 @@ type SoftwareBillofMaterials struct {
 	SoftwareComponents []SoftwareComponent `json:"software_components" parquet:"software_components,list"`
 }
 
+func (v *SoftwareBillofMaterials) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SoftwareBillofMaterialsFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "package", Type: SoftwarePackageStruct, Nullable: false},

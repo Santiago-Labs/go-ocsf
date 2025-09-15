@@ -20,6 +20,10 @@ type Scan struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Scan) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ScanFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -30,3 +34,4 @@ var ScanFields = []arrow.Field{
 var ScanStruct = arrow.StructOf(ScanFields...)
 
 var ScanSchema = arrow.NewSchema(ScanFields, nil)
+var ScanClassname = "scan"

@@ -11,6 +11,10 @@ type Campaign struct {
 	Name string `json:"name" parquet:"name"`
 }
 
+func (v *Campaign) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CampaignFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 }
@@ -18,3 +22,4 @@ var CampaignFields = []arrow.Field{
 var CampaignStruct = arrow.StructOf(CampaignFields...)
 
 var CampaignSchema = arrow.NewSchema(CampaignFields, nil)
+var CampaignClassname = "campaign"

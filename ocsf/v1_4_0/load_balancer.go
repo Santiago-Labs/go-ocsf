@@ -41,6 +41,10 @@ type LoadBalancer struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *LoadBalancer) Observable() (*int, string) {
+	return nil, ""
+}
+
 var LoadBalancerFields = []arrow.Field{
 	{Name: "classification", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "code", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

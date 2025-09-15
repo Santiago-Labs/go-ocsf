@@ -38,6 +38,10 @@ type Enrichment struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *Enrichment) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EnrichmentFields = []arrow.Field{
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: false},

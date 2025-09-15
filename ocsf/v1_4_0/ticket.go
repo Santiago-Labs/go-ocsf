@@ -23,6 +23,10 @@ type Ticket struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Ticket) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TicketFields = []arrow.Field{
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "title", Type: arrow.BinaryTypes.String, Nullable: true},

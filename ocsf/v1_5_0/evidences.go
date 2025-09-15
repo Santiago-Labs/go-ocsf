@@ -47,7 +47,7 @@ type EvidenceArtifacts struct {
 	HttpResponse *HTTPResponse `json:"http_response,omitempty" parquet:"http_response,optional"`
 
 	// JA4+ Fingerprints: Describes details about the JA4+ fingerprints that triggered the detection.
-	Ja4FingerprintList []*JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,optional,list"`
+	Ja4FingerprintList []JA4Fingerprint `json:"ja4_fingerprint_list,omitempty" parquet:"ja4_fingerprint_list,list,optional"`
 
 	// Job: Describes details about the scheduled job that was associated with the activity that triggered the detection.
 	Job *Job `json:"job,omitempty" parquet:"job,optional"`
@@ -68,7 +68,7 @@ type EvidenceArtifacts struct {
 	RegValue *RegistryValue `json:"reg_value,omitempty" parquet:"reg_value,optional"`
 
 	// Cloud Resources: Describes details about the cloud resources directly related to activity that triggered the detection. For resources impacted by the detection, use <code>Affected Resources</code> at the top-level of the finding.
-	Resources []*ResourceDetails `json:"resources,omitempty" parquet:"resources,optional,list"`
+	Resources []ResourceDetails `json:"resources,omitempty" parquet:"resources,list,optional"`
 
 	// Script: Describes details about the script that was associated with the activity that triggered the detection.
 	Script *Script `json:"script,omitempty" parquet:"script,optional"`
@@ -96,6 +96,10 @@ type EvidenceArtifacts struct {
 
 	// Windows Service: Describes details about the Windows service that triggered the detection.
 	WinService *WindowsService `json:"win_service,omitempty" parquet:"win_service,optional"`
+}
+
+func (v *EvidenceArtifacts) Observable() (*int, string) {
+	return nil, ""
 }
 
 var EvidenceArtifactsFields = []arrow.Field{
@@ -134,3 +138,4 @@ var EvidenceArtifactsFields = []arrow.Field{
 var EvidenceArtifactsStruct = arrow.StructOf(EvidenceArtifactsFields...)
 
 var EvidenceArtifactsSchema = arrow.NewSchema(EvidenceArtifactsFields, nil)
+var EvidenceArtifactsClassname = "evidences"

@@ -35,6 +35,10 @@ type OccurrenceDetails struct {
 	StartLine *int32 `json:"start_line,omitempty" parquet:"start_line,optional"`
 }
 
+func (v *OccurrenceDetails) Observable() (*int, string) {
+	return nil, ""
+}
+
 var OccurrenceDetailsFields = []arrow.Field{
 	{Name: "cell_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "column_name", Type: arrow.BinaryTypes.String, Nullable: true},

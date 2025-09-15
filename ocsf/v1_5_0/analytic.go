@@ -32,6 +32,10 @@ type Analytic struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Analytic) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AnalyticFields = []arrow.Field{
 	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -46,3 +50,4 @@ var AnalyticFields = []arrow.Field{
 var AnalyticStruct = arrow.StructOf(AnalyticFields...)
 
 var AnalyticSchema = arrow.NewSchema(AnalyticFields, nil)
+var AnalyticClassname = "analytic"

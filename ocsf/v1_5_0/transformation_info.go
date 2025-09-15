@@ -17,7 +17,7 @@ type TransformationInfo struct {
 	Product *Product `json:"product,omitempty" parquet:"product,optional"`
 
 	// Event Time: Time of the transformation.
-	Time *int64 `json:"time,omitempty" parquet:"time,optional"`
+	Time int64 `json:"time,omitempty" parquet:"time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Unique ID: The unique identifier of the mapping or transformation.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
@@ -26,11 +26,15 @@ type TransformationInfo struct {
 	UrlString *string `json:"url_string,omitempty" parquet:"url_string,optional"`
 }
 
+func (v *TransformationInfo) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TransformationInfoFields = []arrow.Field{
 	{Name: "lang", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: true},
-	{Name: "time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "url_string", Type: arrow.BinaryTypes.String, Nullable: true},
 }
@@ -38,3 +42,4 @@ var TransformationInfoFields = []arrow.Field{
 var TransformationInfoStruct = arrow.StructOf(TransformationInfoFields...)
 
 var TransformationInfoSchema = arrow.NewSchema(TransformationInfoFields, nil)
+var TransformationInfoClassname = "transformation_info"

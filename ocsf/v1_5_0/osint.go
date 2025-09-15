@@ -8,10 +8,10 @@ import (
 type OSINT struct {
 
 	// Related DNS Answers: Any pertinent DNS answers information related to an indicator or OSINT analysis.
-	Answers []*DNSAnswer `json:"answers,omitempty" parquet:"answers,optional,list"`
+	Answers []DNSAnswer `json:"answers,omitempty" parquet:"answers,list,optional"`
 
 	// MITRE ATT&CK® and ATLAS™ Details: MITRE ATT&CK Tactics, Techniques, and/or Procedures (TTPs) pertinent to an indicator or OSINT analysis.
-	Attacks []*MITREATTCKATLAS `json:"attacks,omitempty" parquet:"attacks,optional,list"`
+	Attacks []MITREATTCKATLAS `json:"attacks,omitempty" parquet:"attacks,list,optional"`
 
 	// Autonomous System: Any pertinent autonomous system information related to an indicator or OSINT analysis.
 	AutonomousSystem *AutonomousSystem `json:"autonomous_system,omitempty" parquet:"autonomous_system,optional"`
@@ -32,7 +32,7 @@ type OSINT struct {
 	ConfidenceId *int32 `json:"confidence_id,omitempty" parquet:"confidence_id,optional"`
 
 	// Created Time: The timestamp when the indicator was initially created or identified.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Creator: The identifier of the user, system, or organization that contributed the indicator.
 	Creator *User `json:"creator,omitempty" parquet:"creator,optional"`
@@ -56,7 +56,7 @@ type OSINT struct {
 	EmailAuth *EmailAuthentication `json:"email_auth,omitempty" parquet:"email_auth,optional"`
 
 	// Expiration Time: The expiration date of the indicator, after which it is no longer considered reliable.
-	ExpirationTime *int64 `json:"expiration_time,omitempty" parquet:"expiration_time,optional"`
+	ExpirationTime int64 `json:"expiration_time,omitempty" parquet:"expiration_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// External ID: A unique identifier assigned by an external system for cross-referencing.
 	ExternalUid *string `json:"external_uid,omitempty" parquet:"external_uid,optional"`
@@ -65,31 +65,31 @@ type OSINT struct {
 	File *File `json:"file,omitempty" parquet:"file,optional"`
 
 	// Intrusion Sets: A grouping of adversarial behaviors and resources believed to be associated with specific threat actors or campaigns. Intrusion sets often encompass multiple campaigns and are used to organize related activities under a common label.
-	IntrusionSets []string `json:"intrusion_sets,omitempty" parquet:"intrusion_sets,optional,list"`
+	IntrusionSets []string `json:"intrusion_sets,omitempty" parquet:"intrusion_sets,list,optional"`
 
 	// Kill Chain: Lockheed Martin Kill Chain Phases pertinent to an indicator or OSINT analysis.
-	KillChain []*KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,optional,list"`
+	KillChain []KillChainPhase `json:"kill_chain,omitempty" parquet:"kill_chain,list,optional"`
 
 	// Labels: Tags or keywords associated with the indicator to enhance searchability.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Geo Location: Any pertinent geolocation information related to an indicator or OSINT analysis.
 	Location *GeoLocation `json:"location,omitempty" parquet:"location,optional"`
 
 	// Malware: A list of Malware objects, describing details about the identified malware.
-	Malware []*Malware `json:"malware,omitempty" parquet:"malware,optional,list"`
+	Malware []Malware `json:"malware,omitempty" parquet:"malware,list,optional"`
 
 	// Modified Time: The timestamp of the last modification or update to the indicator.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The <code>name</code> is a pointer/reference to an attribute within the OCSF event data. For example: file.name.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// References: Provides a reference to an external source of information related to the CTI being represented. This may include a URL, a document, or some other type of reference that provides additional context or information about the CTI.
-	References []string `json:"references,omitempty" parquet:"references,optional,list"`
+	References []string `json:"references,omitempty" parquet:"references,list,optional"`
 
 	// Related Analytics: Any analytics related to an indicator or OSINT analysis.
-	RelatedAnalytics []*Analytic `json:"related_analytics,omitempty" parquet:"related_analytics,optional,list"`
+	RelatedAnalytics []Analytic `json:"related_analytics,omitempty" parquet:"related_analytics,list,optional"`
 
 	// Reputation Scores: Related reputational analysis from third-party engines and analysts for a given indicator or OSINT analysis.
 	Reputation *Reputation `json:"reputation,omitempty" parquet:"reputation,optional"`
@@ -107,13 +107,13 @@ type OSINT struct {
 	SeverityId *int32 `json:"severity_id,omitempty" parquet:"severity_id,optional"`
 
 	// Related Digital Signatures: Any digital signatures or hashes related to an indicator or OSINT analysis.
-	Signatures []*DigitalSignature `json:"signatures,omitempty" parquet:"signatures,optional,list"`
+	Signatures []DigitalSignature `json:"signatures,omitempty" parquet:"signatures,list,optional"`
 
 	// Source URL: The source URL of an indicator or OSINT analysis, e.g., a URL back to a TIP, report, or otherwise.
 	SrcUrl *string `json:"src_url,omitempty" parquet:"src_url,optional"`
 
 	// Related Subdomains: Any pertinent subdomain information - such as those generated by a Domain Generation Algorithm - related to an indicator or OSINT analysis.
-	Subdomains []string `json:"subdomains,omitempty" parquet:"subdomains,optional,list"`
+	Subdomains []string `json:"subdomains,omitempty" parquet:"subdomains,list,optional"`
 
 	// Related Subnet: A CIDR or network block related to an indicator or OSINT analysis.
 	Subnet *string `json:"subnet,omitempty" parquet:"subnet,optional"`
@@ -134,7 +134,7 @@ type OSINT struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 
 	// Uploaded Time: The timestamp indicating when the associated indicator or intelligence was added to the system or repository.
-	UploadedTime *int64 `json:"uploaded_time,omitempty" parquet:"uploaded_time,optional"`
+	UploadedTime int64 `json:"uploaded_time,omitempty" parquet:"uploaded_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Indicator: The actual indicator value in scope, e.g., a SHA-256 hash hexdigest or a domain name.
 	Value string `json:"value" parquet:"value"`
@@ -143,10 +143,14 @@ type OSINT struct {
 	VendorName *string `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`
 
 	// Related Vulnerabilities: Any vulnerabilities related to an indicator or OSINT analysis.
-	Vulnerabilities []*VulnerabilityDetails `json:"vulnerabilities,omitempty" parquet:"vulnerabilities,optional,list"`
+	Vulnerabilities []VulnerabilityDetails `json:"vulnerabilities,omitempty" parquet:"vulnerabilities,list,optional"`
 
 	// WHOIS: Any pertinent WHOIS information related to an indicator or OSINT analysis.
 	Whois *WHOIS `json:"whois,omitempty" parquet:"whois,optional"`
+}
+
+func (v *OSINT) Observable() (*int, string) {
+	return nil, ""
 }
 
 var OSINTFields = []arrow.Field{
@@ -158,7 +162,7 @@ var OSINTFields = []arrow.Field{
 	{Name: "comment", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "confidence", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "confidence_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "creator", Type: UserStruct, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "detection_pattern", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -166,7 +170,7 @@ var OSINTFields = []arrow.Field{
 	{Name: "detection_pattern_type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "email", Type: EmailStruct, Nullable: true},
 	{Name: "email_auth", Type: EmailAuthenticationStruct, Nullable: true},
-	{Name: "expiration_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "expiration_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "external_uid", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "file", Type: FileStruct, Nullable: true},
 	{Name: "intrusion_sets", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
@@ -174,7 +178,7 @@ var OSINTFields = []arrow.Field{
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "location", Type: GeoLocationStruct, Nullable: true},
 	{Name: "malware", Type: arrow.ListOf(MalwareStruct), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "references", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "related_analytics", Type: arrow.ListOf(AnalyticStruct), Nullable: true},
@@ -192,7 +196,7 @@ var OSINTFields = []arrow.Field{
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "uploaded_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "uploaded_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "vendor_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "vulnerabilities", Type: arrow.ListOf(VulnerabilityDetailsStruct), Nullable: true},
@@ -202,3 +206,4 @@ var OSINTFields = []arrow.Field{
 var OSINTStruct = arrow.StructOf(OSINTFields...)
 
 var OSINTSchema = arrow.NewSchema(OSINTFields, nil)
+var OSINTClassname = "osint"

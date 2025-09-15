@@ -8,13 +8,13 @@ import (
 type Account struct {
 
 	// Labels: The list of labels associated to the account.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Name: The name of the account (e.g. <code> GCP Project name </code>, <code> Linux Account name </code> or <code> AWS Account name</code>).
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the account.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The account type, normalized to the caption of 'account_type_id'. In the case of 'Other', it is defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -24,6 +24,10 @@ type Account struct {
 
 	// Unique ID: The unique identifier of the account (e.g. <code> AWS Account ID </code>, <code> OCID </code>, <code> GCP Project ID </code>, <code> Azure Subscription ID </code>, <code> Google Workspace Customer ID </code>, or <code> M365 Tenant UID</code>).
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
+}
+
+func (v *Account) Observable() (*int, string) {
+	return nil, ""
 }
 
 var AccountFields = []arrow.Field{
@@ -38,3 +42,4 @@ var AccountFields = []arrow.Field{
 var AccountStruct = arrow.StructOf(AccountFields...)
 
 var AccountSchema = arrow.NewSchema(AccountFields, nil)
+var AccountClassname = "account"

@@ -35,6 +35,10 @@ type NetworkInterface struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *NetworkInterface) Observable() (*int, string) {
+	return nil, ""
+}
+
 var NetworkInterfaceFields = []arrow.Field{
 	{Name: "hostname", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "ip", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -50,3 +54,4 @@ var NetworkInterfaceFields = []arrow.Field{
 var NetworkInterfaceStruct = arrow.StructOf(NetworkInterfaceFields...)
 
 var NetworkInterfaceSchema = arrow.NewSchema(NetworkInterfaceFields, nil)
+var NetworkInterfaceClassname = "network_interface"

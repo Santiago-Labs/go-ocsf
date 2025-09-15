@@ -14,6 +14,10 @@ type EndpointConnection struct {
 	NetworkEndpoint *NetworkEndpoint `json:"network_endpoint,omitempty" parquet:"network_endpoint,optional"`
 }
 
+func (v *EndpointConnection) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EndpointConnectionFields = []arrow.Field{
 	{Name: "code", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "network_endpoint", Type: NetworkEndpointStruct, Nullable: true},

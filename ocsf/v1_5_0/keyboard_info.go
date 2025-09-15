@@ -23,6 +23,10 @@ type KeyboardInformation struct {
 	KeyboardType *string `json:"keyboard_type,omitempty" parquet:"keyboard_type,optional"`
 }
 
+func (v *KeyboardInformation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KeyboardInformationFields = []arrow.Field{
 	{Name: "function_keys", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "ime", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -34,3 +38,4 @@ var KeyboardInformationFields = []arrow.Field{
 var KeyboardInformationStruct = arrow.StructOf(KeyboardInformationFields...)
 
 var KeyboardInformationSchema = arrow.NewSchema(KeyboardInformationFields, nil)
+var KeyboardInformationClassname = "keyboard_info"

@@ -8,7 +8,7 @@ import (
 type MITREMitigation struct {
 
 	// Countermeasures: The D3FEND countermeasures that are associated with the attack technique. For example: ATT&CK Technique <code>T1003</code> is addressed by Mitigation <code>M1027</code>, and D3FEND Technique <code>D3-OTP</code>.
-	Countermeasures []*MITRED3FEND `json:"countermeasures,omitempty" parquet:"countermeasures,optional,list"`
+	Countermeasures []MITRED3FEND `json:"countermeasures,omitempty" parquet:"countermeasures,list,optional"`
 
 	// Name: The Mitigation name that is associated with the attack technique. For example: <code>Password Policies</code>, or <code>Code Signing</code>.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -18,6 +18,10 @@ type MITREMitigation struct {
 
 	// Unique ID: The Mitigation ID that is associated with the attack technique. For example: <code>M1027</code>, or <code>AML.M0013</code>.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
+}
+
+func (v *MITREMitigation) Observable() (*int, string) {
+	return nil, ""
 }
 
 var MITREMitigationFields = []arrow.Field{
@@ -30,3 +34,4 @@ var MITREMitigationFields = []arrow.Field{
 var MITREMitigationStruct = arrow.StructOf(MITREMitigationFields...)
 
 var MITREMitigationSchema = arrow.NewSchema(MITREMitigationFields, nil)
+var MITREMitigationClassname = "mitigation"

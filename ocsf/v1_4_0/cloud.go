@@ -26,6 +26,10 @@ type Cloud struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *Cloud) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CloudFields = []arrow.Field{
 	{Name: "account", Type: AccountStruct, Nullable: true},
 	{Name: "cloud_partition", Type: arrow.BinaryTypes.String, Nullable: true},

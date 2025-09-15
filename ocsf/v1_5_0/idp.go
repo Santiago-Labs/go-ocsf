@@ -8,7 +8,7 @@ import (
 type IdentityProvider struct {
 
 	// Authentication Factors: The Authentication Factors object describes the different types of Multi-Factor Authentication (MFA) methods and/or devices supported by the Identity Provider.
-	AuthFactors []*AuthenticationFactor `json:"auth_factors,omitempty" parquet:"auth_factors,optional,list"`
+	AuthFactors []AuthenticationFactor `json:"auth_factors,omitempty" parquet:"auth_factors,list,optional"`
 
 	// Domain: The primary domain associated with the Identity Provider.
 	Domain *string `json:"domain,omitempty" parquet:"domain,optional"`
@@ -50,6 +50,10 @@ type IdentityProvider struct {
 	UrlString *string `json:"url_string,omitempty" parquet:"url_string,optional"`
 }
 
+func (v *IdentityProvider) Observable() (*int, string) {
+	return nil, ""
+}
+
 var IdentityProviderFields = []arrow.Field{
 	{Name: "auth_factors", Type: arrow.ListOf(AuthenticationFactorStruct), Nullable: true},
 	{Name: "domain", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -70,3 +74,4 @@ var IdentityProviderFields = []arrow.Field{
 var IdentityProviderStruct = arrow.StructOf(IdentityProviderFields...)
 
 var IdentityProviderSchema = arrow.NewSchema(IdentityProviderFields, nil)
+var IdentityProviderClassname = "idp"

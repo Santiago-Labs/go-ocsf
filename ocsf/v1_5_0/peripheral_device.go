@@ -26,6 +26,10 @@ type PeripheralDevice struct {
 	VendorName *string `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`
 }
 
+func (v *PeripheralDevice) Observable() (*int, string) {
+	return nil, ""
+}
+
 var PeripheralDeviceFields = []arrow.Field{
 	{Name: "class", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "model", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -38,3 +42,4 @@ var PeripheralDeviceFields = []arrow.Field{
 var PeripheralDeviceStruct = arrow.StructOf(PeripheralDeviceFields...)
 
 var PeripheralDeviceSchema = arrow.NewSchema(PeripheralDeviceFields, nil)
+var PeripheralDeviceClassname = "peripheral_device"

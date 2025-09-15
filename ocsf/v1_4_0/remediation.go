@@ -17,6 +17,10 @@ type Remediation struct {
 	References []string `json:"references,omitempty" parquet:"references,list,optional"`
 }
 
+func (v *Remediation) Observable() (*int, string) {
+	return nil, ""
+}
+
 var RemediationFields = []arrow.Field{
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "kb_article_list", Type: arrow.ListOf(KBArticleStruct), Nullable: true},

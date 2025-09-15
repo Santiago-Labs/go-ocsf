@@ -14,7 +14,11 @@ type AnomalyAnalysis struct {
 	Anomalies []Anomaly `json:"anomalies" parquet:"anomalies,list"`
 
 	// Baselines: List of established patterns representing normal activity that serve as reference points for anomaly detection. This includes typical user interaction patterns like common user-agents, expected API access frequencies and patterns, standard resource utilization levels, and regular traffic flows. These baselines help establish what constitutes 'normal' activity in the system.
-	Baselines []*Baseline `json:"baselines,omitempty" parquet:"baselines,optional,list"`
+	Baselines []Baseline `json:"baselines,omitempty" parquet:"baselines,list,optional"`
+}
+
+func (v *AnomalyAnalysis) Observable() (*int, string) {
+	return nil, ""
 }
 
 var AnomalyAnalysisFields = []arrow.Field{
@@ -26,3 +30,4 @@ var AnomalyAnalysisFields = []arrow.Field{
 var AnomalyAnalysisStruct = arrow.StructOf(AnomalyAnalysisFields...)
 
 var AnomalyAnalysisSchema = arrow.NewSchema(AnomalyAnalysisFields, nil)
+var AnomalyAnalysisClassname = "anomaly_analysis"

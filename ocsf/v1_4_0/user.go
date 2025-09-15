@@ -65,6 +65,11 @@ type User struct {
 	UidAlt *string `json:"uid_alt,omitempty" parquet:"uid_alt,optional"`
 }
 
+func (v *User) Observable() (*int, string) {
+	typeId := 21
+	return &typeId, "user"
+}
+
 var UserFields = []arrow.Field{
 	{Name: "account", Type: AccountStruct, Nullable: true},
 	{Name: "credential_uid", Type: arrow.BinaryTypes.String, Nullable: true},

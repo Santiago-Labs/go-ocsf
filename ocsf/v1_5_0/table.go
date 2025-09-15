@@ -8,16 +8,16 @@ import (
 type Table struct {
 
 	// Created Time: The time when the table was known to have been created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Description: The description of the table.
 	Desc *string `json:"desc,omitempty" parquet:"desc,optional"`
 
 	// Groups: The group names to which the table belongs.
-	Groups []*Group `json:"groups,omitempty" parquet:"groups,optional,list"`
+	Groups []Group `json:"groups,omitempty" parquet:"groups,list,optional"`
 
 	// Modified Time: The most recent time when any changes, updates, or modifications were made within the table.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The table name, ordinarily as assigned by a database administrator.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -29,11 +29,15 @@ type Table struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Table) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TableFields = []arrow.Field{
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "groups", Type: arrow.ListOf(GroupStruct), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "size", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -42,3 +46,4 @@ var TableFields = []arrow.Field{
 var TableStruct = arrow.StructOf(TableFields...)
 
 var TableSchema = arrow.NewSchema(TableFields, nil)
+var TableClassname = "table"

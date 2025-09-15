@@ -35,6 +35,10 @@ type AuthenticationFactor struct {
 	SecurityQuestions []string `json:"security_questions,omitempty" parquet:"security_questions,list,optional"`
 }
 
+func (v *AuthenticationFactor) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AuthenticationFactorFields = []arrow.Field{
 	{Name: "device", Type: DeviceStruct, Nullable: true},
 	{Name: "email_addr", Type: arrow.BinaryTypes.String, Nullable: true},

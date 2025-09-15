@@ -32,16 +32,20 @@ type TimeSpan struct {
 	DurationYears *int32 `json:"duration_years,omitempty" parquet:"duration_years,optional"`
 
 	// End Time: The end time or conclusion of the timespan's interval.
-	EndTime *int64 `json:"end_time,omitempty" parquet:"end_time,optional"`
+	EndTime int64 `json:"end_time,omitempty" parquet:"end_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Start Time: The start time or beginning of the timespan's interval.
-	StartTime *int64 `json:"start_time,omitempty" parquet:"start_time,optional"`
+	StartTime int64 `json:"start_time,omitempty" parquet:"start_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Time Span Type: The type of time span duration the object represents.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
 
 	// Time Span Type ID: The normalized identifier for the time span duration type.
 	TypeId *int32 `json:"type_id,omitempty" parquet:"type_id,optional"`
+}
+
+func (v *TimeSpan) Observable() (*int, string) {
+	return nil, ""
 }
 
 var TimeSpanFields = []arrow.Field{
@@ -53,8 +57,8 @@ var TimeSpanFields = []arrow.Field{
 	{Name: "duration_secs", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "duration_weeks", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "duration_years", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "end_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
-	{Name: "start_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "end_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
+	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "type", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "type_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 }
@@ -62,3 +66,4 @@ var TimeSpanFields = []arrow.Field{
 var TimeSpanStruct = arrow.StructOf(TimeSpanFields...)
 
 var TimeSpanSchema = arrow.NewSchema(TimeSpanFields, nil)
+var TimeSpanClassname = "timespan"

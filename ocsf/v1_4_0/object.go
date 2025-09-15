@@ -8,6 +8,10 @@ import (
 type Object struct {
 }
 
+func (v *Object) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ObjectFields = []arrow.Field{}
 
 var ObjectStruct = arrow.StructOf(ObjectFields...)

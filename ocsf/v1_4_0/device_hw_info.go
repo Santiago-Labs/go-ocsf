@@ -59,6 +59,10 @@ type DeviceHardwareInfo struct {
 	VendorName *string `json:"vendor_name,omitempty" parquet:"vendor_name,optional"`
 }
 
+func (v *DeviceHardwareInfo) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DeviceHardwareInfoFields = []arrow.Field{
 	{Name: "bios_date", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "bios_manufacturer", Type: arrow.BinaryTypes.String, Nullable: true},

@@ -20,6 +20,10 @@ type DiscoveryDetails struct {
 	Value *string `json:"value,omitempty" parquet:"value,optional"`
 }
 
+func (v *DiscoveryDetails) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DiscoveryDetailsFields = []arrow.Field{
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "occurrence_details", Type: OccurrenceDetailsStruct, Nullable: true},

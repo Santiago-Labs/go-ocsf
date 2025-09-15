@@ -17,6 +17,10 @@ type MITRETactic struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *MITRETactic) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITRETacticFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -26,3 +30,4 @@ var MITRETacticFields = []arrow.Field{
 var MITRETacticStruct = arrow.StructOf(MITRETacticFields...)
 
 var MITRETacticSchema = arrow.NewSchema(MITRETacticFields, nil)
+var MITRETacticClassname = "tactic"

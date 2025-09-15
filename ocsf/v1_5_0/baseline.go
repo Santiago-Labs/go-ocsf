@@ -20,6 +20,10 @@ type Baseline struct {
 	ObservedPattern *string `json:"observed_pattern,omitempty" parquet:"observed_pattern,optional"`
 }
 
+func (v *Baseline) Observable() (*int, string) {
+	return nil, ""
+}
+
 var BaselineFields = []arrow.Field{
 	{Name: "observation_parameter", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "observation_type", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -30,3 +34,4 @@ var BaselineFields = []arrow.Field{
 var BaselineStruct = arrow.StructOf(BaselineFields...)
 
 var BaselineSchema = arrow.NewSchema(BaselineFields, nil)
+var BaselineClassname = "baseline"

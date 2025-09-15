@@ -14,6 +14,10 @@ type HTTPHeader struct {
 	Value string `json:"value" parquet:"value"`
 }
 
+func (v *HTTPHeader) Observable() (*int, string) {
+	return nil, ""
+}
+
 var HTTPHeaderFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "value", Type: arrow.BinaryTypes.String, Nullable: false},
@@ -22,3 +26,4 @@ var HTTPHeaderFields = []arrow.Field{
 var HTTPHeaderStruct = arrow.StructOf(HTTPHeaderFields...)
 
 var HTTPHeaderSchema = arrow.NewSchema(HTTPHeaderFields, nil)
+var HTTPHeaderClassname = "http_header"

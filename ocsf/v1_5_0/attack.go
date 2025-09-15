@@ -23,6 +23,10 @@ type MITREATTCKATLAS struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *MITREATTCKATLAS) Observable() (*int, string) {
+	return nil, ""
+}
+
 var MITREATTCKATLASFields = []arrow.Field{
 	{Name: "mitigation", Type: MITREMitigationStruct, Nullable: true},
 	{Name: "sub_technique", Type: MITRESubtechniqueStruct, Nullable: true},
@@ -34,3 +38,4 @@ var MITREATTCKATLASFields = []arrow.Field{
 var MITREATTCKATLASStruct = arrow.StructOf(MITREATTCKATLASFields...)
 
 var MITREATTCKATLASSchema = arrow.NewSchema(MITREATTCKATLASFields, nil)
+var MITREATTCKATLASClassname = "attack"

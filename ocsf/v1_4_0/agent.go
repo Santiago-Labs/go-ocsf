@@ -32,6 +32,10 @@ type Agent struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Agent) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AgentFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "policies", Type: arrow.ListOf(PolicyStruct), Nullable: true},

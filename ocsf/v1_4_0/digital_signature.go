@@ -32,6 +32,10 @@ type DigitalSignature struct {
 	StateId *int32 `json:"state_id,omitempty" parquet:"state_id,optional"`
 }
 
+func (v *DigitalSignature) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DigitalSignatureFields = []arrow.Field{
 	{Name: "algorithm", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "algorithm_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},

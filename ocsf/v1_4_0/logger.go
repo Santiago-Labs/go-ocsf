@@ -44,6 +44,10 @@ type Logger struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Logger) Observable() (*int, string) {
+	return nil, ""
+}
+
 var LoggerFields = []arrow.Field{
 	{Name: "device", Type: DeviceStruct, Nullable: true},
 	{Name: "event_uid", Type: arrow.BinaryTypes.String, Nullable: true},

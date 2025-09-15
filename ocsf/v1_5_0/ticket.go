@@ -14,7 +14,7 @@ type Ticket struct {
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
 
 	// Status Details: A list of contextual descriptions of the <code>status, status_id</code> values.
-	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,optional,list"`
+	StatusDetails []string `json:"status_details,omitempty" parquet:"status_details,list,optional"`
 
 	// Ticket Status ID: The normalized identifier for the ticket status.
 	StatusId *int32 `json:"status_id,omitempty" parquet:"status_id,optional"`
@@ -32,6 +32,10 @@ type Ticket struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Ticket) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TicketFields = []arrow.Field{
 	{Name: "src_url", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "status", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -46,3 +50,4 @@ var TicketFields = []arrow.Field{
 var TicketStruct = arrow.StructOf(TicketFields...)
 
 var TicketSchema = arrow.NewSchema(TicketFields, nil)
+var TicketClassname = "ticket"

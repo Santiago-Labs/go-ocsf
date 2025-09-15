@@ -47,6 +47,10 @@ type TransportLayerSecurityTLS struct {
 	Version string `json:"version" parquet:"version"`
 }
 
+func (v *TransportLayerSecurityTLS) Observable() (*int, string) {
+	return nil, ""
+}
+
 var TransportLayerSecurityTLSFields = []arrow.Field{
 	{Name: "alert", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "certificate", Type: DigitalCertificateStruct, Nullable: true},

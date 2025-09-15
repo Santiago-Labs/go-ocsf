@@ -68,6 +68,10 @@ type DataSecurity struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *DataSecurity) Observable() (*int, string) {
+	return nil, ""
+}
+
 var DataSecurityFields = []arrow.Field{
 	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},

@@ -47,6 +47,10 @@ type Session struct {
 	Uuid *string `json:"uuid,omitempty" parquet:"uuid,optional"`
 }
 
+func (v *Session) Observable() (*int, string) {
+	return nil, ""
+}
+
 var SessionFields = []arrow.Field{
 	{Name: "count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

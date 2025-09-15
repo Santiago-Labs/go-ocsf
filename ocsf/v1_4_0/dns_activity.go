@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type DNSActivity struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -85,9 +85,6 @@ type DNSActivity struct {
 	// Response Code ID: The normalized identifier of the DNS server response code. See <a target='_blank' href='https://datatracker.ietf.org/doc/html/rfc6895'>RFC-6895</a>.
 	RcodeId *int32 `json:"rcode_id,omitempty" parquet:"rcode_id,optional"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
-
 	// Response Time: The Domain Name System (DNS) response time.
 	ResponseTime int64 `json:"response_time,omitempty" parquet:"response_time,timestamp_millis,timestamp(millisecond),optional"`
 
@@ -137,8 +134,30 @@ type DNSActivity struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *DNSActivity) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *DNSActivity) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var DNSActivityFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "answers", Type: arrow.ListOf(DNSAnswerStruct), Nullable: true},
@@ -164,7 +183,6 @@ var DNSActivityFields = []arrow.Field{
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "rcode", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "rcode_id", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "response_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},

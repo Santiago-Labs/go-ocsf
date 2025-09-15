@@ -29,6 +29,10 @@ type Policy struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Policy) Observable() (*int, string) {
+	return nil, ""
+}
+
 var PolicyFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -42,3 +46,4 @@ var PolicyFields = []arrow.Field{
 var PolicyStruct = arrow.StructOf(PolicyFields...)
 
 var PolicySchema = arrow.NewSchema(PolicyFields, nil)
+var PolicyClassname = "policy"

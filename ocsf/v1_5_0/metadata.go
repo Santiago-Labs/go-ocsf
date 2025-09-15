@@ -11,19 +11,19 @@ type Metadata struct {
 	CorrelationUid *string `json:"correlation_uid,omitempty" parquet:"correlation_uid,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Debug Information: Debug information about non-fatal issues with this OCSF event. Each issue is a line in this string array.
-	Debug []string `json:"debug,omitempty" parquet:"debug,optional,list"`
+	Debug []string `json:"debug,omitempty" parquet:"debug,list,optional"`
 
 	// Event Code: The <code>Event ID, Code, or Name</code> that the product uses to primarily identify the event.
 	EventCode *string `json:"event_code,omitempty" parquet:"event_code,optional"`
 
 	// Schema Extensions: The schema extensions used to create the event.
-	Extensions []*SchemaExtension `json:"extensions,omitempty" parquet:"extensions,optional,list"`
+	Extensions []SchemaExtension `json:"extensions,omitempty" parquet:"extensions,list,optional"`
 
 	// Labels: The list of labels attached to the event. For example: <code>["sample", "dev"]</code>
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Log Level: The audit level at which an event was generated.
 	LogLevel *string `json:"log_level,omitempty" parquet:"log_level,optional"`
@@ -38,43 +38,47 @@ type Metadata struct {
 	LogVersion *string `json:"log_version,omitempty" parquet:"log_version,optional"`
 
 	// Logged Time: <p>The time when the logging system collected and logged the event.</p>This attribute is distinct from the event time in that event time typically contain the time extracted from the original event. Most of the time, these two times will be different.
-	LoggedTime *int64 `json:"logged_time,omitempty" parquet:"logged_time,optional"`
+	LoggedTime int64 `json:"logged_time,omitempty" parquet:"logged_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Loggers: An array of Logger objects that describe the devices and logging products between the event source and its eventual destination. Note, this attribute can be used when there is a complex end-to-end path of event flow.
-	Loggers []*Logger `json:"loggers,omitempty" parquet:"loggers,optional,list"`
+	Loggers []Logger `json:"loggers,omitempty" parquet:"loggers,list,optional"`
 
 	// Modified Time: The time when the event was last modified or enriched.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Original Time: The original event time as reported by the event source. For example, the time in the original format from system event log such as Syslog on Unix/Linux and the System event file on Windows. Omit if event is generated instead of collected via logs.
 	OriginalTime *string `json:"original_time,omitempty" parquet:"original_time,optional"`
 
 	// Processed Time: The event processed time, such as an ETL operation.
-	ProcessedTime *int64 `json:"processed_time,omitempty" parquet:"processed_time,optional"`
+	ProcessedTime int64 `json:"processed_time,omitempty" parquet:"processed_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Product: The product that reported the event.
 	Product Product `json:"product" parquet:"product"`
 
 	// Profiles: The list of profiles used to create the event.  Profiles should be referenced by their <code>name</code> attribute for core profiles, or <code>extension/name</code> for profiles from extensions.
-	Profiles []string `json:"profiles,omitempty" parquet:"profiles,optional,list"`
+	Profiles []string `json:"profiles,omitempty" parquet:"profiles,list,optional"`
 
 	// Sequence Number: Sequence number of the event. The sequence number is a value available in some events, to make the exact ordering of events unambiguous, regardless of the event time precision.
 	Sequence *int32 `json:"sequence,omitempty" parquet:"sequence,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the event.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Tenant UID: The unique tenant identifier.
 	TenantUid *string `json:"tenant_uid,omitempty" parquet:"tenant_uid,optional"`
 
 	// Transformation Info: An array of transformation info that describes the mappings or transforms applied to the data.
-	TransformationInfoList []*TransformationInfo `json:"transformation_info_list,omitempty" parquet:"transformation_info_list,optional,list"`
+	TransformationInfoList []TransformationInfo `json:"transformation_info_list,omitempty" parquet:"transformation_info_list,list,optional"`
 
 	// Event UID: The logging system-assigned unique identifier of an event instance.
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 
 	// Version: The version of the OCSF schema, using Semantic Versioning Specification (<a target='_blank' href='https://semver.org'>SemVer</a>). For example: 1.0.0. Event consumers use the version to determine the available event attributes.
 	Version string `json:"version" parquet:"version"`
+}
+
+func (v *Metadata) Observable() (*int, string) {
+	return nil, ""
 }
 
 var MetadataFields = []arrow.Field{
@@ -88,11 +92,11 @@ var MetadataFields = []arrow.Field{
 	{Name: "log_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "log_provider", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "log_version", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "logged_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "logged_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "loggers", Type: arrow.ListOf(LoggerStruct), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "original_time", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "processed_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "processed_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "product", Type: ProductStruct, Nullable: false},
 	{Name: "profiles", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
 	{Name: "sequence", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
@@ -106,3 +110,4 @@ var MetadataFields = []arrow.Field{
 var MetadataStruct = arrow.StructOf(MetadataFields...)
 
 var MetadataSchema = arrow.NewSchema(MetadataFields, nil)
+var MetadataClassname = "metadata"

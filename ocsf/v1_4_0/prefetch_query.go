@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type PrefetchQuery struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -73,9 +73,6 @@ type PrefetchQuery struct {
 	// Raw Data: The raw event/finding data as received from the source.
 	RawData *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
-
 	// Run Count: The prefetch file run count.
 	RunCount *int32 `json:"run_count,omitempty" parquet:"run_count,optional"`
 
@@ -116,8 +113,30 @@ type PrefetchQuery struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *PrefetchQuery) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *PrefetchQuery) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var PrefetchQueryFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -139,7 +158,6 @@ var PrefetchQueryFields = []arrow.Field{
 	{Name: "query_result", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "query_result_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "run_count", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},

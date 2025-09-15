@@ -89,6 +89,11 @@ type NetworkProxyEndpoint struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *NetworkProxyEndpoint) Observable() (*int, string) {
+	typeId := 20
+	return &typeId, "network_proxy"
+}
+
 var NetworkProxyEndpointFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "autonomous_system", Type: AutonomousSystemStruct, Nullable: true},

@@ -11,10 +11,10 @@ type DNSAnswer struct {
 	Class *string `json:"class,omitempty" parquet:"class,optional"`
 
 	// DNS Header Flags: The list of DNS answer header flag IDs.
-	FlagIds []int32 `json:"flag_ids,omitempty" parquet:"flag_ids,optional,list"`
+	FlagIds []int32 `json:"flag_ids,omitempty" parquet:"flag_ids,list,optional"`
 
 	// DNS Header Flags: The list of DNS answer header flags.
-	Flags []string `json:"flags,omitempty" parquet:"flags,optional,list"`
+	Flags []string `json:"flags,omitempty" parquet:"flags,list,optional"`
 
 	// Packet UID: The DNS packet identifier assigned by the program that generated the query. The identifier is copied to the response.
 	PacketUid *int32 `json:"packet_uid,omitempty" parquet:"packet_uid,optional"`
@@ -27,6 +27,10 @@ type DNSAnswer struct {
 
 	// Resource Record Type: The type of data contained in this resource record. See <a target='_blank' href='https://www.rfc-editor.org/rfc/rfc1035.txt'>RFC1035</a>. For example: <code>CNAME</code>.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
+}
+
+func (v *DNSAnswer) Observable() (*int, string) {
+	return nil, ""
 }
 
 var DNSAnswerFields = []arrow.Field{
@@ -42,3 +46,4 @@ var DNSAnswerFields = []arrow.Field{
 var DNSAnswerStruct = arrow.StructOf(DNSAnswerFields...)
 
 var DNSAnswerSchema = arrow.NewSchema(DNSAnswerFields, nil)
+var DNSAnswerClassname = "dns_answer"

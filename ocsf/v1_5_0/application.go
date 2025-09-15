@@ -23,7 +23,7 @@ type Application struct {
 	Hostname *string `json:"hostname,omitempty" parquet:"hostname,optional"`
 
 	// Labels: The list of labels associated to the application.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Application Name: The name of the application.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -50,7 +50,7 @@ type Application struct {
 	Sbom *SoftwareBillofMaterials `json:"sbom,omitempty" parquet:"sbom,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the application.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Application Type: The type of application as defined by the event source, e.g., <code>GitHub</code>, <code>Azure Logic App</code>, or <code>Amazon Elastic BeanStalk</code>.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -66,6 +66,10 @@ type Application struct {
 
 	// Application Version: The semantic version of the application, e.g., <code>1.7.4</code>.
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
+}
+
+func (v *Application) Observable() (*int, string) {
+	return nil, ""
 }
 
 var ApplicationFields = []arrow.Field{
@@ -94,3 +98,4 @@ var ApplicationFields = []arrow.Field{
 var ApplicationStruct = arrow.StructOf(ApplicationFields...)
 
 var ApplicationSchema = arrow.NewSchema(ApplicationFields, nil)
+var ApplicationClassname = "application"

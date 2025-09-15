@@ -47,6 +47,10 @@ type ManagedEntity struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *ManagedEntity) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ManagedEntityFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "device", Type: DeviceStruct, Nullable: true},

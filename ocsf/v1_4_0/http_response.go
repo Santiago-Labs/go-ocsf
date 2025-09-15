@@ -32,6 +32,10 @@ type HTTPResponse struct {
 	Status *string `json:"status,omitempty" parquet:"status,optional"`
 }
 
+func (v *HTTPResponse) Observable() (*int, string) {
+	return nil, ""
+}
+
 var HTTPResponseFields = []arrow.Field{
 	{Name: "body_length", Type: arrow.PrimitiveTypes.Int32, Nullable: true},
 	{Name: "code", Type: arrow.PrimitiveTypes.Int32, Nullable: false},

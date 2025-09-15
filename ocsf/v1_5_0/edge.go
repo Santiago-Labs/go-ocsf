@@ -29,6 +29,10 @@ type Edge struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Edge) Observable() (*int, string) {
+	return nil, ""
+}
+
 var EdgeFields = []arrow.Field{
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "is_directed", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
@@ -42,3 +46,4 @@ var EdgeFields = []arrow.Field{
 var EdgeStruct = arrow.StructOf(EdgeFields...)
 
 var EdgeSchema = arrow.NewSchema(EdgeFields, nil)
+var EdgeClassname = "edge"

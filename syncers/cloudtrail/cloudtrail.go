@@ -609,9 +609,6 @@ func (s *Syncer) ToOCSF(ctx context.Context, event CloudtrailEvent) (ocsf.APIAct
 		TypeName:       &typeName,
 		TypeUid:        int64(typeUID),
 		TimezoneOffset: int32Ptr(0),
-
-		Region:    event.AwsRegion,
-		AccountId: event.RecipientAccountID,
 	}
 
 	return activity, nil

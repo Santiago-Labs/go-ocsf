@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type CloudResourcesInventoryInfo struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -67,8 +67,8 @@ type CloudResourcesInventoryInfo struct {
 	// Raw Data: The raw event/finding data as received from the source.
 	RawData *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
+	// Region: The cloud region where the resource is located, e.g., <code>us-isof-south-1</code>, <code>eastus2</code>, <code>us-central1</code>, etc.
+	Region *string `json:"region,omitempty" parquet:"region,optional"`
 
 	// Cloud Resources: The cloud resource(s) that are being discovered by an inventory process. Use this object if there is not a direct object match in the class.
 	Resources []ResourceDetails `json:"resources,omitempty" parquet:"resources,list,optional"`
@@ -113,8 +113,30 @@ type CloudResourcesInventoryInfo struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *CloudResourcesInventoryInfo) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *CloudResourcesInventoryInfo) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var CloudResourcesInventoryInfoFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -134,7 +156,7 @@ var CloudResourcesInventoryInfoFields = []arrow.Field{
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "osint", Type: arrow.ListOf(OSINTStruct), Nullable: false},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
+	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "resources", Type: arrow.ListOf(ResourceDetailsStruct), Nullable: true},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},

@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type RegistryValueActivity struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -70,9 +70,6 @@ type RegistryValueActivity struct {
 	// Registry Value: The registry value.
 	RegValue RegistryValue `json:"reg_value" parquet:"reg_value"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
-
 	// Severity: The event/finding severity, normalized to the caption of the severity_id value. In the case of 'Other', it is defined by the source.
 	Severity *string `json:"severity,omitempty" parquet:"severity,optional"`
 
@@ -110,8 +107,30 @@ type RegistryValueActivity struct {
 	Unmapped *string `json:"unmapped,omitempty" parquet:"unmapped,optional"`
 }
 
+func (v *RegistryValueActivity) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *RegistryValueActivity) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var RegistryValueActivityFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "actor", Type: ActorStruct, Nullable: false},
@@ -132,7 +151,6 @@ var RegistryValueActivityFields = []arrow.Field{
 	{Name: "prev_reg_value", Type: RegistryValueStruct, Nullable: true},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "reg_value", Type: RegistryValueStruct, Nullable: false},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "start_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},

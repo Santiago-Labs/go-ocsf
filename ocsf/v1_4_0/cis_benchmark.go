@@ -17,6 +17,10 @@ type CISBenchmark struct {
 	Name string `json:"name" parquet:"name"`
 }
 
+func (v *CISBenchmark) Observable() (*int, string) {
+	return nil, ""
+}
+
 var CISBenchmarkFields = []arrow.Field{
 	{Name: "cis_controls", Type: arrow.ListOf(CISControlStruct), Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},

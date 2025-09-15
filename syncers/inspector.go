@@ -238,8 +238,6 @@ func (s *InspectorOCSFSyncer) ToOCSF(ctx context.Context, inspectorFinding types
 		ClassName:       &className,
 		Message:         inspectorFinding.Description,
 		Metadata:        metadata,
-		Region:          regionFromArn(*inspectorFinding.FindingArn),
-		AccountId:       *inspectorFinding.AwsAccountId,
 		Resources:       mapInspectorResources(inspectorFinding),
 		Status:          &status,
 		StatusId:        &statusID,

@@ -38,6 +38,10 @@ type NetworkTraffic struct {
 	PacketsOut *int64 `json:"packets_out,omitempty" parquet:"packets_out,optional"`
 }
 
+func (v *NetworkTraffic) Observable() (*int, string) {
+	return nil, ""
+}
+
 var NetworkTrafficFields = []arrow.Field{
 	{Name: "bytes", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 	{Name: "bytes_in", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
@@ -54,3 +58,4 @@ var NetworkTrafficFields = []arrow.Field{
 var NetworkTrafficStruct = arrow.StructOf(NetworkTrafficFields...)
 
 var NetworkTrafficSchema = arrow.NewSchema(NetworkTrafficFields, nil)
+var NetworkTrafficClassname = "network_traffic"

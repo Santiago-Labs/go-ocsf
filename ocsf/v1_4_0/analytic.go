@@ -29,6 +29,10 @@ type Analytic struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Analytic) Observable() (*int, string) {
+	return nil, ""
+}
+
 var AnalyticFields = []arrow.Field{
 	{Name: "category", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "desc", Type: arrow.BinaryTypes.String, Nullable: true},

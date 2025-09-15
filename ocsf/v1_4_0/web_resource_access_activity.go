@@ -2,13 +2,13 @@
 package v1_4_0
 
 import (
+	"fmt"
+
+	"github.com/Santiago-Labs/go-ocsf/ocsf"
 	"github.com/apache/arrow-go/v18/arrow"
 )
 
 type WebResourceAccessActivity struct {
-
-	// Account ID: The account ID of the event. Used for partitioning.
-	AccountId string `json:"account_id" parquet:"account_id"`
 
 	// Activity ID: The normalized identifier of the activity that triggered the event.
 	ActivityId int32 `json:"activity_id" parquet:"activity_id"`
@@ -64,9 +64,6 @@ type WebResourceAccessActivity struct {
 	// Raw Data: The raw event/finding data as received from the source.
 	RawData *string `json:"raw_data,omitempty" parquet:"raw_data,optional"`
 
-	// Region: The region of the event. Used for partitioning.
-	Region string `json:"region" parquet:"region"`
-
 	// Severity: The event/finding severity, normalized to the caption of the severity_id value. In the case of 'Other', it is defined by the source.
 	Severity *string `json:"severity,omitempty" parquet:"severity,optional"`
 
@@ -113,8 +110,30 @@ type WebResourceAccessActivity struct {
 	WebResources []WebResource `json:"web_resources" parquet:"web_resources,list"`
 }
 
+func (v *WebResourceAccessActivity) Observable() (*int, string) {
+	return nil, ""
+}
+
+func (v *WebResourceAccessActivity) ValidateObservables() error {
+	presentObservables := ocsf.PresentObservablesOf(v)
+	for presObsIdx := range presentObservables {
+		var found bool
+		for obsIdx := range v.Observables {
+			presObsEnum := presentObservables[presObsIdx][0].(*int)
+			if v.Observables[obsIdx].TypeId == int32(*presObsEnum) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			obs := presentObservables[presObsIdx]
+			return fmt.Errorf("non-null observable %s(%d) not found in observables array", obs[1], *obs[0].(*int))
+		}
+	}
+	return nil
+}
+
 var WebResourceAccessActivityFields = []arrow.Field{
-	{Name: "account_id", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "activity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "activity_name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "category_name", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -133,7 +152,6 @@ var WebResourceAccessActivityFields = []arrow.Field{
 	{Name: "observables", Type: arrow.ListOf(ObservableStruct), Nullable: true},
 	{Name: "osint", Type: arrow.ListOf(OSINTStruct), Nullable: false},
 	{Name: "raw_data", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "region", Type: arrow.BinaryTypes.String, Nullable: false},
 	{Name: "severity", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "severity_id", Type: arrow.PrimitiveTypes.Int32, Nullable: false},
 	{Name: "src_endpoint", Type: NetworkEndpointStruct, Nullable: true},

@@ -152,6 +152,11 @@ type Device struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *Device) Observable() (*int, string) {
+	typeId := 20
+	return &typeId, "device"
+}
+
 var DeviceFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "autoscale_uid", Type: arrow.BinaryTypes.String, Nullable: true},

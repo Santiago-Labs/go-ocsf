@@ -41,6 +41,11 @@ type Container struct {
 	Uid *string `json:"uid,omitempty" parquet:"uid,optional"`
 }
 
+func (v *Container) Observable() (*int, string) {
+	typeId := 27
+	return &typeId, "container"
+}
+
 var ContainerFields = []arrow.Field{
 	{Name: "hash", Type: FingerprintStruct, Nullable: true},
 	{Name: "image", Type: ImageStruct, Nullable: true},

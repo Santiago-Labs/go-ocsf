@@ -11,6 +11,10 @@ type KernelExtension struct {
 	File File `json:"file" parquet:"file"`
 }
 
+func (v *KernelExtension) Observable() (*int, string) {
+	return nil, ""
+}
+
 var KernelExtensionFields = []arrow.Field{
 	{Name: "file", Type: FileStruct, Nullable: false},
 }
@@ -18,3 +22,4 @@ var KernelExtensionFields = []arrow.Field{
 var KernelExtensionStruct = arrow.StructOf(KernelExtensionFields...)
 
 var KernelExtensionSchema = arrow.NewSchema(KernelExtensionFields, nil)
+var KernelExtensionClassname = "kernel_driver"

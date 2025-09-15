@@ -8,13 +8,13 @@ import (
 type ResourceDetails struct {
 
 	// Agent List: A list of <code>agent</code> objects associated with a device, endpoint, or resource.
-	AgentList []*Agent `json:"agent_list,omitempty" parquet:"agent_list,optional,list"`
+	AgentList []Agent `json:"agent_list,omitempty" parquet:"agent_list,list,optional"`
 
 	// Cloud Partition: The canonical cloud partition name to which the region is assigned (e.g. AWS Partitions: aws, aws-cn, aws-us-gov).
 	CloudPartition *string `json:"cloud_partition,omitempty" parquet:"cloud_partition,optional"`
 
 	// Created Time: The time when the resource was created.
-	CreatedTime *int64 `json:"created_time,omitempty" parquet:"created_time,optional"`
+	CreatedTime int64 `json:"created_time,omitempty" parquet:"created_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Criticality: The criticality of the resource as defined by the event source.
 	Criticality *string `json:"criticality,omitempty" parquet:"criticality,optional"`
@@ -23,7 +23,7 @@ type ResourceDetails struct {
 	Data *string `json:"data,omitempty" parquet:"data,optional"`
 
 	// Data Classification: A list of Data Classification objects, that include information about data classification levels and data category types, indentified by a classifier.
-	DataClassifications []*DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,optional,list"`
+	DataClassifications []DataClassification `json:"data_classifications,omitempty" parquet:"data_classifications,list,optional"`
 
 	// Group: The name of the related resource group.
 	Group *Group `json:"group,omitempty" parquet:"group,optional"`
@@ -38,10 +38,10 @@ type ResourceDetails struct {
 	IsBackedUp *bool `json:"is_backed_up,omitempty" parquet:"is_backed_up,optional"`
 
 	// Labels: The list of labels associated to the resource.
-	Labels []string `json:"labels,omitempty" parquet:"labels,optional,list"`
+	Labels []string `json:"labels,omitempty" parquet:"labels,list,optional"`
 
 	// Modified Time: The time when the resource was last modified.
-	ModifiedTime *int64 `json:"modified_time,omitempty" parquet:"modified_time,optional"`
+	ModifiedTime int64 `json:"modified_time,omitempty" parquet:"modified_time,timestamp_millis,timestamp(millisecond),optional"`
 
 	// Name: The name of the resource.
 	Name *string `json:"name,omitempty" parquet:"name,optional"`
@@ -59,7 +59,7 @@ type ResourceDetails struct {
 	ResourceRelationship *Graph `json:"resource_relationship,omitempty" parquet:"resource_relationship,optional"`
 
 	// Tags: The list of tags; <code>{key:value}</code> pairs associated to the resource.
-	Tags []*KeyValueobject `json:"tags,omitempty" parquet:"tags,optional,list"`
+	Tags []KeyValueobject `json:"tags,omitempty" parquet:"tags,list,optional"`
 
 	// Type: The resource type as defined by the event source.
 	Type *string `json:"type,omitempty" parquet:"type,optional"`
@@ -77,10 +77,14 @@ type ResourceDetails struct {
 	Zone *string `json:"zone,omitempty" parquet:"zone,optional"`
 }
 
+func (v *ResourceDetails) Observable() (*int, string) {
+	return nil, ""
+}
+
 var ResourceDetailsFields = []arrow.Field{
 	{Name: "agent_list", Type: arrow.ListOf(AgentStruct), Nullable: true},
 	{Name: "cloud_partition", Type: arrow.BinaryTypes.String, Nullable: true},
-	{Name: "created_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "created_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "criticality", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "data_classifications", Type: arrow.ListOf(DataClassificationStruct), Nullable: true},
@@ -89,7 +93,7 @@ var ResourceDetailsFields = []arrow.Field{
 	{Name: "ip", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "is_backed_up", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 	{Name: "labels", Type: arrow.ListOf(arrow.BinaryTypes.String), Nullable: true},
-	{Name: "modified_time", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
+	{Name: "modified_time", Type: arrow.FixedWidthTypes.Timestamp_ms, Nullable: true},
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "namespace", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "owner", Type: UserStruct, Nullable: true},
@@ -106,3 +110,4 @@ var ResourceDetailsFields = []arrow.Field{
 var ResourceDetailsStruct = arrow.StructOf(ResourceDetailsFields...)
 
 var ResourceDetailsSchema = arrow.NewSchema(ResourceDetailsFields, nil)
+var ResourceDetailsClassname = "resource_details"

@@ -17,6 +17,10 @@ type Feature struct {
 	Version *string `json:"version,omitempty" parquet:"version,optional"`
 }
 
+func (v *Feature) Observable() (*int, string) {
+	return nil, ""
+}
+
 var FeatureFields = []arrow.Field{
 	{Name: "name", Type: arrow.BinaryTypes.String, Nullable: true},
 	{Name: "uid", Type: arrow.BinaryTypes.String, Nullable: true},
@@ -26,3 +30,4 @@ var FeatureFields = []arrow.Field{
 var FeatureStruct = arrow.StructOf(FeatureFields...)
 
 var FeatureSchema = arrow.NewSchema(FeatureFields, nil)
+var FeatureClassname = "feature"
